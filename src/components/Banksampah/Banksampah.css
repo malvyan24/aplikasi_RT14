@@ -1,0 +1,89 @@
+.bank-sampah-container {
+  padding: 30px;
+  background-color: #00aaff;
+  color: white;
+  border-radius: 10px;
+  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+  width: 80%;
+  margin: 0 auto;
+}
+
+h2 {
+  font-size: 28px;
+  font-weight: bold;
+  color: yellow;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+form input {
+  padding: 12px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+}
+
+button {
+  background-color: green;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: darkgreen;
+}
+
+table {
+  width: 100%;
+  margin-top: 30px;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+th {
+  background-color: orange;
+  color: white;
+  font-size: 16px;
+}
+
+td {
+  font-size: 14px;
+  background-color: #f9f9f9;
+}
+
+table tr:nth-child(even) {
+  background-color: #e6e6e6;
+}
+
+table tr:hover {
+  background-color: #f1f1f1;
+}
+
+button {
+  width: 100px;
+  margin: 10px;
+}
+
+button.red {
+  background-color: red;
+}
+
+button.yellow {
+  background-color: yellow;
+}

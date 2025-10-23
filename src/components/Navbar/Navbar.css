@@ -1,0 +1,115 @@
+:root{
+  --nav-bg:#ffffff;
+  --ink:#111827;
+  --muted:#6b7280;
+  --accent:#e9be06;   /* kuning figma */
+  --brand:#3f54fb;    /* biru figma */
+  --shadow:0 8px 20px rgba(0,0,0,.08);
+}
+
+.nav{
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--nav-bg);
+  box-shadow: var(--shadow);
+}
+
+.nav__inner{
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 16px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav__brand{
+  display: flex;
+  align-items: center;
+}
+.nav__logo{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing:.2px;
+}
+.nav__dot{
+  width: 18px; height: 18px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--brand), var(--accent));
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+}
+
+/* Tengah: menu */
+.nav__menu{
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  justify-content: center;
+}
+.nav__link{
+  position: relative;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--muted);
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+.nav__link:hover{ color: var(--ink); }
+.nav__link--active{
+  color: var(--ink);
+}
+.nav__link--active::after{
+  content:"";
+  position:absolute; left:10px; right:10px; bottom:-6px;
+  height:3px; border-radius:3px;
+  background: var(--accent);
+}
+
+/* Kanan: profil + hamburger */
+.nav__profile{
+  display:flex; align-items:center; gap:10px;
+  justify-self: end;
+}
+.nav__avatar{
+  width:28px; height:28px; border-radius:50%;
+  object-fit:cover; background:#f3f4f6;
+  border:2px solid #f3f4f6;
+}
+.nav__name{
+  font-weight:600; color:var(--ink);
+}
+
+/* Hamburger */
+.nav__toggle{
+  display:none;
+  width:36px; height:36px;
+  border-radius:10px; border:none; background:#f3f4f6;
+  margin-left:6px; cursor:pointer;
+}
+.nav__toggle span{
+  display:block; width:20px; height:2px; background:#111; margin:4px auto;
+}
+
+/* ====== Mobile ====== */
+@media (max-width: 960px){
+  .nav__inner{ grid-template-columns: 1fr auto auto; }
+  .nav__menu{
+    position: absolute;
+    top: 58px; left: 0; right: 0;
+    background: var(--nav-bg);
+    box-shadow: var(--shadow);
+    padding: 10px 14px;
+    display: none;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    justify-content: center;
+  }
+  .nav__menu.is-open{ display: flex; }
+  .nav__toggle{ display: inline-block; }
+  .nav__name{ display:none; } /* hemat ruang di hp */
+}

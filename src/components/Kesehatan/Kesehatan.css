@@ -1,0 +1,57 @@
+.kesehatan-container {
+    background-color: #00aaff; /* Warna latar belakang */
+    padding: 20px;
+    border-radius: 10px;
+}
+
+h2 {
+    color: yellow; /* Warna judul */
+    text-align: center;
+    margin-bottom: 20px; /* Ruang di bawah judul */
+}
+
+.kesehatan-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Jarak antara input */
+    margin-bottom: 20px;
+}
+
+input {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ddd; /* Garis tepi */
+}
+
+button {
+    padding: 10px;
+    background-color: green; /* Warna tombol */
+    color: white; /* Warna teks tombol */
+    border: none; /* Tanpa garis tepi */
+    border-radius: 5px;
+    cursor: pointer; /* Kursor pointer */
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: darkgreen; /* Warna saat hover */
+}
+
+table {
+    width: 100%; /* Menggunakan lebar penuh */
+    border-collapse: collapse; /* Menghapus jarak antara sel */
+}
+
+th, td {
+    border: 1px solid white; /* Garis tepi pada sel */
+    padding: 10px;
+    text-align: center; /* Tengah teks */
+}
+
+th {
+    background-color: orange; /* Warna latar tabel */
+}
+
+tr:hover {
+    background-color: #f1f1f1; /* Warna saat hover pada baris */
+}

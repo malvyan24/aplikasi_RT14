@@ -1,0 +1,103 @@
+body {
+    background-color: #f4f4f4;
+    /* Warna latar belakang umum */
+    font-family: Arial, sans-serif;
+    /* Font yang lebih bersih */
+}
+
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #3A6EA5;
+    /* Warna latar belakang form */
+    border-radius: 10px;
+    padding: 40px;
+    /* Padding yang seimbang di segala sisi */
+    width: 400px;
+    /* Lebar form */
+    margin: 100px auto;
+    /* Pusatkan form */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    /* Efek bayangan yang lebih tajam */
+}
+
+h1 {
+    margin: 0 0 20px;
+    /* Tambahkan margin bawah agar lebih jauh dengan elemen lain */
+    color: white;
+    /* Warna teks judul */
+    text-align: center;
+    /* Pusatkan judul */
+    font-size: 24px;
+    /* Ukuran judul yang lebih besar */
+}
+
+h2 {
+    margin: 0 0 20px;
+    /* Tambahkan margin bawah */
+    color: white;
+    /* Warna teks */
+    text-align: center;
+    /* Pusatkan teks */
+    font-size: 18px;
+    /* Ukuran teks yang sedikit lebih kecil */
+}
+
+input {
+    width: 100%;
+    /* Lebar penuh */
+    padding: 12px;
+    /* Ruang di dalam input */
+    margin: 10px 0;
+    /* Ruang di antara input */
+    border: 1px solid #ccc;
+    /* Tambahkan border */
+    border-radius: 5px;
+    font-size: 16px;
+    /* Ukuran font yang lebih besar */
+}
+
+button {
+    background-color: #FFC107;
+    /* Warna tombol */
+    color: #000;
+    /* Warna teks tombol */
+    padding: 12px;
+    /* Ruang di dalam tombol */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    /* Lebar tombol */
+    font-size: 16px;
+    /* Ukuran font tombol */
+    transition: background-color 0.3s;
+    /* Animasi transisi warna tombol */
+    margin-top: 10px;
+    /* Ruang di atas tombol */
+}
+
+button:hover {
+    background-color: #ffd54f;
+    /* Warna saat hover */
+}
+
+a {
+    color: #FFC107;
+    /* Warna tautan */
+    text-decoration: none;
+    /* Menghilangkan garis bawah */
+    font-size: 14px;
+    /* Ukuran font */
+    margin-top: 15px;
+    /* Tambahkan ruang di atas tautan */
+    text-align: center;
+    /* Pusatkan tautan */
+}
+
+a:hover {
+    text-decoration: underline;
+    /* Garis bawah saat hover */
+}
