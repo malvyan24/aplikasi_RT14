@@ -7,6 +7,12 @@
   --shadow:0 8px 20px rgba(0,0,0,.08);
 }
 
+.nav__logo-image {
+  width: 50px; /* Sesuaikan ukuran logo */
+  height: auto;
+}
+
+
 .nav{
   position: sticky;
   top: 0;
@@ -113,3 +119,5 @@
   .nav__toggle{ display: inline-block; }
   .nav__name{ display:none; } /* hemat ruang di hp */
 }
+
+

@@ -3,7 +3,8 @@ import { useState } from "react";
 import "./Home.css";
 
 // Ikon bawaan (bisa diganti gambar lokal kalau mau)
-import { Users, FileText, Leaf, Recycle } from "lucide-react";
+import { Users, FileText, Leaf, Recycle, HeartPlus } from "lucide-react";
+import { BiHealth } from "react-icons/bi";
 
 /**
  * Jika mau pakai gambar daripada ikon:
@@ -12,7 +13,7 @@ import { Users, FileText, Leaf, Recycle } from "lucide-react";
  */
 const FEATURES = [
   { to: "/datawarga", title: "Data Warga", Icon: Users, img: null },
-  { to: "/laporan", title: "Laporan Warga", Icon: FileText, img: null },
+  { to: "/kesehatan", title: "kesehatan", Icon: HeartPlus, img: null },
   { to: "/kegiatan", title: "Kegiatan Lingkungan", Icon: Leaf, img: null },
   { to: "/bank-sampah", title: "Bank Sampah", Icon: Recycle, img: null },
 ];

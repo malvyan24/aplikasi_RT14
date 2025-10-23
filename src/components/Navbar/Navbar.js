@@ -3,7 +3,8 @@ import { NavLink, Link } from "react-router-dom";
 import "./Navbar.css";
 
 
-const AVATAR = "/assets/avatar.png";
+const AVATAR = "/image/logoSiRT.png"; // Sesuaikan dengan nama dan lokasi file logo Anda
+
 
 const NAV_ITEMS = [
   { to: "/", label: "Beranda" },
@@ -20,12 +21,13 @@ export default function Navbar() {
     <header className="nav">
       <div className="nav__inner">
         {/* Kiri: Logo / Judul singkat */}
-        <div className="nav__brand">
-          <Link to="/" className="nav__logo" aria-label="Beranda">
-            <span className="nav__dot" />
-            Aplikasi RT 14
-          </Link>
-        </div>
+<div className="nav__brand">
+  <Link to="/" className="nav__logo" aria-label="Beranda">
+    <img src={AVATAR} alt="Logo RT 14" className="nav__logo-image" />
+    Sistem Informasi RT 14
+  </Link>
+</div>
+
 
         {/* Tengah: Menu utama */}
         <nav className={`nav__menu ${open ? "is-open" : ""}`} aria-label="Main">
