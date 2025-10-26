@@ -45,7 +45,7 @@ export default function Home() {
 
           <div className="home__hero-illustration">
             {/* Taruh file di /public/assets/hero.png; jika belum ada, bagian ini otomatis tersembunyi */}
-            <HeroImage src="/assets/hero.png" />
+            <HeroImage src="/image/LogoSiRT.png" />
           </div>
         </div>
       </div>
