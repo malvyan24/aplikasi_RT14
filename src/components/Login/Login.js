@@ -13,7 +13,7 @@ function Login() {
 
     return (
         <div className="login-container">
-            <h1>Selamat Datang</h1>
+            <h1>Selamat Datang Di Web SiRT</h1>
             <h2>Masukkan Nama & Kata Sandi</h2>
             <form onSubmit={handleSubmit}>
                 <input 
