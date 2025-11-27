@@ -14,8 +14,8 @@ import { BiHealth } from "react-icons/bi";
 const FEATURES = [
   { to: "/datawarga", title: "Data Warga", Icon: Users, img: null },
   { to: "/kesehatan", title: "kesehatan", Icon: HeartPlus, img: null },
-  { to: "/kegiatan", title: "Kegiatan Lingkungan", Icon: Leaf, img: null },
-  { to: "/bank-sampah", title: "Bank Sampah", Icon: Recycle, img: null },
+  { to: "/lingkungan", title: "Kegiatan Lingkungan", Icon: Leaf, img: null },
+  { to: "/banksampah", title: "Bank Sampah", Icon: Recycle, img: null },
 ];
 
 // Komponen gambar dengan fallback hide jika file tidak ada

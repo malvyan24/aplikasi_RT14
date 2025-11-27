@@ -1,108 +1,80 @@
-import React, { useState } from 'react';
-import './Banksampah.css';
+import React from "react";
+import TambahDataSampah from "./TambahDataSampah";
+import DataSampah from "./DataSampah";
+import { FaPlus, FaListUl, FaSyncAlt, FaPrint } from "react-icons/fa";
+import "./Banksampah.css"; // Pastikan mengimpor CSS dengan benar
 
-const BankSampah = () => {
-  const [idBankSampah, setIdBankSampah] = useState('');
-  const [nama, setNama] = useState('');
-  const [alamat, setAlamat] = useState('');
-  const [jenisSampah, setJenisSampah] = useState('');
-  const [berat, setBerat] = useState('');
-  const [tanggal, setTanggal] = useState('');
-  const [dataBankSampah, setDataBankSampah] = useState([]);
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const newData = {
-      idBankSampah,
-      nama,
-      alamat,
-      jenisSampah,
-      berat,
-      tanggal,
+const Banksampah = () => {
+    const handleRefresh = () => {
+        window.location.reload();
     };
-    setDataBankSampah([...dataBankSampah, newData]);
-    setIdBankSampah('');
-    setNama('');
-    setAlamat('');
-    setJenisSampah('');
-    setBerat('');
-    setTanggal('');
-  };
 
-  return (
-    <div className="bank-sampah-container">
-      <h2>Bank Sampah RT 14</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="ID Bank Sampah"
-          value={idBankSampah}
-          onChange={(e) => setIdBankSampah(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Nama"
-          value={nama}
-          onChange={(e) => setNama(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Alamat"
-          value={alamat}
-          onChange={(e) => setAlamat(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Jenis Sampah"
-          value={jenisSampah}
-          onChange={(e) => setJenisSampah(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Berat Sampah (kg)"
-          value={berat}
-          onChange={(e) => setBerat(e.target.value)}
-        />
-        <input
-          type="date"
-          value={tanggal}
-          onChange={(e) => setTanggal(e.target.value)}
-        />
-        <button type="submit">Tambah</button>
-      </form>
-      
-      <table>
-        <thead>
-          <tr>
-            <th>ID Bank Sampah</th>
-            <th>Nama</th>
-            <th>Alamat</th>
-            <th>Jenis Sampah</th>
-            <th>Berat (kg)</th>
-            <th>Tanggal</th>
-            <th>Aksi</th>
-          </tr>
-        </thead>
-        <tbody>
-          {dataBankSampah.map((item, index) => (
-            <tr key={index}>
-              <td>{item.idBankSampah}</td>
-              <td>{item.nama}</td>
-              <td>{item.alamat}</td>
-              <td>{item.jenisSampah}</td>
-              <td>{item.berat}</td>
-              <td>{item.tanggal}</td>
-              <td>
-                <button className="yellow">Edit</button>
-                <button className="red">Hapus</button>
-                <button className="green">Cetak</button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
+    const handlePrint = () => {
+        window.print();
+    };
+
+    return (
+        <div className="container py-3 dw-page">
+            <div className="dw-header mb-2">
+                <h1>Bank Sampah RT 14</h1>
+            </div>
+
+            <div className="card mb-3 dw-toolbar">
+                <div className="card-body">
+                    <div className="dw-toolbar"> {/* Pembungkus flexbox */}
+                        <button className="btn btn-primary btn-sm">
+                            <FaPlus className="me-1" />
+                            <span>Tambah Data</span>
+                        </button>
+
+                        <button className="btn btn-light btn-sm">
+                            <FaListUl className="me-1" />
+                            <span>Lihat Data</span>
+                        </button>
+
+                        <button
+                            className="btn btn-secondary btn-sm"
+                            type="button"
+                            onClick={handleRefresh}
+                        >
+                            <FaSyncAlt className="me-1" />
+                            <span>Refresh</span>
+                        </button>
+
+                        <button
+                            className="btn btn-success btn-sm"
+                            type="button"
+                            onClick={handlePrint}
+                        >
+                            <FaPrint className="me-1" />
+                            <span>Cetak</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div className="row g-3">
+                <div className="col-12">
+                    <div className="card dw-main">
+                        <div className="card-body">
+                            <DataSampah />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="col-12">
+                    <div className="card dw-form-wrapper">
+                        <div className="card-header">
+                            <h2 className="mb-0">Form Tambah Data Sampah</h2>
+                        </div>
+                        <div className="card-body">
+                            <TambahDataSampah />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
 };
 
-export default BankSampah;
+export default Banksampah;

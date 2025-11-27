@@ -1,76 +1,226 @@
-.datawarga-container {
-  padding: 30px;
-  background-color: #00aaff;
-  color: white;
+/* ===== Global halaman Data Warga ===== */
+.dw-page {
+  padding: 24px 40px;
+  background-color: #f4f6f9;
+  min-height: calc(100vh - 60px); /* Sesuaikan tinggi navbar */
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #111827;
+}
+
+.dw-header h1 {
+  font-size: 26px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #111827;
+}
+
+/* ===== Card ===== */
+.card {
+  background: #ffffff;
   border-radius: 10px;
-  box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
-  width: 80%;
-  margin: 0 auto;
+  padding: 16px 20px;
+  margin-bottom: 18px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+  border: 1px solid #e5e7eb;
 }
 
-h2 {
-  font-size: 28px;
-  font-weight: bold;
-  color: yellow;
-  text-align: center;
-  margin-bottom: 30px;
+/* ===== Toolbar Tombol ===== */
+.dw-toolbar {
+  display: flex; /* Menggunakan flexbox untuk menyusun tombol */
+  justify-content: flex-start; /* Mengatur tombol ke kiri */
+  align-items: center; /* Menyelaraskan tombol secara vertikal */
+  gap: 10px; /* Ruang antara tombol */
+  margin-bottom: 16px; /* Spasi di bawah toolbar */
 }
 
-form {
+/* ===== Tombol ===== */
+.btn {
+  display: inline-flex; /* Menjaga agar tombol tetap rata */
+  align-items: center; /* Menyelaraskan ikon dan teks di tengah */
+  justify-content: center; /* Menyelaraskan isi tombol di tengah */
+  padding: 6px 14px; /* Padding tombol */
+  border-radius: 999px; /* Tombol bulat */
+  border: 1px solid transparent;
+  font-size: 13px; /* Ukuran font */
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  line-height: 1.3;
+  white-space: nowrap; /* Mencegah teks terputus dalam satu baris */
+}
+
+/* ===== Tombol Warna ===== */
+.btn-primary {
+  background-color: #2563eb;
+  border-color: #1d4ed8;
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background-color: #1d4ed8;
+}
+
+.btn-light {
+  background-color: #ffffff;
+  border-color: #d1d5db;
+  color: #374151;
+}
+
+.btn-light:hover {
+  background-color: #f3f4f6;
+}
+
+.btn-secondary {
+  background-color: #6b7280;
+  border-color: #4b5563;
+  color: #ffffff;
+}
+
+.btn-secondary:hover {
+  background-color: #4b5563;
+}
+
+.btn-success {
+  background-color: #16a34a;
+  border-color: #15803d;
+  color: #ffffff;
+}
+
+.btn-success:hover {
+  background-color: #15803d;
+}
+
+/* ===== Tabel ===== */
+.dw-table-wrapper {
+  width: 100%;
+}
+
+.dw-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 13px;
+  background-color: #ffffff;
+}
+
+.dw-table thead tr {
+  background-color: #f3f4f6;
+}
+
+.dw-table th,
+.dw-table td {
+  border-bottom: 1px solid #e5e7eb;
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.dw-table th {
+  font-weight: 600;
+  color: #374151;
+}
+
+.dw-table tbody tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+.dw-table tbody tr:hover {
+  background-color: #eef2ff;
+}
+
+/* ===== Form Tambah Data ===== */
+.dw-form-wrapper h2 {
+  margin-top: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.dw-form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px 20px;
+  margin-top: 8px;
+}
+
+.dw-form-group {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  font-size: 13px;
+  color: #4b5563;
 }
 
-form input {
-  padding: 12px;
-  border-radius: 5px;
-  border: 1px solid #ddd;
-  font-size: 16px;
+.dw-form-group label {
+  margin-bottom: 4px;
+  font-weight: 500;
 }
 
-button {
-  background-color: green;
-  color: white;
-  padding: 12px;
-  border: none;
-  border-radius: 5px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+.dw-form-group input {
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  font-size: 13px;
+  outline: none;
+  background-color: #f9fafb;
 }
 
-button:hover {
-  background-color: darkgreen;
+.dw-form-group input:focus {
+  border-color: #2563eb;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.2);
 }
 
-table {
-  width: 100%;
-  margin-top: 30px;
-  border-collapse: collapse;
+/* ===== Messages ===== */
+.dw-success {
+  margin-top: 8px;
+  color: #16a34a;
+  font-size: 13px;
 }
 
-th, td {
-  padding: 12px;
-  text-align: left;
-  border: 1px solid #ddd;
+.dw-error {
+  margin-top: 8px;
+  color: #b91c1c;
+  font-size: 13px;
 }
 
-th {
-  background-color: orange;
-  color: white;
-  font-size: 16px;
+/* ===== Media Queries ===== */
+@media (max-width: 768px) {
+  /* Tablet dan ponsel */
+  .dw-page {
+    padding: 16px; /* Kurangi padding */
+  }
+
+  .dw-header h1 {
+    font-size: 22px; /* Ukuran font lebih kecil */
+  }
+
+  .btn {
+    font-size: 12px; /* Ukuran font lebih kecil untuk tombol */
+  }
+  
+  .card {
+    padding: 12px; /* Kurangi padding di dalam kartu */
+  }
 }
 
-td {
-  font-size: 14px;
-  background-color: #f9f9f9;
-}
+@media (max-width: 576px) {
+  /* Ponsel */
+  .dw-page {
+    padding: 12px; /* Spasi lebih kecil untuk ponsel */
+  }
 
-table tr:nth-child(even) {
-  background-color: #e6e6e6;
-}
+  .dw-header h1 {
+    font-size: 20px; /* Ukuran font lebih kecil di ponsel */
+  }
 
-table tr:hover {
-  background-color: #f1f1f1;
+  .dw-toolbar {
+    flex-direction: column; /* Tata ulang tombol dalam kolom */
+    align-items: stretch; /* Menghabiskan lebar penuh */
+  }
+
+  .btn {
+    width: 100%; /* Tombol menghabiskan lebar penuh */
+    margin-bottom: 8px; /* Tambahkan spasi antar tombol */
+  }
 }

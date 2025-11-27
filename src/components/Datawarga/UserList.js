@@ -1,43 +1,41 @@
-// src/components/Datawarga/UserList.js
 import React from "react";
-import { useQuery } from "@apollo/client";
-import { GET_WARGA } from "../../graphql/userQueries";
+import "./Datawarga.css";
 
 const UserList = () => {
-  const { data, loading, error } = useQuery(GET_WARGA);
+  // NOTE:
+  // Saat ini tombol Tambah/Lihat Data/Refresh/Cetak belum punya fungsi khusus,
+  // hanya untuk tampilan saja. Nanti bisa ditambahkan handler onClick.
 
-  if (loading) return <p>Memuat data warga...</p>;
-  if (error)
-    return (
-      <p style={{ color: "yellow" }}>Error memuat data: {error.message}</p>
-    );
+  const handleRefresh = () => {
+    // sementara hanya reload halaman
+    window.location.reload();
+  };
+
+  const handlePrint = () => {
+    // sementara pakai print browser
+    window.print();
+  };
 
   return (
-    <>
-      <h3>Daftar Warga</h3>
-      <table>
+    <div>
+      {/* Contoh sederhana, ganti dengan tabel sebenarnya */}
+      <table className="table table-striped">
         <thead>
           <tr>
-            <th>NIK</th>
-            <th>Nama Kepala Keluarga</th>
-            <th>Alamat Rumah</th>
-            <th>Status Rumah</th>
-            <th>Tgl Masuk</th>
+            <th>Nama</th>
+            <th>Alamat</th>
+            <th>RT/RW</th>
           </tr>
         </thead>
         <tbody>
-          {data?.wargas?.map((warga) => (
-            <tr key={warga.id}>
-              <td>{warga.nik}</td>
-              <td>{warga.nama}</td>
-              <td>{warga.alamat}</td>
-              <td>{warga.status}</td>
-              <td>{warga.tglMasuk}</td>
-            </tr>
-          ))}
+          <tr>
+            <td>Contoh Warga</td>
+            <td>Jl. Contoh No. 1</td>
+            <td>14/03</td>
+          </tr>
         </tbody>
       </table>
-    </>
+    </div>
   );
 };
 
