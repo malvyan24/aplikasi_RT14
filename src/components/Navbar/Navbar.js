@@ -1,76 +1,68 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { NavLink, Link } from "react-router-dom";
 import "./Navbar.css";
-
-const AVATAR = "/image/logoSiRT.png";
-
-const NAV_ITEMS = [
-  { to: "/", label: "Beranda" },
-  { to: "/datawarga", label: "Data Warga" },
-  { to: "/kesehatan", label: "Kesehatan" },
-  { to: "/lingkungan", label: "Lingkungan" },
-  { to: "/Banksampah", label: "Banksampah" },
-];
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
 
+  const linkClass = ({ isActive }) =>
+    `sirt-nav__link ${isActive ? "sirt-nav__link--active" : ""}`;
+
+  const closeMenu = () => setOpen(false);
+
   return (
-    // kombinasikan class lamamu + class bootstrap navbar
-    <header className="nav navbar navbar-expand-lg navbar-light">
-      <div className="container nav__inner">
-        {/* Kiri: Logo / Judul */}
-        <div className="nav__brand">
-          <Link to="/" className="nav__logo navbar-brand" aria-label="Beranda">
+    <header className="sirt-nav">
+      <div className="sirt-nav__inner">
+        <div className="sirt-nav__brand">
+          <Link to="/" className="sirt-nav__logo" onClick={closeMenu}>
             <img
-              src={AVATAR}
-              alt="Logo RT 14"
-              className="nav__logo-image d-inline-block align-text-top"
+              src="/image/LogoSiRT.png"
+              alt="SiRT"
+              className="sirt-nav__logo-image"
+              onError={(e) => (e.currentTarget.style.display = "none")}
             />
-            <span className="ms-1">Sistem Informasi RT 14</span>
+            <span>Sistem Informasi RT 14</span>
           </Link>
         </div>
 
-        {/* Tombol hamburger Bootstrap */}
-        <button
-          className="navbar-toggler nav__toggle"
-          type="button"
-          aria-label="Toggle navigation"
-          aria-expanded={open}
-          onClick={() => setOpen((v) => !v)}
-        >
-          <span className="navbar-toggler-icon" />
-        </button>
+        <nav className={`sirt-nav__menu ${open ? "is-open" : ""}`}>
+          <NavLink to="/" className={linkClass} onClick={closeMenu}>
+            Beranda
+          </NavLink>
+          <NavLink to="/datawarga" className={linkClass} onClick={closeMenu}>
+            Data Warga
+          </NavLink>
+          <NavLink to="/kesehatan" className={linkClass} onClick={closeMenu}>
+            Kesehatan
+          </NavLink>
+          <NavLink to="/lingkungan" className={linkClass} onClick={closeMenu}>
+            Lingkungan
+          </NavLink>
+          <NavLink to="/banksampah" className={linkClass} onClick={closeMenu}>
+            Bank Sampah
+          </NavLink>
+        </nav>
 
-        {/* Tengah + kanan: menu + profile */}
-        <div className={"collapse navbar-collapse" + (open ? " show" : "")}>
-          {/* Tengah: menu utama */}
-          <nav className="navbar-nav mx-auto nav__menu" aria-label="Main">
-            {NAV_ITEMS.map((item) => (
-              <NavLink
-                key={item.to}
-                to={item.to}
-                end={item.to === "/"}
-                className={({ isActive }) =>
-                  "nav-link nav__link" + (isActive ? " nav__link--active" : "")
-                }
-                onClick={() => setOpen(false)}
-              >
-                {item.label}
-              </NavLink>
-            ))}
-          </nav>
+        <div className="sirt-nav__profile">
+          <img
+            src="/image/LogoSiRT.png"
+            alt="avatar"
+            className="sirt-nav__avatar"
+            onError={(e) => (e.currentTarget.style.display = "none")}
+          />
+          <span className="sirt-nav__name">Admin RT</span>
 
-          {/* Kanan: Profil */}
-          <div className="d-flex align-items-center nav__profile">
-            <img
-              src={AVATAR}
-              alt=""
-              className="nav__avatar"
-              onError={(e) => (e.currentTarget.style.display = "none")}
-            />
-            <span className="nav__name">Admin RT</span>
-          </div>
+          <button
+            type="button"
+            className="sirt-nav__toggle"
+            aria-label="Toggle menu"
+            aria-expanded={open}
+            onClick={() => setOpen((v) => !v)}
+          >
+            <span />
+            <span />
+            <span />
+          </button>
         </div>
       </div>
     </header>

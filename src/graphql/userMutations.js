@@ -1,26 +1,20 @@
 import { gql } from "@apollo/client";
 
 export const ADD_WARGA = gql`
-  mutation AddWarga(
-    $nik: String!
-    $nama: String!
-    $alamat: String!
-    $status: String!
-    $tglMasuk: String!
+  mutation CreateFamily(
+    $kepalaKeluarga: String!
+    $noKK: String!
+    $address: String
+    $ownershipStatus: String
   ) {
-    addWarga(
-      nik: $nik
-      nama: $nama
-      alamat: $alamat
-      status: $status
-      tglMasuk: $tglMasuk
+    createFamily(
+      kepalaKeluarga: $kepalaKeluarga
+      noKK: $noKK
+      address: $address
+      ownershipStatus: $ownershipStatus
     ) {
       id
-      nik
-      nama
-      alamat
-      status
-      tglMasuk
+      kepalaKeluarga
     }
   }
 `;

@@ -1,31 +1,46 @@
 :root {
-  --brand-blue: #3f54fb;    /* biru banner */
-  --brand-yellow: #e9be06;  /* kuning banner */
+  --brand-blue: #3f54fb;     /* Biru banner */
+  --brand-yellow: #e9be06;   /* Kuning banner */
   --ink-900: #0f172a;
   --surface: #ffffff;
   --bg: #f5f7fb;
   --shadow: 0 12px 22px rgba(0, 0, 0, 0.08);
   --radius-xl: 20px;
+
+  /* Layout tokens */
+  --container: 1100px;
+  --nav-h: 64px;
+  --pad-x: clamp(12px, 3vw, 20px);
+  --gap: clamp(14px, 2.5vw, 28px);
+}
+
+/* Anti “overflow ghaib” */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 .home {
   background: var(--bg);
-  min-height: calc(100vh - 64px);
-  padding: 28px 16px 64px;
+  min-height: calc(100vh - var(--nav-h));
+  min-height: calc(100svh - var(--nav-h)); /* lebih stabil di mobile */
+  padding: clamp(16px, 3vw, 28px) var(--pad-x) clamp(40px, 6vw, 64px);
+  overflow-x: clip;
 }
 
 /* ====== HERO ====== */
 .home__hero {
   position: relative;
-  max-width: 1100px;
-  margin: 0 auto 40px;
+  max-width: var(--container);
+  margin: 0 auto clamp(18px, 4vw, 40px);
   border-radius: var(--radius-xl);
   overflow: hidden;
   background: var(--surface);
   box-shadow: var(--shadow);
 }
 
-/* pola diagonal biru + panel kuning */
+/* Layer dekorasi */
 .home__hero::before,
 .home__hero::after {
   content: "";
@@ -33,6 +48,8 @@
   inset: 0;
   pointer-events: none;
 }
+
+/* Pola diagonal biru */
 .home__hero::before {
   background: linear-gradient(
     120deg,
@@ -41,31 +58,38 @@
     transparent 59%
   );
 }
+
+/* Panel kuning kanan (adaptif) */
 .home__hero::after {
-  right: 0;
   left: auto;
-  width: 34%;
+  right: 0;
+  width: clamp(140px, 34%, 380px);
   background: var(--brand-yellow);
 }
 
 .home__hero-inner {
   position: relative;
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
+  grid-template-columns: 1.2fr minmax(0, 360px);
   align-items: center;
-  gap: 24px;
-  padding: 32px 32px;
+  gap: var(--gap);
+  padding: clamp(18px, 3.2vw, 32px);
   min-height: 180px;
+}
+
+/* cegah anak grid memaksa melebar */
+.home__hero-inner > * {
+  min-width: 0;
 }
 
 .home__title {
   color: #fff;
   font-weight: 800;
-  line-height: 1.35;
-  font-size: clamp(20px, 2.2vw, 28px);
+  line-height: 1.25;
+  font-size: clamp(18px, 2.2vw, 30px);
   margin: 0;
-  z-index: 1; /* teks di atas layer */
-  max-width: 560px;
+  z-index: 1;
+  max-width: 28ch;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
@@ -74,10 +98,13 @@
   justify-content: center;
   z-index: 1;
 }
+
 .home__hero-illustration img {
-  max-width: 300px;
-  width: 100%;
+  display: block;
+  width: min(320px, 100%);
+  max-height: 190px;
   height: auto;
+  object-fit: contain;
   filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.20));
 }
 
@@ -86,13 +113,18 @@
   list-style: none;
   padding: 0;
   margin: 0 auto;
-  max-width: 1100px;
+  max-width: var(--container);
+  width: 100%;
   display: grid;
-  grid-template-columns: repeat(4, minmax(200px, 1fr));
-  gap: 28px;
+  gap: var(--gap);
+
+  /* Kunci responsif: kolom otomatis menyesuaikan */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
 }
 
-.home__grid-item { display: block; }
+.home__grid-item {
+  display: block;
+}
 
 .feature-card {
   display: grid;
@@ -102,33 +134,37 @@
   border-radius: 18px;
   box-shadow: var(--shadow);
   overflow: hidden;
+
+  /* enak ditap + konsisten */
+  min-height: 160px;
+  touch-action: manipulation;
+
   transition: transform 140ms ease, box-shadow 140ms ease;
 }
 
-.feature-card:hover,
+@media (hover: hover) and (pointer: fine) {
+  .feature-card:hover,
+  .feature-card:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: 0 16px 28px rgba(0, 0, 0, 0.12);
+    outline: none;
+  }
+}
+
 .feature-card:focus-visible {
-  transform: translateY(-2px);
-  box-shadow: 0 16px 28px rgba(0, 0, 0, 0.12);
-  outline: none;
+  outline: 3px solid rgba(63, 84, 251, 0.45);
+  outline-offset: 3px;
 }
 
 .feature-card__thumb {
-  padding: 18px 18px 6px;
+  padding: clamp(12px, 2.4vw, 18px) clamp(12px, 2.4vw, 18px) 6px;
   display: grid;
   place-items: center;
 }
 
-.feature-card__thumb img {
-  width: 100%;
-  max-width: 180px;
-  height: auto;
-  border-radius: 10px;
-}
-
-/* Ikon (kalau pakai lucide-react) */
 .feature-card__icon {
-  width: 72px;
-  height: 72px;
+  width: clamp(52px, 10vw, 72px);
+  height: clamp(52px, 10vw, 72px);
   stroke-width: 1.8;
 }
 
@@ -137,36 +173,47 @@
   color: #fff;
   text-align: center;
   font-weight: 700;
-  font-size: 15px;
+  font-size: clamp(13px, 1.5vw, 15px);
   letter-spacing: 0.2px;
   padding: 12px 10px;
 }
 
-/* ====== RESPONSIVE ====== */
-@media (max-width: 992px) {
-  .home__hero-inner { grid-template-columns: 1fr 0.9fr; }
-  .home__hero::after { width: 38%; }
-  .home__grid { grid-template-columns: repeat(3, minmax(180px, 1fr)); }
-}
-
+/* ====== RESPONSIVE HERO (mobile) ====== */
 @media (max-width: 720px) {
-  .home { padding: 20px 12px 48px; }
   .home__hero-inner {
     grid-template-columns: 1fr;
     gap: 12px;
-    padding: 24px;
   }
+
   .home__hero::before {
     background: linear-gradient(135deg, var(--brand-blue) 0 74%, transparent 75%);
   }
+
   .home__hero::after {
     width: 100%;
-    height: 38%;
+    height: clamp(110px, 38%, 160px);
     top: auto;
+    bottom: 0;
   }
-  .home__grid { grid-template-columns: repeat(2, minmax(160px, 1fr)); gap: 20px; }
+
+  .home__title {
+    max-width: 32ch;
+  }
 }
 
-@media (max-width: 420px) {
-  .home__grid { grid-template-columns: 1fr; }
+/* ====== Warna ikon ====== */
+.icon-blue {
+  color: #007bff;
+}
+
+.icon-pink {
+  color: #e83e8c;
+}
+
+.icon-green {
+  color: #28a745;
+}
+
+.icon-yellow {
+  color: #ffc107;
 }

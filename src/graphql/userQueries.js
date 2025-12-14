@@ -1,14 +1,13 @@
 import { gql } from "@apollo/client";
 
 export const GET_WARGA = gql`
-  query GetWarga {
-    wargas {
+  query GetFamilies {
+    families {
       id
-      nik
-      nama
-      alamat
-      status
-      tglMasuk
+      noKK
+      kepalaKeluarga
+      address
+      ownershipStatus
     }
   }
 `;
