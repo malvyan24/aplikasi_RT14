@@ -12,27 +12,29 @@ function Login() {
     };
 
     return (
-        <div className="login-container">
-            <h1>Selamat Datang Di Web SiRT</h1>
-            <h2>Masukkan Nama & Kata Sandi</h2>
-            <form onSubmit={handleSubmit}>
-                <input 
-                    type="text" 
-                    placeholder="Nama" 
-                    value={name} 
-                    onChange={(e) => setName(e.target.value)} 
-                    required 
-                />
-                <input 
-                    type="password" 
-                    placeholder="Katasandi" 
-                    value={password} 
-                    onChange={(e) => setPassword(e.target.value)} 
-                    required 
-                />
-                <button type="submit">Masuk</button>
-            </form>
-            <a href="#!">Lupa Password?</a>
+        <div className="login-page-wrapper">
+            <div className="login-container">
+                <h1>Selamat Datang Di Web SiRT</h1>
+                <h2>Masukkan Nama & Kata Sandi</h2>
+                <form onSubmit={handleSubmit}>
+                    <input 
+                        type="text" 
+                        placeholder="Nama" 
+                        value={name} 
+                        onChange={(e) => setName(e.target.value)} 
+                        required 
+                    />
+                    <input 
+                        type="password" 
+                        placeholder="Katasandi" 
+                        value={password} 
+                        onChange={(e) => setPassword(e.target.value)} 
+                        required 
+                    />
+                    <button type="submit">Masuk</button>
+                </form>
+                <a href="#!">Lupa Password?</a>
+            </div>
         </div>
     );
 }

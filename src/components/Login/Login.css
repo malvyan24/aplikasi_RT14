@@ -9,11 +9,17 @@
 body {
   font-family: 'Arial', sans-serif;
   background-color: #f0f0f0;
+  margin: 0;
+}
+
+/* Wrapper untuk halaman login - untuk centering */
+.login-page-wrapper {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  margin: 0;
+  min-height: calc(100vh - 60px);
+  /* 60px adalah tinggi navbar */
+  padding: 20px;
 }
 
 /* Container utama login */
@@ -47,7 +53,8 @@ form {
   gap: 20px;
 }
 
-input[type="text"], input[type="password"] {
+input[type="text"],
+input[type="password"] {
   padding: 12px;
   border: none;
   border-radius: 5px;
@@ -56,7 +63,8 @@ input[type="text"], input[type="password"] {
   outline: none;
 }
 
-input[type="text"]:focus, input[type="password"]:focus {
+input[type="text"]:focus,
+input[type="password"]:focus {
   border: 2px solid #0056b3;
 }
 
