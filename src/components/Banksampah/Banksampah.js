@@ -1,7 +1,7 @@
 import React from "react";
 import TambahDataSampah from "./TambahDataSampah";
 import DataSampah from "./DataSampah";
-import { FaPlus, FaEye, FaSyncAlt, FaPrint } from "react-icons/fa";
+import { FaPlus, FaTrash, FaSyncAlt, FaPrint } from "react-icons/fa"; // Import FaTrash
 import "./Banksampah.css";
 
 const Banksampah = () => {
@@ -18,21 +18,25 @@ const Banksampah = () => {
       <div className="card mb-3 bank-sampah-toolbar-card">
         <div className="card-body">
           <div className="bank-sampah-toolbar">
+            {/* Tombol Tambah Data */}
             <button className="btn btn-primary btn-sm" type="button">
               <FaPlus className="me-1" />
               <span>Tambah Data</span>
             </button>
 
+            {/* Tombol Hapus Data */}
             <button className="btn btn-light btn-sm" type="button">
-              <FaEye className="me-1" />
-              <span>Lihat Data</span>
+              <FaTrash className="me-1" />
+              <span>Hapus Data</span>
             </button>
 
+            {/* Tombol Refresh */}
             <button className="btn btn-secondary btn-sm" type="button" onClick={handleRefresh}>
               <FaSyncAlt className="me-1" />
               <span>Refresh</span>
             </button>
 
+            {/* Tombol Cetak */}
             <button className="btn btn-success btn-sm" type="button" onClick={handlePrint}>
               <FaPrint className="me-1" />
               <span>Cetak</span>

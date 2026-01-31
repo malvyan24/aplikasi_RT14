@@ -1,9 +1,8 @@
-// src/components/Kesehatan/Kesehatan.js
 import React from "react";
 import "./Kesehatan.css";
 import TambahDataKesehatan from "./TambahDataKesehatan";
 import DaftarKesehatan from "./DaftarKesehatan";
-import { FaPlus, FaEye, FaSyncAlt, FaPrint } from "react-icons/fa";
+import { FaPlus, FaTrash, FaSyncAlt, FaPrint } from "react-icons/fa"; // Import FaTrash
 
 const Kesehatan = () => {
   const handleRefresh = () => window.location.reload();
@@ -19,21 +18,25 @@ const Kesehatan = () => {
       <div className="card mb-3 ks-toolbar-card">
         <div className="card-body">
           <div className="ks-toolbar">
+            {/* Tombol Tambah Data */}
             <button className="btn btn-primary btn-sm" type="button">
               <FaPlus className="me-1" />
               <span>Tambah Data</span>
             </button>
 
+            {/* Tombol Hapus Data */}
             <button className="btn btn-light btn-sm" type="button">
-              <FaEye className="me-1" />
-              <span>Lihat Data</span>
+              <FaTrash className="me-1" />
+              <span>Hapus Data</span>
             </button>
 
+            {/* Tombol Refresh */}
             <button className="btn btn-secondary btn-sm" type="button" onClick={handleRefresh}>
               <FaSyncAlt className="me-1" />
               <span>Refresh</span>
             </button>
 
+            {/* Tombol Cetak */}
             <button className="btn btn-success btn-sm" type="button" onClick={handlePrint}>
               <FaPrint className="me-1" />
               <span>Cetak</span>

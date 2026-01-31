@@ -1,9 +1,9 @@
-// src/components/Datawarga/Datawarga.js
 import React from "react";
-import "./Datawarga.css"; // Impor CSS untuk styling
-import AddUser from "./AddUser"; // Komponen untuk menambah pengguna
-import UserList from "./UserList"; // Komponen untuk menampilkan daftar pengguna
-import { FaPlus, FaEye, FaSyncAlt, FaPrint } from "react-icons/fa"; // Impor ikon
+import "./Datawarga.css";
+import AddUser from "./AddUser";
+import UserList from "./UserList";
+// PERBAIKAN 1: Tambahkan FaTrash ke dalam import
+import { FaPlus, FaTrash, FaSyncAlt, FaPrint } from "react-icons/fa";
 
 const Datawarga = () => {
   const handleRefresh = () => {
@@ -14,31 +14,58 @@ const Datawarga = () => {
     window.print();
   };
 
+  // Fungsi scroll ke form tambah data
+  const scrollToForm = () => {
+    const formElement = document.getElementById("form-tambah-warga");
+    if (formElement) {
+      formElement.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <div className="container py-3 dw-page">
       <div className="dw-header mb-2">
         <h1>Data Warga</h1>
       </div>
 
-      <div className="card mb-3 dw-toolbar">
+      {/* Toolbar Card */}
+      {/* PERBAIKAN 2: Ubah class 'ks-toolbar-card' jadi 'dw-toolbar' atau hapus jika pakai bootstrap murni */}
+      <div className="card mb-3 dw-toolbar-card">
         <div className="card-body">
-          <div className="dw-toolbar">
-            <button className="btn btn-primary btn-sm">
+          <div className="dw-toolbar d-flex gap-2 flex-wrap">
+            {/* Tombol Tambah Data (Biru) - Ditambah fungsi Scroll */}
+            <button
+              className="btn btn-primary btn-sm"
+              type="button"
+              onClick={scrollToForm}
+            >
               <FaPlus className="me-1" />
-              <span>Tambah</span>
+              <span>Tambah Data</span>
             </button>
 
-            <button className="btn btn-light btn-sm">
-              <FaEye className="me-1" />
-              <span>Lihat Data</span>
+            {/* Tombol Hapus Data (Putih) */}
+            <button className="btn btn-light btn-sm" type="button">
+              {/* Sekarang FaTrash sudah diimport, error akan hilang */}
+              <FaTrash className="me-1" />
+              <span>Hapus Data</span>
             </button>
 
-            <button className="btn btn-secondary btn-sm" onClick={handleRefresh}>
+            {/* Tombol Refresh (Abu) */}
+            <button
+              className="btn btn-secondary btn-sm"
+              type="button"
+              onClick={handleRefresh}
+            >
               <FaSyncAlt className="me-1" />
               <span>Refresh</span>
             </button>
 
-            <button className="btn btn-success btn-sm" onClick={handlePrint}>
+            {/* Tombol Cetak (Hijau) */}
+            <button
+              className="btn btn-success btn-sm"
+              type="button"
+              onClick={handlePrint}
+            >
               <FaPrint className="me-1" />
               <span>Cetak</span>
             </button>
@@ -47,18 +74,21 @@ const Datawarga = () => {
       </div>
 
       <div className="row g-3">
+        {/* Bagian List Warga */}
         <div className="col-12">
-          <div className="card dw-main">
-            <div className="card-body">
+          <div className="card dw-main shadow-sm border-0">
+            <div className="card-body p-0">
               <UserList />
             </div>
           </div>
         </div>
 
-        <div className="col-12">
-          <div className="card dw-form-wrapper">
-            <div className="card-header">
-              <h2 className="mb-0">Form Tambah Data Warga</h2>
+        {/* Bagian Form Tambah Data */}
+        <div className="col-12" id="form-tambah-warga">
+          <div className="card dw-form-wrapper shadow-sm border-0">
+            {/* PERBAIKAN 3: Header dibuat abu-abu (bg-light) agar mirip halaman Kesehatan */}
+            <div className="card-header bg-light py-3">
+              <h6 className="mb-0 fw-bold text-dark">Form Tambah Data Warga</h6>
             </div>
             <div className="card-body">
               <AddUser />
