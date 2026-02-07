@@ -1,245 +1,206 @@
-/* ===== Global halaman Data Warga ===== */
-.dw-page {
-  padding: 24px 40px;
-  background-color: #f4f6f9;
-  min-height: calc(100vh - 60px);
-  min-height: calc(100svh - 60px);
-  box-sizing: border-box;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: #111827;
+/* SISTEM INFORMASI LAYANAN DIGITAL RT 14 
+  Developer: Muhamad Alpian (0110222184) 
+*/
+
+/* ===== 1. GLOBAL & LAYOUT ===== */
+:root {
+  --primary: #2563eb;
+  --success: #16a34a;
+  --dark: #111827;
+  --gray-text: #4b5563;
+  --border: #e5e7eb;
+  --bg-page: #f4f6f9;
 }
 
-/* Anti overflow: semua isi halaman boleh mengecil */
+.dw-page {
+  padding: 24px 40px;
+  background-color: var(--bg-page);
+  min-height: 100svh;
+  box-sizing: border-box;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: var(--dark);
+}
+
 .dw-page * {
-  min-width: 0;
+  min-width: 0; /* Anti overflow */
 }
 
 .dw-header h1 {
   font-size: 26px;
-  font-weight: 600;
+  font-weight: 700;
   margin: 0 0 16px;
-  color: #111827;
+  color: var(--dark);
 }
 
-/* ===== Card ===== */
+/* ===== 2. KOMPONEN CARD & STATISTIK ===== */
 .card {
   background: #ffffff;
-  border-radius: 10px;
-  padding: 16px 20px;
-  margin-bottom: 18px;
-  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
-  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+  border: 1px solid var(--border);
+  transition: transform 0.2s ease;
 }
 
-/* ===== Toolbar Tombol ===== */
-.dw-toolbar {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-
-/* ===== Tombol ===== */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 8px 14px;
-  border-radius: 999px;
-  border: 1px solid transparent;
-  font-size: 13px;
-  font-weight: 600;
+/* Efek khusus untuk Kartu Statistik interaktif */
+.stat-card {
   cursor: pointer;
-  transition: all 0.18s ease;
-  line-height: 1.3;
-  white-space: nowrap;
-  max-width: 100%;
+  border: none !important;
+  overflow: hidden;
 }
 
-.btn-primary {
-  background-color: #2563eb;
-  border-color: #1d4ed8;
-  color: #ffffff;
+.stat-card:hover {
+  transform: translateY(-5px);
+  filter: brightness(1.1);
 }
 
-.btn-primary:hover {
-  background-color: #1d4ed8;
+.stat-card small {
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: padding-left 0.2s;
 }
 
-.btn-light {
-  background-color: #ffffff;
-  border-color: #d1d5db;
-  color: #374151;
+.stat-card:hover small {
+  padding-left: 5px;
 }
 
-.btn-light:hover {
-  background-color: #f3f4f6;
-}
-
-.btn-secondary {
-  background-color: #6b7280;
-  border-color: #4b5563;
-  color: #ffffff;
-}
-
-.btn-secondary:hover {
-  background-color: #4b5563;
-}
-
-.btn-success {
-  background-color: #16a34a;
-  border-color: #15803d;
-  color: #ffffff;
-}
-
-.btn-success:hover {
-  background-color: #15803d;
-}
-
-/* ===== Tabel ===== */
+/* ===== 3. TABEL DATA ===== */
 .dw-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
-  font-size: 13px;
+  font-size: 14px;
   background-color: #ffffff;
 }
 
-.dw-table thead tr {
-  background-color: #f3f4f6;
-}
-
-.dw-table th,
-.dw-table td {
-  border-bottom: 1px solid #e5e7eb;
-  padding: 10px 12px;
-  text-align: left;
-  vertical-align: top;
-}
-
 .dw-table th {
-  font-weight: 700;
-  color: #374151;
+  background-color: #1f2937; /* Dark header agar teks jelas */
+  color: #ffffff;
+  font-weight: 600;
+  padding: 14px 12px;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.05em;
 }
 
-.dw-table tbody tr:nth-child(even) {
-  background-color: #f9fafb;
+.dw-table td {
+  border-bottom: 1px solid var(--border);
+  padding: 12px;
+  color: var(--dark);
+  vertical-align: middle;
 }
 
 .dw-table tbody tr:hover {
-  background-color: #eef2ff;
+  background-color: #f8fafc;
 }
 
-/* ===== Form Tambah Data ===== */
-.dw-form-wrapper h2 {
-  margin-top: 0;
-  font-size: 18px;
+.badge {
   font-weight: 600;
-  color: #111827;
-  margin-bottom: 8px;
+  padding: 6px 12px;
+  border-radius: 6px;
 }
 
-/* Form pakai CSS Grid */
+/* ===== 4. FORM & INPUT ===== */
 .dw-form {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 12px 20px;
-  margin-top: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); /* Responsif 2 kolom */
+  gap: 16px 24px;
 }
 
 .dw-form-group {
   display: flex;
   flex-direction: column;
-  font-size: 13px;
-  color: #4b5563;
-  min-width: 0;
 }
 
 .dw-form-group label {
-  margin-bottom: 6px;
+  font-size: 13px;
   font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--gray-text);
 }
 
-/* input/select aman di HP */
 .dw-form-group input,
 .dw-form-group select {
-  width: 100%;
-  min-width: 0;
-  padding: 10px 12px;
-  border-radius: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
   border: 1px solid #d1d5db;
-  font-size: 13px;
-  outline: none;
-  background-color: #f9fafb;
+  font-size: 14px;
+  transition: all 0.2s;
 }
 
-.dw-form-group input:focus,
-.dw-form-group select:focus {
-  border-color: #2563eb;
-  background-color: #ffffff;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.16);
+.dw-form-group input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
 }
 
-/* tombol aksi full baris */
-.dw-form-actions {
-  grid-column: 1 / -1;
+/* ===== 5. MODAL CUSTOMIZATION ===== */
+/* Perbaikan agar modal tidak terpotong dan memiliki scroll */
+.modal-dialog-scrollable .modal-body {
+  max-height: 70vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
 }
 
-/* ===== Messages ===== */
-.dw-success {
-  margin-top: 8px;
-  color: #16a34a;
-  font-size: 13px;
+.modal-content {
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
-.dw-error {
-  margin-top: 8px;
-  color: #b91c1c;
-  font-size: 13px;
-}
-
-/* ===== Responsive ===== */
-@media (max-width: 768px) {
-  .dw-page {
-    padding: 16px;
+/* ===== 6. MEDIA PRINT (CETAK LAPORAN) ===== */
+@media print {
+  .no-print, 
+  .navbar, 
+  .btn, 
+  .modal-footer,
+  .btn-close,
+  #form-tambah-warga {
+    display: none !important;
   }
 
-  .dw-header h1 {
-    font-size: 22px;
+  .print-only {
+    display: block !important;
   }
 
+  body {
+    background-color: #ffffff !important;
+    font-size: 11pt;
+  }
+
+  .dw-page { padding: 0; }
+  
   .card {
-    padding: 12px;
+    border: 1px solid #000 !important;
+    box-shadow: none !important;
+    margin-bottom: 10px;
+    break-inside: avoid;
   }
 
-  .btn {
-    font-size: 12px;
+  .stat-card {
+    color: #000 !important;
+    background: transparent !important;
+    border: 1px solid #000 !important;
+  }
+
+  .modal-dialog {
+    max-width: 100% !important;
+    margin: 0 !important;
   }
 }
 
-@media (max-width: 576px) {
-  .dw-page {
-    padding: 12px;
-  }
+.print-only {
+  display: none;
+}
 
-  .dw-header h1 {
-    font-size: 20px;
-  }
-
-  /* toolbar jadi kolom di HP */
+/* ===== 7. RESPONSIVE MOBILE ===== */
+@media (max-width: 768px) {
+  .dw-page { padding: 16px; }
+  .dw-form { grid-template-columns: 1fr; }
+  
   .dw-toolbar {
     flex-direction: column;
-    align-items: stretch;
-  }
-
-  .dw-toolbar .btn {
     width: 100%;
   }
-
-  /* form dipaksa 1 kolom agar tidak kepotong */
-  .dw-form {
-    grid-template-columns: 1fr;
-  }
+  
+  .btn { width: 100%; }
 }

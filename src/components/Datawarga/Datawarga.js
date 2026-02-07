@@ -1,101 +1,173 @@
-import React from "react";
-import "./Datawarga.css";
-import AddUser from "./AddUser";
+import React, { useState } from "react";
+import { useQuery } from "@apollo/client";
+import { GET_WARGA, GET_ALL_CITIZENS } from "../../graphql/userQueries";
 import UserList from "./UserList";
-// PERBAIKAN 1: Tambahkan FaTrash ke dalam import
-import { FaPlus, FaTrash, FaSyncAlt, FaPrint } from "react-icons/fa";
+import AddUser from "./AddUser";
+import { 
+  FaUsers, FaHome, FaPlus, FaChartLine, 
+  FaArrowRight, FaPrint, FaClipboardList 
+} from "react-icons/fa";
 
 const Datawarga = () => {
-  const handleRefresh = () => {
-    window.location.reload();
-  };
+  const [showStatDetail, setShowStatDetail] = useState(null);
 
-  const handlePrint = () => {
+  const { data: familyData } = useQuery(GET_WARGA, { pollInterval: 5000 });
+  const { data: citizenData } = useQuery(GET_ALL_CITIZENS, { pollInterval: 5000 });
+
+  const totalKK = familyData?.families?.length || 0;
+  const totalJiwa = citizenData?.citizens?.length || 0;
+
+  // Fungsi Cetak khusus untuk Master List
+  const handlePrintMasterList = () => {
     window.print();
   };
 
-  // Fungsi scroll ke form tambah data
-  const scrollToForm = () => {
-    const formElement = document.getElementById("form-tambah-warga");
-    if (formElement) {
-      formElement.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
   return (
-    <div className="container py-3 dw-page">
-      <div className="dw-header mb-2">
-        <h1>Data Warga</h1>
+    <div className="container py-4">
+      {/* HEADER DASHBOARD (Tombol cetak dihapus dari sini) */}
+      <div className="d-flex align-items-center mb-4 no-print">
+        <div className="bg-primary text-white p-3 rounded-3 me-3 shadow-sm">
+          <FaChartLine size={24} />
+        </div>
+        <div>
+          <h3 className="fw-bold mb-0">Dashboard Data Warga</h3>
+          <p className="text-muted mb-0 small text-uppercase">
+            Admin: Muhamad Alpian (0110222184)
+          </p>
+        </div>
       </div>
 
-      {/* Toolbar Card */}
-      {/* PERBAIKAN 2: Ubah class 'ks-toolbar-card' jadi 'dw-toolbar' atau hapus jika pakai bootstrap murni */}
-      <div className="card mb-3 dw-toolbar-card">
+      {/* KARTU STATISTIK INTERAKTIF */}
+      <div className="row g-3 mb-4 no-print">
+        <div className="col-md-6">
+          <div 
+            className="card border-0 shadow-sm bg-primary text-white p-4 h-100 cursor-pointer" 
+            onClick={() => setShowStatDetail('KK')}
+            style={{ cursor: 'pointer' }}
+          >
+            <div className="d-flex justify-content-between align-items-start">
+              <div>
+                <h6 className="opacity-75">Total Kepala Keluarga (KK)</h6>
+                <h2 className="fw-bold mb-0">{totalKK} Keluarga</h2>
+                <small className="mt-2 d-block bg-white bg-opacity-25 rounded px-2 py-1">
+                  Klik untuk detail <FaArrowRight size={10} />
+                </small>
+              </div>
+              <FaHome size={40} className="opacity-50" />
+            </div>
+          </div>
+        </div>
+        
+        <div className="col-md-6">
+          <div 
+            className="card border-0 shadow-sm bg-success text-white p-4 h-100 cursor-pointer" 
+            onClick={() => setShowStatDetail('JIWA')}
+            style={{ cursor: 'pointer' }}
+          >
+            <div className="d-flex justify-content-between align-items-start">
+              <div>
+                <h6 className="opacity-75">Total Seluruh Warga (Jiwa)</h6>
+                <h2 className="fw-bold mb-0">{totalJiwa} Orang</h2>
+                <small className="mt-2 d-block bg-white bg-opacity-25 rounded px-2 py-1">
+                  Klik untuk detail <FaArrowRight size={10} />
+                </small>
+              </div>
+              <FaUsers size={40} className="opacity-50" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* DAFTAR KELUARGA UTAMA */}
+      <div className="card border-0 shadow-sm mb-5 no-print">
+        <div className="card-header bg-white py-3 fw-bold border-0">
+          <FaClipboardList className="me-2 text-primary" /> Daftar Keluarga Terdaftar
+        </div>
+        <div className="card-body p-0">
+          <UserList />
+        </div>
+      </div>
+
+      {/* FORM REGISTRASI */}
+      <div className="card border-0 shadow-sm bg-light mb-5 no-print">
+        <div className="card-header bg-transparent py-3 fw-bold border-0 text-center text-primary">
+          <FaPlus className="me-2" /> Form Registrasi Keluarga Baru
+        </div>
         <div className="card-body">
-          <div className="dw-toolbar d-flex gap-2 flex-wrap">
-            {/* Tombol Tambah Data (Biru) - Ditambah fungsi Scroll */}
-            <button
-              className="btn btn-primary btn-sm"
-              type="button"
-              onClick={scrollToForm}
-            >
-              <FaPlus className="me-1" />
-              <span>Tambah Data</span>
-            </button>
-
-            {/* Tombol Hapus Data (Putih) */}
-            <button className="btn btn-light btn-sm" type="button">
-              {/* Sekarang FaTrash sudah diimport, error akan hilang */}
-              <FaTrash className="me-1" />
-              <span>Hapus Data</span>
-            </button>
-
-            {/* Tombol Refresh (Abu) */}
-            <button
-              className="btn btn-secondary btn-sm"
-              type="button"
-              onClick={handleRefresh}
-            >
-              <FaSyncAlt className="me-1" />
-              <span>Refresh</span>
-            </button>
-
-            {/* Tombol Cetak (Hijau) */}
-            <button
-              className="btn btn-success btn-sm"
-              type="button"
-              onClick={handlePrint}
-            >
-              <FaPrint className="me-1" />
-              <span>Cetak</span>
-            </button>
-          </div>
+          <AddUser />
         </div>
       </div>
 
-      <div className="row g-3">
-        {/* Bagian List Warga */}
-        <div className="col-12">
-          <div className="card dw-main shadow-sm border-0">
-            <div className="card-body p-0">
-              <UserList />
+      {/* --- MODAL MASTER LIST DENGAN TOMBOL CETAK DI DALAMNYA --- */}
+      {showStatDetail && (
+        <div className="modal show d-block" style={{ backgroundColor: 'rgba(0,0,0,0.8)', position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 10000 }}>
+          <div className="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div className="modal-content border-0 shadow-lg">
+              <div className={`modal-header ${showStatDetail === 'KK' ? 'bg-primary' : 'bg-success'} text-white py-3`}>
+                <h5 className="modal-title fw-bold">
+                  {showStatDetail === 'KK' ? `Master List: ${totalKK} Keluarga` : `Master List: ${totalJiwa} Jiwa`}
+                </h5>
+                <div className="d-flex gap-2">
+                  {/* TOMBOL CETAK SEKARANG DI SINI */}
+                  <button className="btn btn-light btn-sm fw-bold d-flex align-items-center" onClick={handlePrintMasterList}>
+                    <FaPrint className="me-1" /> Cetak List
+                  </button>
+                  <button type="button" className="btn-close btn-close-white" onClick={() => setShowStatDetail(null)}></button>
+                </div>
+              </div>
+              <div className="modal-body p-0 bg-white">
+                <div className="table-responsive">
+                  <table className="table table-hover align-middle mb-0">
+                    <thead className="table-light small">
+                      {showStatDetail === 'KK' ? (
+                        <tr>
+                          <th className="p-3">No KK</th>
+                          <th>Kepala Keluarga</th>
+                          <th>Alamat</th>
+                          <th className="text-center">Anggota</th>
+                        </tr>
+                      ) : (
+                        <tr>
+                          <th className="p-3">NIK</th>
+                          <th>Nama Lengkap</th>
+                          <th>L/P</th>
+                          <th>Pekerjaan</th>
+                        </tr>
+                      )}
+                    </thead>
+                    <tbody>
+                      {showStatDetail === 'KK' ? (
+                        familyData?.families.map(f => (
+                          <tr key={f.id}>
+                            <td className="p-3 fw-bold">{f.noKK}</td>
+                            <td>{f.kepalaKeluarga}</td>
+                            <td>{f.address}</td>
+                            <td className="text-center">
+                                <span className="badge bg-secondary">{f.members?.length} Orang</span>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        citizenData?.citizens.map(c => (
+                          <tr key={c.id}>
+                            <td className="p-3 fw-bold">{c.nik}</td>
+                            <td>{c.name}</td>
+                            <td>{c.gender}</td>
+                            <td>{c.profession}</td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div className="modal-footer border-0 bg-light no-print">
+                <button className="btn btn-secondary px-4 fw-bold" onClick={() => setShowStatDetail(null)}>Tutup List</button>
+              </div>
             </div>
           </div>
         </div>
-
-        {/* Bagian Form Tambah Data */}
-        <div className="col-12" id="form-tambah-warga">
-          <div className="card dw-form-wrapper shadow-sm border-0">
-            {/* PERBAIKAN 3: Header dibuat abu-abu (bg-light) agar mirip halaman Kesehatan */}
-            <div className="card-header bg-light py-3">
-              <h6 className="mb-0 fw-bold text-dark">Form Tambah Data Warga</h6>
-            </div>
-            <div className="card-body">
-              <AddUser />
-            </div>
-          </div>
-        </div>
-      </div>
+      )}
     </div>
   );
 };

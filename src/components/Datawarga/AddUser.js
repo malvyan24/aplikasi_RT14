@@ -16,27 +16,31 @@ const AddUser = () => {
   // Setup Mutation
   const [addWarga, { loading, error }] = useMutation(ADD_WARGA, {
     // Biar setelah nambah, tabel otomatis update tanpa refresh
-    refetchQueries: [{ query: GET_WARGA }], 
+    refetchQueries: [{ query: GET_WARGA }],
     onCompleted: () => {
       setSuccessMsg("Data warga berhasil ditambahkan!");
       // Reset Form
-      setNik(""); setNama(""); setAlamat(""); setStatus("OWNED"); setTglMasuk("");
+      setNik("");
+      setNama("");
+      setAlamat("");
+      setStatus("OWNED");
+      setTglMasuk("");
       setTimeout(() => setSuccessMsg(""), 3000);
     },
   });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Kirim data ke Backend
     // Kita petakan (Map) state frontend ke variabel backend
     await addWarga({
       variables: {
-        noKK: nik,                // NIK di form -> noKK di backend
-        kepalaKeluarga: nama,     // Nama di form -> kepalaKeluarga di backend
+        noKK: nik, // NIK di form -> noKK di backend
+        kepalaKeluarga: nama, // Nama di form -> kepalaKeluarga di backend
         address: alamat,
-        ownershipStatus: status
-      }
+        ownershipStatus: status,
+      },
     });
   };
 
@@ -44,49 +48,49 @@ const AddUser = () => {
     <form className="dw-form" onSubmit={handleSubmit}>
       {/* Input NIK / No KK */}
       <div className="dw-form-group">
-        <label>No KK / NIK</label>
-        <input 
-          type="number" 
-          className="form-control" 
-          value={nik} 
-          onChange={(e) => setNik(e.target.value)} 
+        <label>Nomor Kartu Keluarga</label>
+        <input
+          type="number"
+          className="form-control"
+          value={nik}
+          onChange={(e) => setNik(e.target.value)}
           placeholder="Masukkan 16 digit Nomor"
-          required 
+          required
         />
       </div>
 
       {/* Input Nama Kepala Keluarga */}
       <div className="dw-form-group">
         <label>Nama Kepala Keluarga</label>
-        <input 
-          type="text" 
-          className="form-control" 
-          value={nama} 
-          onChange={(e) => setNama(e.target.value)} 
+        <input
+          type="text"
+          className="form-control"
+          value={nama}
+          onChange={(e) => setNama(e.target.value)}
           placeholder="Nama Lengkap"
-          required 
+          required
         />
       </div>
 
       {/* Input Alamat */}
       <div className="dw-form-group">
         <label>Alamat Rumah</label>
-        <input 
-          type="text" 
-          className="form-control" 
-          value={alamat} 
-          onChange={(e) => setAlamat(e.target.value)} 
+        <input
+          type="text"
+          className="form-control"
+          value={alamat}
+          onChange={(e) => setAlamat(e.target.value)}
           placeholder="Jl. Mawar No. 1"
-          required 
+          required
         />
       </div>
 
       {/* Input Status (Dropdown biar sesuai Enum Backend) */}
       <div className="dw-form-group">
         <label>Status Rumah</label>
-        <select 
-          className="form-control" 
-          value={status} 
+        <select
+          className="form-control"
+          value={status}
           onChange={(e) => setStatus(e.target.value)}
         >
           <option value="OWNED">Milik Sendiri (OWNED)</option>
@@ -98,24 +102,32 @@ const AddUser = () => {
       {/* Tanggal Masuk (Hanya UI, tidak dikirim ke backend dulu) */}
       <div className="dw-form-group">
         <label>Tanggal Masuk</label>
-        <input 
-          type="date" 
-          className="form-control" 
-          value={tglMasuk} 
-          onChange={(e) => setTglMasuk(e.target.value)} 
+        <input
+          type="date"
+          className="form-control"
+          value={tglMasuk}
+          onChange={(e) => setTglMasuk(e.target.value)}
         />
       </div>
 
       <div className="dw-form-actions mt-3">
-        <button type="submit" className="btn btn-primary w-100" disabled={loading}>
+        <button
+          type="submit"
+          className="btn btn-primary w-100"
+          disabled={loading}
+        >
           {loading ? "Menyimpan ke Server..." : "Simpan Data"}
         </button>
       </div>
 
-      {successMsg && <div className="alert alert-success mt-2">{successMsg}</div>}
-      {error && <div className="alert alert-danger mt-2">Gagal: {error.message}</div>}
+      {successMsg && (
+        <div className="alert alert-success mt-2">{successMsg}</div>
+      )}
+      {error && (
+        <div className="alert alert-danger mt-2">Gagal: {error.message}</div>
+      )}
     </form>
   );
 };
 
-export default AddUser;
+export default AddUser;
