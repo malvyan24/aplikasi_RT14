@@ -1,201 +1,160 @@
-/* SISTEM INFORMASI LAYANAN DIGITAL RT 14 
-  Developer: Muhamad Alpian (0110222184) 
+/* SIRT RT 14 - MODUL KESEHATAN 
+  Tema: Pink Kesehatan Modern
 */
 
-/* ===== 1. GLOBAL SETTINGS ===== */
+/* --- 1. VARIABLE SYSTEM --- */
 :root {
-  --primary-blue: #2563eb;
-  --primary-dark: #1e40af;
-  --success-green: #16a34a;
-  --text-main: #111827;
-  --text-muted: #4b5563;
-  --bg-light: #f4f6f9;
-  --border-color: #e5e7eb;
-  --white: #ffffff;
+  --health-primary: #ff6b81;    /* Rose Pink */
+  --health-secondary: #ff8da1;  /* Soft Pink */
+  --health-bg: #fff5f7;         /* Blush Background */
+  --health-dark: #c44569;       /* Dark Rose Text */
+  --health-success: #20c997;    /* Mint Green */
+  --health-warning: #fbc531;    /* Sun Yellow */
+  --health-danger: #ff4757;     /* Soft Red */
+  --health-border: #f1f3f5;
 }
 
-.dw-page {
-  padding: 24px 40px;
-  background-color: var(--bg-light);
-  min-height: 100svh;
-  box-sizing: border-box;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  color: var(--text-main);
+/* --- 2. GLOBAL WRAPPER --- */
+.health-wrapper {
+  background-color: var(--health-bg);
+  min-height: 100vh;
+  padding: 25px 25px 50px 25px;
+  font-family: 'Inter', 'Poppins', sans-serif;
 }
 
-/* Anti overflow untuk elemen dalam grid */
-.dw-page * { min-width: 0; }
+.text-health-primary {
+  color: var(--health-primary) !important;
+}
 
-/* ===== 2. DASHBOARD STAT CARDS ===== */
-.stat-card {
-  cursor: pointer;
+/* --- 3. KARTU STATISTIK & GRADIENT --- */
+.health-card {
   border: none !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 20px !important;
+  color: white !important;
+  transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  box-shadow: 0 8px 20px rgba(255, 107, 129, 0.1) !important;
 }
 
-.stat-card:hover {
-  transform: translateY(-5px);
-  filter: brightness(1.05);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15) !important;
+.health-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(255, 107, 129, 0.2) !important;
 }
 
-.stat-card small {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+/* Utility Gradient */
+.card-pink-gradient, .cpink { 
+  background: linear-gradient(135deg, var(--health-primary), var(--health-secondary)) !important; 
+}
+.card-blue-gradient, .cblue { 
+  background: linear-gradient(135deg, #4facfe, #00f2fe) !important; 
+}
+.card-orange-gradient, .corange { 
+  background: linear-gradient(135deg, #fa709a, #fee140) !important; 
 }
 
-/* ===== 3. TABLE STYLING ===== */
-.dw-table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: var(--white);
-  font-size: 14px;
+/* --- 4. FORM INPUT & TOMBOL --- */
+.health-form, .health-form-container {
+  background: white;
+  border-radius: 15px;
+  border: none;
+  border-top: 5px solid var(--health-primary) !important;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  overflow: visible !important; /* Mencegah tombol terpotong */
 }
 
-.dw-table thead tr {
-  background-color: #1f2937; /* Header gelap agar kontras */
+.form-control, .form-select, .health-input {
+  border: 2px solid var(--health-border) !important;
+  border-radius: 10px !important;
+  padding: 10px 15px;
+  transition: all 0.2s ease;
 }
 
-.dw-table th {
-  color: var(--white);
-  font-weight: 600;
-  padding: 14px 16px;
-  text-align: left;
-  font-size: 12px;
-  text-transform: uppercase;
-}
-
-.dw-table td {
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--border-color);
-  color: var(--text-main); /* Teks dibuat pekat agar tidak samar */
-  vertical-align: middle;
-}
-
-.dw-table tbody tr:hover {
-  background-color: #f8fafc;
-}
-
-.badge {
-  font-size: 11px;
-  font-weight: 700;
-  padding: 5px 10px;
-  border-radius: 6px;
-  text-transform: uppercase;
-}
-
-/* ===== 4. FORM GRID (SOLUSI ANTI TERPOTONG) ===== */
-.dw-form {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 16px 24px;
-  margin-top: 10px;
-}
-
-.dw-form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.dw-form-group label {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-muted);
-  margin-bottom: 6px;
-}
-
-.dw-form-group input,
-.dw-form-group select {
-  padding: 10px 14px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  font-size: 14px;
-  background-color: #f9fafb;
-  transition: all 0.2s;
-}
-
-.dw-form-group input:focus {
-  border-color: var(--primary-blue);
-  background-color: var(--white);
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+.form-control:focus, .form-select:focus, .health-input:focus {
+  border-color: var(--health-primary) !important;
+  box-shadow: 0 0 0 0.25rem rgba(255, 107, 129, 0.15) !important;
   outline: none;
 }
 
-/* ===== 5. MODAL CUSTOMIZATION ===== */
-.modal-content {
-  border-radius: 16px;
-  border: none;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-}
-
-.modal-header {
-  border-bottom: 1px solid var(--border-color);
-}
-
-/* Scrollable area di dalam modal */
-.modal-dialog-scrollable .modal-body {
-  max-height: 75vh;
-  overflow-y: auto;
-  padding: 25px;
-}
-
-/* ===== 6. TOMBOL (BUTTONS) ===== */
-.btn {
-  border-radius: 8px;
+.btn-primary {
+  background-color: var(--health-primary) !important;
+  border: none !important;
+  border-radius: 10px !important;
   font-weight: 600;
-  padding: 8px 16px;
-  transition: all 0.2s;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+  box-shadow: 0 4px 12px rgba(255, 107, 129, 0.3) !important;
+  transition: all 0.3s ease;
 }
 
-.btn-primary { background-color: var(--primary-blue); border: none; }
-.btn-primary:hover { background-color: var(--primary-dark); transform: scale(1.02); }
-
-/* ===== 7. PRINT MEDIA SETTINGS ===== */
-@media print {
-  .no-print, .btn, .btn-close, .modal-footer, .navbar, #form-tambah-warga {
-    display: none !important;
-  }
-  
-  .print-only { display: block !important; }
-
-  body { background-color: white !important; font-size: 11pt; color: black; }
-  .dw-page { padding: 0; }
-  .card { border: 1px solid #000 !important; box-shadow: none !important; break-inside: avoid; }
-  .dw-table th { background-color: #eee !important; color: black !important; border: 1px solid #000; }
-  .dw-table td { border: 1px solid #000; }
+.btn-primary:hover {
+  background-color: var(--health-dark) !important;
+  transform: translateY(-2px);
 }
 
-.print-only { display: none; }
+/* --- 5. TABEL & BADGE STATUS --- */
+.health-table-container {
+  border-radius: 15px;
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.05);
+  background: white;
+}
 
-/* ===== 8. RESPONSIVE MOBILE ===== */
+.table-health-header, .table-pink {
+  background-color: #ffe4ea !important; /* Header Pink Muda */
+  color: var(--health-dark) !important;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+}
+
+/* Badge System */
+.badge-pill {
+  border-radius: 50px;
+  padding: 6px 14px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  display: inline-block;
+  border: 1px solid transparent;
+}
+
+.badge-sehat, .b-sehat {
+  background-color: rgba(32, 201, 151, 0.15) !important;
+  color: #0f5132 !important;
+  border-color: #badbcc !important;
+}
+
+.badge-pantauan, .b-pantau {
+  background-color: rgba(251, 197, 49, 0.15) !important;
+  color: #856404 !important;
+  border-color: #ffeeba !important;
+}
+
+.badge-darurat, .b-darurat {
+  background-color: rgba(255, 71, 87, 0.15) !important;
+  color: #842029 !important;
+  border-color: #f5c2c7 !important;
+}
+
+/* --- 6. UTILITIES --- */
+.border-end-dashed {
+  border-right: 2px dashed #ffe4ea !important;
+}
+
+.italic { font-style: italic; }
+
+.table-responsive::-webkit-scrollbar { width: 6px; height: 6px; }
+.table-responsive::-webkit-scrollbar-thumb {
+  background: var(--health-primary);
+  border-radius: 10px;
+}
+
+/* --- 7. RESPONSIVE --- */
 @media (max-width: 768px) {
-  .dw-page { padding: 16px; }
-  .dw-form { grid-template-columns: 1fr; }
-  .dw-header h1 { font-size: 22px; }
-}
-
-/* Styling Box Pencarian */
-.search-container {
-  background: #f8fafc;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
-}
-
-.search-container input:focus {
-  border-color: #2563eb !important;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
-  background: #fff;
-}
-
-/* Sembunyikan search saat cetak */
-@media print {
-  .search-container {
-    display: none !important;
+  .health-wrapper { padding: 15px; }
+  .border-end-dashed {
+    border-right: none !important;
+    border-bottom: 2px dashed #ffe4ea !important;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
   }
-}
+} 

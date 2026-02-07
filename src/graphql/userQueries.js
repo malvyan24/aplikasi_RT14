@@ -13,6 +13,9 @@ export const GET_WARGA = gql`
         name
         nik
         gender
+        relationship
+        religion
+        dateOfBirth
       }
     }
   }
@@ -25,8 +28,9 @@ export const GET_ALL_CITIZENS = gql`
       name
       nik
       gender
+      relationship
       religion
-      profession
+      dateOfBirth
       family {
         kepalaKeluarga
       }

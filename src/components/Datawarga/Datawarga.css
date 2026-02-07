@@ -1,206 +1,175 @@
 /* SISTEM INFORMASI LAYANAN DIGITAL RT 14 
-  Developer: Muhamad Alpian (0110222184) 
+   Tema: Citizen Blue & Growth Teal 
+   Developer: Muhamad Alpian (0110222184) 
 */
 
-/* ===== 1. GLOBAL & LAYOUT ===== */
+/* ===== 1. VARIABLE DASAR (SAMA DENGAN STYLE KESEHATAN) ===== */
 :root {
-  --primary: #2563eb;
-  --success: #16a34a;
-  --dark: #111827;
-  --gray-text: #4b5563;
-  --border: #e5e7eb;
-  --bg-page: #f4f6f9;
+  --warga-primary: #0d6efd;      /* Biru Utama */
+  --warga-secondary: #0dcaf0;    /* Biru Muda/Cyan */
+  --warga-bg: #f0f4f8;           /* Latar belakang abu biru lembut */
+  --warga-dark: #084298;         /* Biru tua untuk teks */
+  --warga-success: #198754;      /* Hijau untuk Total Jiwa */
+  --warga-success-light: #20c997;
+  --warga-warning: #fbc531;      /* Kuning untuk Status RENT */
 }
 
+/* ===== 2. GLOBAL & PAGE WRAPPER ===== */
 .dw-page {
-  padding: 24px 40px;
-  background-color: var(--bg-page);
-  min-height: 100svh;
-  box-sizing: border-box;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  color: var(--dark);
+  padding: 30px 40px;
+  background-color: var(--warga-bg);
+  min-height: 100vh;
+  font-family: 'Inter', 'Poppins', sans-serif;
+  color: #334155;
 }
 
-.dw-page * {
-  min-width: 0; /* Anti overflow */
-}
-
-.dw-header h1 {
-  font-size: 26px;
-  font-weight: 700;
-  margin: 0 0 16px;
-  color: var(--dark);
-}
-
-/* ===== 2. KOMPONEN CARD & STATISTIK ===== */
-.card {
-  background: #ffffff;
+/* Header Dashboard */
+.dw-header-icon {
+  background-color: var(--warga-primary);
+  padding: 15px;
   border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
-  border: 1px solid var(--border);
-  transition: transform 0.2s ease;
+  color: white;
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
 }
 
-/* Efek khusus untuk Kartu Statistik interaktif */
-.stat-card {
-  cursor: pointer;
+/* ===== 3. KARTU STATISTIK (GRADIENT MODERN) ===== */
+.warga-card {
   border: none !important;
-  overflow: hidden;
+  border-radius: 20px !important;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05) !important;
 }
 
-.stat-card:hover {
-  transform: translateY(-5px);
-  filter: brightness(1.1);
+.warga-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.1) !important;
 }
 
-.stat-card small {
-  font-size: 0.75rem;
+.gradient-blue { 
+  background: linear-gradient(135deg, var(--warga-primary), var(--warga-secondary)); 
+  color: white; 
+}
+
+.gradient-green { 
+  background: linear-gradient(135deg, var(--warga-success), var(--warga-success-light)); 
+  color: white; 
+}
+
+.card-icon-opacity {
+  opacity: 0.25;
+  font-size: 3.5rem;
+}
+
+/* ===== 4. FORM REGISTRASI HORIZONTAL ===== */
+.form-warga-container {
+  background: white;
+  border-radius: 15px;
+  border: none;
+  border-top: 5px solid var(--warga-primary) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.dw-input {
+  border: 2px solid #eef2f7 !important;
+  border-radius: 10px !important;
+  padding: 10px 15px;
   font-weight: 500;
-  transition: padding-left 0.2s;
+  transition: all 0.2s ease;
 }
 
-.stat-card:hover small {
-  padding-left: 5px;
-}
-
-/* ===== 3. TABEL DATA ===== */
-.dw-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 14px;
+.dw-input:focus {
+  border-color: var(--warga-primary) !important;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1) !important;
   background-color: #ffffff;
 }
 
-.dw-table th {
-  background-color: #1f2937; /* Dark header agar teks jelas */
-  color: #ffffff;
-  font-weight: 600;
-  padding: 14px 12px;
+/* Tombol Biru Lebar */
+.btn-warga-primary {
+  background-color: var(--warga-primary) !important;
+  border: none;
+  border-radius: 10px;
+  padding: 12px;
+  font-weight: 700;
   text-transform: uppercase;
-  font-size: 12px;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+}
+
+/* ===== 5. TABEL & BADGE ===== */
+.table-warga-container {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.table-warga-header {
+  background-color: #e7f1ff !important; /* Biru muda transparan */
+  color: var(--warga-dark);
+  font-size: 0.75rem;
+  text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
-.dw-table td {
-  border-bottom: 1px solid var(--border);
-  padding: 12px;
-  color: var(--dark);
-  vertical-align: middle;
+/* Badge Status Rumah */
+.badge-pill {
+  border-radius: 50px;
+  padding: 6px 14px;
+  font-weight: 700;
+  font-size: 0.7rem;
 }
 
-.dw-table tbody tr:hover {
-  background-color: #f8fafc;
+.badge-owned {
+  background-color: #d1e7dd;
+  color: #0f5132;
+  border: 1px solid #badbcc;
 }
 
-.badge {
-  font-weight: 600;
-  padding: 6px 12px;
-  border-radius: 6px;
+.badge-rent {
+  background-color: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
 }
 
-/* ===== 4. FORM & INPUT ===== */
-.dw-form {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); /* Responsif 2 kolom */
-  gap: 16px 24px;
-}
-
-.dw-form-group {
-  display: flex;
-  flex-direction: column;
-}
-
-.dw-form-group label {
-  font-size: 13px;
-  font-weight: 600;
-  margin-bottom: 6px;
-  color: var(--gray-text);
-}
-
-.dw-form-group input,
-.dw-form-group select {
-  padding: 10px 14px;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
-  font-size: 14px;
+/* Tombol Aksi Bulat */
+.btn-action-circle {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 4px;
   transition: all 0.2s;
+  background: white;
 }
 
-.dw-form-group input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+.btn-action-circle:hover {
+  transform: scale(1.15);
 }
 
-/* ===== 5. MODAL CUSTOMIZATION ===== */
-/* Perbaikan agar modal tidak terpotong dan memiliki scroll */
-.modal-dialog-scrollable .modal-body {
-  max-height: 70vh;
-  overflow-y: auto;
-  scrollbar-width: thin;
-}
-
-.modal-content {
+/* ===== 6. MODAL CUSTOM (FIX ERROR 400 & WARNING) ===== */
+.modal-content-custom {
   border: none;
-  border-radius: 16px;
+  border-radius: 20px;
+  overflow: hidden;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
-/* ===== 6. MEDIA PRINT (CETAK LAPORAN) ===== */
-@media print {
-  .no-print, 
-  .navbar, 
-  .btn, 
-  .modal-footer,
-  .btn-close,
-  #form-tambah-warga {
-    display: none !important;
-  }
-
-  .print-only {
-    display: block !important;
-  }
-
-  body {
-    background-color: #ffffff !important;
-    font-size: 11pt;
-  }
-
-  .dw-page { padding: 0; }
-  
-  .card {
-    border: 1px solid #000 !important;
-    box-shadow: none !important;
-    margin-bottom: 10px;
-    break-inside: avoid;
-  }
-
-  .stat-card {
-    color: #000 !important;
-    background: transparent !important;
-    border: 1px solid #000 !important;
-  }
-
-  .modal-dialog {
-    max-width: 100% !important;
-    margin: 0 !important;
-  }
+.modal-header-blue {
+  background: var(--warga-primary);
+  color: white;
+  border: none;
 }
 
-.print-only {
-  display: none;
-}
-
-/* ===== 7. RESPONSIVE MOBILE ===== */
+/* ===== 7. RESPONSIVE & PRINT ===== */
 @media (max-width: 768px) {
-  .dw-page { padding: 16px; }
-  .dw-form { grid-template-columns: 1fr; }
-  
-  .dw-toolbar {
-    flex-direction: column;
-    width: 100%;
-  }
-  
-  .btn { width: 100%; }
+  .dw-page { padding: 15px; }
+  .dw-header h1 { font-size: 20px; }
+}
+
+@media print {
+  .no-print { display: none !important; }
+  .dw-page { background: white; padding: 0; }
+  .warga-card { border: 1px solid #ddd !important; box-shadow: none !important; }
 }

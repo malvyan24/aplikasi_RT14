@@ -1,87 +1,62 @@
 import React, { useState } from "react";
+import { useMutation } from "@apollo/client";
+import { ADD_HEALTH_RECORD } from "../../graphql/healthMutations";
+import { GET_ALL_HEALTH_RECORDS } from "../../graphql/healthQueries";
 
-const TambahDataKesehatan = () => {
-  const [nik, setNik] = useState("");
-  const [noKK, setNoKK] = useState("");
-  const [nama, setNama] = useState("");
-  const [golonganDarah, setGolonganDarah] = useState("");
-  const [tinggiBadan, setTinggiBadan] = useState("");
-  const [beratBadan, setBeratBadan] = useState("");
-  const [riwayatPenyakit, setRiwayatPenyakit] = useState("");
-  const [apakahDisabilitas, setApakahDisabilitas] = useState("");
-  const [tanggalPemeriksaan, setTanggalPemeriksaan] = useState("");
+const TambahDataKesehatan = ({ allMembers }) => {
+  const [form, setForm] = useState({ citizenId: "", healthStatus: "SEHAT", bloodType: "O", notes: "" });
+
+  const [addRecord, { loading }] = useMutation(ADD_HEALTH_RECORD, {
+    refetchQueries: [{ query: GET_ALL_HEALTH_RECORDS }],
+    onCompleted: () => {
+      alert("Data Pemeriksaan Berhasil Disimpan!");
+      setForm({ ...form, citizenId: "", notes: "" });
+    },
+    onError: (err) => alert("Gagal menyimpan: " + err.message)
+  });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({
-      nik, noKK, nama, golonganDarah, tinggiBadan, beratBadan,
-      riwayatPenyakit, apakahDisabilitas, tanggalPemeriksaan
-    });
-
-    setNik("");
-    setNoKK("");
-    setNama("");
-    setGolonganDarah("");
-    setTinggiBadan("");
-    setBeratBadan("");
-    setRiwayatPenyakit("");
-    setApakahDisabilitas("");
-    setTanggalPemeriksaan("");
+    if (!form.citizenId) return alert("Pilih nama warga!");
+    addRecord({ variables: { ...form, height: 0, weight: 0, chronicDisease: "-" } });
   };
 
   return (
-    <form className="dw-form ks-form" onSubmit={handleSubmit}>
-      <div className="dw-form-group">
-        <label>NIK</label>
-        <input type="text" className="form-control" value={nik} onChange={(e) => setNik(e.target.value)} required />
-      </div>
-
-      <div className="dw-form-group">
-        <label>No KK</label>
-        <input type="text" className="form-control" value={noKK} onChange={(e) => setNoKK(e.target.value)} required />
-      </div>
-
-      <div className="dw-form-group">
-        <label>Nama</label>
-        <input type="text" className="form-control" value={nama} onChange={(e) => setNama(e.target.value)} required />
-      </div>
-
-      <div className="dw-form-group">
-        <label>Golongan Darah</label>
-        <input type="text" className="form-control" value={golonganDarah} onChange={(e) => setGolonganDarah(e.target.value)} required />
-      </div>
-
-      <div className="dw-form-group">
-        <label>Tinggi Badan</label>
-        <input type="text" className="form-control" value={tinggiBadan} onChange={(e) => setTinggiBadan(e.target.value)} required />
-      </div>
-
-      <div className="dw-form-group">
-        <label>Berat Badan</label>
-        <input type="text" className="form-control" value={beratBadan} onChange={(e) => setBeratBadan(e.target.value)} required />
-      </div>
-
-      <div className="dw-form-group">
-        <label>Riwayat Penyakit</label>
-        <input type="text" className="form-control" value={riwayatPenyakit} onChange={(e) => setRiwayatPenyakit(e.target.value)} required />
-      </div>
-
-      <div className="dw-form-group">
-        <label>Apakah Disabilitas</label>
-        <input type="text" className="form-control" value={apakahDisabilitas} onChange={(e) => setApakahDisabilitas(e.target.value)} required />
-      </div>
-
-      <div className="dw-form-group">
-        <label>Tanggal Pemeriksaan</label>
-        <input type="date" className="form-control" value={tanggalPemeriksaan} onChange={(e) => setTanggalPemeriksaan(e.target.value)} required />
-      </div>
-
-      <div className="dw-form-actions mt-3 ks-form-actions">
-        <button type="submit" className="btn btn-primary w-100">
-          Simpan
-        </button>
-      </div>
-    </form>
+    <div className="health-form mb-4">
+      <h6 className="fw-bold text-primary mb-3">Input Pemeriksaan Warga</h6>
+      <form onSubmit={handleSubmit}>
+        <div className="row g-2 align-items-end">
+          <div className="col-md-3">
+            <label className="small fw-bold text-muted mb-1">Pilih Nama Warga</label>
+            <select className="form-select health-input" value={form.citizenId} required onChange={e => setForm({...form, citizenId: e.target.value})}>
+              <option value="">-- Pilih Warga --</option>
+              {allMembers.map(c => <option key={c.id} value={c.id}>{c.name} ({c.nik})</option>)}
+            </select>
+          </div>
+          <div className="col-md-2">
+            <label className="small fw-bold text-muted mb-1">Status</label>
+            <select className="form-select health-input" value={form.healthStatus} onChange={e => setForm({...form, healthStatus: e.target.value})}>
+              <option value="SEHAT">SEHAT</option><option value="PANTAUAN">PANTAUAN</option><option value="DARURAT">DARURAT</option>
+            </select>
+          </div>
+          <div className="col-md-2">
+            <label className="small fw-bold text-muted mb-1">Gol. Darah</label>
+            <select className="form-select health-input" value={form.bloodType} onChange={e => setForm({...form, bloodType: e.target.value})}>
+              <option value="A">A</option><option value="B">B</option><option value="AB">AB</option><option value="O">O</option>
+            </select>
+          </div>
+          <div className="col-md-3">
+            <label className="small fw-bold text-muted mb-1">Catatan</label>
+            <input type="text" className="form-control health-input" placeholder="Riwayat sakit..." value={form.notes} onChange={e => setForm({...form, notes: e.target.value})} />
+          </div>
+          <div className="col-md-2">
+            <button type="submit" className="btn btn-primary w-100 fw-bold" disabled={loading} style={{height: '40px'}}>
+              {loading ? "..." : "Simpan Data"}
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
   );
 };
 
