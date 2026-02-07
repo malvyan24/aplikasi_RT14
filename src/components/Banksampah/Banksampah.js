@@ -1,70 +1,38 @@
-import React from "react";
-import TambahDataSampah from "./TambahDataSampah";
-import DataSampah from "./DataSampah";
-import { FaPlus, FaTrash, FaSyncAlt, FaPrint } from "react-icons/fa"; // Import FaTrash
-import "./Banksampah.css";
+import React, { useState } from 'react';
+import DataSampah from './DataSampah';
+import TambahDataSampah from './TambahDataSampah';
+import './Banksampah.css';
 
 const Banksampah = () => {
-  const handleRefresh = () => window.location.reload();
-  const handlePrint = () => window.print();
+  const [dataSampah, setDataSampah] = useState([
+    { id: "BS-001", nama: "Muhamad Alpian", alamat: "Blok A1", jenis: "Plastik", berat: 25, tanggal: "2025-01-01" },
+  ]);
+
+  const handleSimpan = (newData) => {
+    setDataSampah([...dataSampah, { ...newData, id: `BS-00${dataSampah.length + 1}` }]);
+  };
 
   return (
-    <div className="container py-3 bank-sampah-page">
-      <div className="bank-sampah-header mb-2">
-        <h1>Bank Sampah RT 14</h1>
-      </div>
-
-      {/* Toolbar Card */}
-      <div className="card mb-3 bank-sampah-toolbar-card">
-        <div className="card-body">
-          <div className="bank-sampah-toolbar">
-            {/* Tombol Tambah Data */}
-            <button className="btn btn-primary btn-sm" type="button">
-              <FaPlus className="me-1" />
-              <span>Tambah Data</span>
-            </button>
-
-            {/* Tombol Hapus Data */}
-            <button className="btn btn-light btn-sm" type="button">
-              <FaTrash className="me-1" />
-              <span>Hapus Data</span>
-            </button>
-
-            {/* Tombol Refresh */}
-            <button className="btn btn-secondary btn-sm" type="button" onClick={handleRefresh}>
-              <FaSyncAlt className="me-1" />
-              <span>Refresh</span>
-            </button>
-
-            {/* Tombol Cetak */}
-            <button className="btn btn-success btn-sm" type="button" onClick={handlePrint}>
-              <FaPrint className="me-1" />
-              <span>Cetak</span>
-            </button>
-          </div>
+    <div className="bank-sampah-container">
+      <div className="header-section">
+        <h1>♻️ Bank Sampah RT 14</h1>
+        <div className="action-buttons">
+          <button className="btn btn-tambah">+ Tambah Data</button>
+          <button className="btn btn-hapus">🗑️ Hapus Data</button>
+          <button className="btn btn-refresh">🔄 Refresh</button>
+          <button className="btn btn-cetak">🖨️ Cetak</button>
         </div>
       </div>
 
-      <div className="row g-3">
-        {/* Data / Tabel */}
-        <div className="col-12">
-          <div className="card bank-sampah-main">
-            <div className="card-body">
-              <DataSampah />
-            </div>
-          </div>
+      <div className="main-content">
+        {/* Bagian Tabel */}
+        <div className="card-section">
+          <DataSampah items={dataSampah} />
         </div>
 
-        {/* Form */}
-        <div className="col-12">
-          <div className="card bank-sampah-form-wrapper">
-            <div className="card-header">
-              <h2 className="mb-0">Form Tambah Data Sampah</h2>
-            </div>
-            <div className="card-body">
-              <TambahDataSampah />
-            </div>
-          </div>
+        {/* Bagian Form */}
+        <div className="card-section">
+          <TambahDataSampah onSimpan={handleSimpan} />
         </div>
       </div>
     </div>

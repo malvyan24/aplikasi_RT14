@@ -1,140 +1,47 @@
-import React, { useState } from "react";
-import { useMutation } from "@apollo/client";
-import { ADD_SAMPAH } from "../../graphql/sampahMutations";
-import { GET_SAMPAH } from "../../graphql/sampahQueries";
+import React, { useState } from 'react';
 
-const TambahDataSampah = () => {
-  const [jenisSampah, setJenisSampah] = useState("");
-  const [berat, setBerat] = useState("");
-  const [tanggal, setTanggal] = useState("");
-  const [idBankSampah, setIdBankSampah] = useState("");
-  const [nama, setNama] = useState("");
-  const [alamat, setAlamat] = useState("");
-  const [successMsg, setSuccessMsg] = useState("");
-
-  const [addSampah, { loading, error }] = useMutation(ADD_SAMPAH, {
-    refetchQueries: [{ query: GET_SAMPAH }],
-    onCompleted: () => {
-      setSuccessMsg("Data sampah berhasil ditambahkan.");
-      setTimeout(() => setSuccessMsg(""), 2500);
-    },
+const TambahDataSampah = ({ onSimpan }) => {
+  const [formData, setFormData] = useState({
+    idBank: '', nama: '', alamat: '', jenis: '', berat: '', tanggal: ''
   });
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (
-      !jenisSampah ||
-      isNaN(berat) ||
-      !tanggal ||
-      !idBankSampah ||
-      !nama ||
-      !alamat
-    ) {
-      alert("Silakan isi semua kolom dengan benar.");
-      return;
-    }
-
-    await addSampah({
-      variables: {
-        idBankSampah,
-        nama,
-        alamat,
-        jenisSampah,
-        berat: parseFloat(berat),
-        tanggal,
-      },
-    });
-
-    setIdBankSampah("");
-    setNama("");
-    setAlamat("");
-    setJenisSampah("");
-    setBerat("");
-    setTanggal("");
+    onSimpan(formData);
+    alert("Data Sampah Berhasil Disimpan!");
   };
 
   return (
-    <form className="dw-form bank-sampah-form" onSubmit={handleSubmit}>
-      <div className="dw-form-group">
-        <label>ID Bank Sampah</label>
-        <input
-          type="text"
-          className="form-control"
-          value={idBankSampah}
-          onChange={(e) => setIdBankSampah(e.target.value)}
-          required
-        />
-      </div>
-
-      <div className="dw-form-group">
-        <label>Nama</label>
-        <input
-          type="text"
-          className="form-control"
-          value={nama}
-          onChange={(e) => setNama(e.target.value)}
-          required
-        />
-      </div>
-
-      <div className="dw-form-group">
-        <label>Alamat</label>
-        <input
-          type="text"
-          className="form-control"
-          value={alamat}
-          onChange={(e) => setAlamat(e.target.value)}
-          required
-        />
-      </div>
-
-      <div className="dw-form-group">
-        <label>Jenis Sampah</label>
-        <input
-          type="text"
-          className="form-control"
-          value={jenisSampah}
-          onChange={(e) => setJenisSampah(e.target.value)}
-          required
-        />
-      </div>
-
-      <div className="dw-form-group">
-        <label>Berat (kg)</label>
-        <input
-          type="number"
-          className="form-control"
-          value={berat}
-          onChange={(e) => setBerat(e.target.value)}
-          required
-        />
-      </div>
-
-      <div className="dw-form-group">
-        <label>Tanggal</label>
-        <input
-          type="date"
-          className="form-control"
-          value={tanggal}
-          onChange={(e) => setTanggal(e.target.value)}
-          required
-        />
-      </div>
-
-      <div className="dw-form-actions mt-2 bank-sampah-actions">
-        <button
-          type="submit"
-          className="btn btn-primary w-100"
-          disabled={loading}
-        >
-          {loading ? "Menyimpan..." : "Simpan"}
-        </button>
-      </div>
-
-      {successMsg && <p className="bank-sampah-success">{successMsg}</p>}
-      {error && <p className="bank-sampah-error">Error: {error.message}</p>}
-    </form>
+    <div className="form-container">
+      <h3>Form Tambah Data Sampah</h3>
+      <form onSubmit={handleSubmit} className="grid-form">
+        <div className="input-group">
+          <label>ID Bank Sampah</label>
+          <input type="text" placeholder="ID..." onChange={(e) => setFormData({...formData, idBank: e.target.value})} />
+        </div>
+        <div className="input-group">
+          <label>Nama</label>
+          <input type="text" placeholder="Nama Warga..." onChange={(e) => setFormData({...formData, nama: e.target.value})} />
+        </div>
+        <div className="input-group">
+          <label>Alamat</label>
+          <input type="text" placeholder="Alamat..." onChange={(e) => setFormData({...formData, alamat: e.target.value})} />
+        </div>
+        <div className="input-group">
+          <label>Jenis Sampah</label>
+          <input type="text" placeholder="Plastik/Kertas/Logam..." onChange={(e) => setFormData({...formData, jenis: e.target.value})} />
+        </div>
+        <div className="input-group">
+          <label>Berat (kg)</label>
+          <input type="number" placeholder="0" onChange={(e) => setFormData({...formData, berat: e.target.value})} />
+        </div>
+        <div className="input-group">
+          <label>Tanggal</label>
+          <input type="date" onChange={(e) => setFormData({...formData, tanggal: e.target.value})} />
+        </div>
+        <button type="submit" className="btn-simpan">Simpan</button>
+      </form>
+    </div>
   );
 };
 

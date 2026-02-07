@@ -1,106 +1,95 @@
-/* ===== Halaman Bank Sampah (selaras Data Warga) ===== */
-.bank-sampah-page {
-  padding: 24px 40px;
-  background-color: #f4f6f9;
-  min-height: calc(100vh - 60px);
-  min-height: calc(100svh - 60px);
-  box-sizing: border-box;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: #111827;
+.bank-sampah-container {
+  padding: 30px;
+  background-color: #f8fafc;
+  min-height: 100vh;
 }
 
-/* Anti overflow */
-.bank-sampah-page * {
-  min-width: 0;
+.header-section {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  margin-bottom: 25px;
 }
 
-/* Header */
-.bank-sampah-header h1 {
-  margin: 0 0 16px;
-  font-size: 26px;
-  font-weight: 600;
-  color: #111827;
-}
-
-/* Toolbar */
-.bank-sampah-toolbar {
+.action-buttons {
   display: flex;
-  justify-content: flex-start;
-  align-items: center;
   gap: 10px;
-  flex-wrap: wrap;
+  margin-top: 15px;
 }
 
-/* Tabel wrapper */
-.bank-sampah-table-wrapper {
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+.btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  color: white;
 }
 
-/* Tabel */
-.bank-sampah-table {
+.btn-tambah { background-color: #ff7675; }
+.btn-hapus { background-color: #2d3436; }
+.btn-refresh { background-color: #636e72; }
+.btn-cetak { background-color: #2ecc71; }
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.card-section {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+.custom-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
-  font-size: 13px;
-  background-color: #ffffff;
 }
 
-.bank-sampah-table th,
-.bank-sampah-table td {
-  border-bottom: 1px solid #e5e7eb;
-  padding: 10px 12px;
+.custom-table th {
+  background-color: #2d3436;
+  color: white;
+  padding: 12px;
   text-align: left;
-  vertical-align: top;
 }
 
-/* Form khusus bank sampah (grid stabil) */
-.bank-sampah-form {
+.custom-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.grid-form {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px 20px;
-  margin-top: 8px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
 }
 
-.bank-sampah-actions {
-  grid-column: 1 / -1;
-}
-
-/* Pesan */
-.bank-sampah-success {
-  margin-top: 8px;
-  color: #16a34a;
+.input-group label {
+  display: block;
   font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 8px;
 }
 
-.bank-sampah-error {
-  margin-top: 8px;
-  color: #b91c1c;
-  font-size: 13px;
+.input-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #dfe6e9;
+  border-radius: 8px;
 }
 
-/* Responsive */
-@media (max-width: 900px) {
-  .bank-sampah-form {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 768px) {
-  .bank-sampah-page { padding: 16px; }
-  .bank-sampah-header h1 { font-size: 22px; }
-
-  .bank-sampah-toolbar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .bank-sampah-toolbar .btn { width: 100%; }
-}
-
-@media (max-width: 576px) {
-  .bank-sampah-page { padding: 12px; }
-  .bank-sampah-header h1 { font-size: 20px; }
-  .bank-sampah-form { grid-template-columns: 1fr; }
+.btn-simpan {
+  grid-column: span 3;
+  padding: 12px;
+  background-color: #ff7675;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 10px;
 }

@@ -1,334 +1,225 @@
-/* src/components/Kegiatanlingkungan/Kegiatanlingkungan.css */
-
-/* ===== RESET KECIL (aman, lokal) ===== */
-.kgl-wrapper,
-.kgl-wrapper * {
-  box-sizing: border-box;
-  min-width: 0;
+.kegiatan-container {
+  padding: 40px 20px;
+  background-color: #f4f7f6;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Roboto, sans-serif;
 }
 
-/* ===== WRAPPER UTAMA ===== */
-.kgl-wrapper {
+.kegiatan-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.kegiatan-header h1 {
+  font-size: 2.2rem;
+  color: #2d3436;
+  margin-bottom: 10px;
+}
+
+.kegiatan-header p {
+  color: #636e72;
+}
+
+/* Form Section */
+.input-card {
+  background: white;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  margin-bottom: 50px;
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.input-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.form-input {
+  padding: 12px;
+  border: 1px solid #dfe6e9;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.btn-publikasi {
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.btn-publikasi:hover {
+  background-color: #27ae60;
+}
+
+/* Grid & Cards */
+.kegiatan-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
   max-width: 1100px;
   margin: 0 auto;
-
-  /* ✅ INTI FIX: jarak aman dari Navbar (karena navbar sticky) */
-  /* Kalau masih kepotong, naikkan jadi 130px */
-  padding: 120px 16px 40px;
-
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
-/* ===== HERO / BAGIAN ATAS ===== */
-.kgl-hero {
-  display: grid;
-  grid-template-columns: minmax(0, 2fr) minmax(0, 1.3fr);
-  gap: 32px;
-  margin-bottom: 32px;
-  align-items: start;
-}
-
-/* Kolom kiri */
-.kgl-badge {
-  display: inline-block;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: #e8f5e9;
-  color: #2e7d32;
-  font-size: 13px;
-  font-weight: 700;
-  margin: 0 0 10px;
-}
-
-.kgl-title {
-  font-size: clamp(26px, 3.2vw, 44px);
-  font-weight: 900;
-  color: #166534;
-  line-height: 1.05;
-
-  /* ✅ INTI FIX: hilangkan margin-top default h1 */
-  margin: 0 0 12px;
-}
-
-.kgl-text {
-  margin: 8px 0;
-  color: #475569;
-  line-height: 1.7;
-  font-size: 15px;
-}
-
-.kgl-tags {
+.activity-card {
+  background: white;
+  border-radius: 12px;
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 16px;
-}
-
-.kgl-tag {
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: #ecfeff;
-  color: #0f766e;
-  font-size: 12px;
-  border: 1px solid #a5f3fc;
-}
-
-/* Kolom kanan: ringkasan */
-.kgl-hero-right {
-  min-width: 0;
-}
-
-.kgl-hero-card {
-  background: linear-gradient(135deg, #22c55e, #16a34a);
-  border-radius: 18px;
-  padding: 18px 20px;
-  color: #f0fdf4;
-  box-shadow: 0 18px 40px rgba(22, 163, 74, 0.25);
   overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+  transition: transform 0.3s ease;
 }
 
-.kgl-hero-card h3 {
-  margin: 0 0 10px;
-  font-size: 22px;
-  line-height: 1.2;
+.activity-card:hover {
+  transform: translateY(-5px);
 }
 
-.kgl-hero-card ul {
-  margin: 10px 0 12px 18px;
-  padding: 0;
-  font-size: 14px;
-  line-height: 1.6;
+.card-accent {
+  width: 8px;
 }
 
-.kgl-hero-card li {
-  margin-bottom: 6px;
+.card-content {
+  padding: 20px;
+  flex: 1;
 }
 
-.kgl-hero-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.18);
+.card-header-top {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
-  font-size: 22px;
 }
 
-.kgl-hero-note {
-  margin-top: 10px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.16);
-  font-size: 13px;
-  line-height: 1.6;
+.activity-icon {
+  font-size: 1.8rem;
 }
 
-/* ===== KONTEN UTAMA ===== */
-.kgl-content {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-/* CARD GENERIK */
-.kgl-card {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 18px 20px 20px;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
-  border: 1px solid #e2e8f0;
-}
-
-.kgl-card h2 {
-  margin: 0 0 6px;
-  font-size: 22px;
-  font-weight: 900;
-  color: #15803d;
-}
-
-.kgl-card-subtitle {
-  margin: 4px 0 0;
-  color: #6b7280;
-  font-size: 14px;
-  line-height: 1.6;
-}
-
-/* Header card jadwal */
-.kgl-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-  margin-bottom: 12px;
-}
-
-.kgl-card-header h2 {
-  margin: 0;
-}
-
-.kgl-card-pill {
-  padding: 6px 10px;
-  border-radius: 999px;
-  background: #eff6ff;
-  color: #1d4ed8;
-  font-size: 12px;
-  white-space: nowrap;
-}
-
-/* Grid 2 kolom untuk Aturan & Kontak */
-.kgl-grid-2 {
-  display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-  gap: 24px;
-  margin-top: 4px;
-}
-
-/* ===== TABEL JADWAL ===== */
-.kgl-table-wrapper {
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  margin-top: 10px;
-}
-
-.kgl-table {
-  width: 100%;
-  min-width: 520px; /* ✅ biar gak pecah di layar kecil, jadi scroll */
-  border-collapse: collapse;
-  font-size: 14px;
-}
-
-.kgl-table th,
-.kgl-table td {
-  padding: 10px 12px;
-  border-bottom: 1px solid #e5e7eb;
-  text-align: left;
-  vertical-align: top;
-}
-
-.kgl-table thead th {
-  background: #f9fafb;
+.activity-badge {
   font-weight: 800;
-  color: #4b5563;
+  font-size: 0.75rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  text-transform: uppercase;
 }
 
-.kgl-table tbody tr:last-child td {
-  border-bottom: none;
+.activity-title {
+  font-size: 1.4rem;
+  margin: 15px 0;
+  color: #2d3436;
 }
 
-.kgl-table tbody tr:hover {
-  background: #f9fafb;
+.activity-info p {
+  font-size: 0.9rem;
+  color: #636e72;
+  margin: 8px 0;
 }
 
-/* ===== LIST ATURAN ===== */
-.kgl-list {
-  margin: 10px 0 0 18px;
-  padding: 0;
-  color: #374151;
-  line-height: 1.7;
-  font-size: 14px;
+.btn-detail {
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  border-radius: 8px;
+  font-weight: bold;
+  margin-top: 15px;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
-.kgl-list li {
-  margin-bottom: 8px;
+.btn-detail:hover {
+  background: rgba(0,0,0,0.02);
 }
 
-/* ===== CARD KONTAK ===== */
-.kgl-card-highlight {
-  background: #f0fdf4;
-  border-color: #bbf7d0;
-}
-
-.kgl-contact {
-  margin-top: 10px;
+/* Modal Styling */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
 }
 
-.kgl-contact-item {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  font-size: 14px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: #dcfce7;
-  border: 1px solid #bbf7d0;
+.modal-content {
+  background: #ffffff; /* Putih Solid */
+  width: 90%;
+  max-width: 480px;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  animation: popUp 0.3s ease;
 }
 
-.kgl-contact-label {
-  font-weight: 900;
-  color: #166534;
+@keyframes popUp {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
 }
 
-.kgl-contact-value {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-    "Liberation Mono", "Courier New", monospace;
-  color: #047857;
-  white-space: nowrap;
+.modal-header-box {
+  padding: 50px 20px;
+  text-align: center;
+  position: relative;
 }
 
-.kgl-contact-note {
-  margin-top: 10px;
-  font-size: 13px;
-  color: #374151;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: rgba(22, 163, 74, 0.06);
-  border: 1px dashed #86efac;
+.modal-icon {
+  font-size: 4rem;
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: rgba(255, 255, 255, 0.3);
+  border: none;
+  font-size: 1.5rem;
+  color: white;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+}
+
+.modal-body {
+  padding: 30px;
+  background: white; /* Pastikan Putih */
+}
+
+.modal-badge-type {
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+}
+
+.modal-info-list p {
+  margin: 12px 0;
+  color: #2d3436;
+}
+
+.modal-description-text {
   line-height: 1.6;
+  color: #636e72;
+  margin-top: 10px;
 }
 
-/* ===== RESPONSIVE ===== */
-@media (max-width: 1200px) {
-  .kgl-hero {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 900px) {
-  .kgl-wrapper {
-    padding: 120px 12px 36px;
-  }
-
-  .kgl-grid-2 {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 700px) {
-  .kgl-wrapper {
-    /* ✅ mobile biasanya navbar + safe area lebih tinggi */
-    padding: 132px 12px 28px;
-  }
-
-  .kgl-card {
-    padding: 14px 14px 16px;
-  }
-
-  .kgl-card h2 {
-    font-size: 18px;
-  }
-
-  .kgl-card-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .kgl-contact-item {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .kgl-contact-value {
-    white-space: normal;
-    word-break: break-word;
-  }
-
-  .kgl-table {
-    min-width: 540px; /* scroll lebih nyaman di HP */
-  }
+.btn-modal-close {
+  width: 100%;
+  padding: 12px;
+  background: #f1f2f6;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  margin-top: 25px;
+  cursor: pointer;
 }

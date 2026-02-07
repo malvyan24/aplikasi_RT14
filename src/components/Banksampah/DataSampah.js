@@ -1,10 +1,10 @@
-import React from "react";
+import React from 'react';
 
-const DataSampah = () => {
+const DataSampah = ({ items }) => {
   return (
-    <div className="bank-sampah-table-wrapper">
-      <table className="table table-striped table-hover bank-sampah-table">
-        <thead className="table-dark">
+    <div className="data-table-container">
+      <table className="custom-table">
+        <thead>
           <tr>
             <th>Jenis Sampah</th>
             <th>Berat (kg)</th>
@@ -12,12 +12,13 @@ const DataSampah = () => {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>Contoh Sampah</td>
-            <td>25</td>
-            <td>2025-01-01</td>
-          </tr>
-          {/* Tambahkan baris data lain di sini */}
+          {items.map((item, index) => (
+            <tr key={index}>
+              <td>{item.jenis}</td>
+              <td><strong>{item.berat} kg</strong></td>
+              <td>{item.tanggal}</td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>

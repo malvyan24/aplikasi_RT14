@@ -1,149 +1,119 @@
-import React from "react";
-import "./Kegiatanlingkungan.css";
+import React, { useState } from 'react';
+import './Kegiatanlingkungan.css';
 
 const KegiatanLingkungan = () => {
+  const [selectedKegiatan, setSelectedKegiatan] = useState(null);
+
+  const [kegiatan] = useState([
+    {
+      id: 1,
+      nama: "Kerja Bakti Akbar",
+      jenis: "Kebersihan",
+      tanggal: "15 Februari 2026",
+      jam: "07:00 - Selesai",
+      lokasi: "Lapangan Utama & Selokan RT 14",
+      deskripsi: "Kegiatan rutin bulanan untuk menjaga kebersihan lingkungan. Mohon warga membawa peralatan masing-masing.",
+      icon: "🧹",
+      warna: "#2ecc71"
+    },
+    {
+      id: 2,
+      nama: "Posyandu Balita & Lansia",
+      jenis: "Kesehatan",
+      tanggal: "18 Februari 2026",
+      jam: "09:00 - 12:00",
+      lokasi: "Balai Warga RT 14",
+      deskripsi: "Pemeriksaan kesehatan rutin meliputi penimbangan balita dan pemberian vitamin.",
+      icon: "👶",
+      warna: "#ff7675"
+    },
+    {
+      id: 3,
+      nama: "Ronda Malam Regu A",
+      jenis: "Keamanan",
+      tanggal: "Setiap Malam",
+      jam: "22:00 - 04:00",
+      lokasi: "Pos Siskamling",
+      deskripsi: "Jadwal siskamling rutin untuk menjaga keamanan wilayah RT 14.",
+      icon: "👮‍♂️",
+      warna: "#0984e3"
+    }
+  ]);
+
   return (
-    <div className="kgl-wrapper">
-      {/* ===== HERO / BAGIAN ATAS ===== */}
-      <section className="kgl-hero">
-        {/* Kolom kiri: judul & deskripsi */}
-        <div className="kgl-hero-left">
-          <p className="kgl-badge">Program Keamanan Lingkungan</p>
-          <h1 className="kgl-title">Siskamling RT 14</h1>
-          <p className="kgl-text">
-            Siskamling (Sistem Keamanan Lingkungan) RT 14 adalah kegiatan ronda
-            malam yang dilakukan secara bergiliran oleh warga untuk menjaga
-            keamanan, ketertiban, dan kenyamanan lingkungan.
-          </p>
-          <p className="kgl-text">
-            Dengan adanya Siskamling, diharapkan lingkungan RT 14 tetap aman
-            dari tindak kejahatan serta meningkatkan rasa kebersamaan antar
-            warga.
-          </p>
+    <div className="kegiatan-container">
+      <div className="kegiatan-header">
+        <h1>🌱 Kegiatan Lingkungan RT 14</h1>
+        <p>Mari berpartisipasi untuk lingkungan yang lebih asri dan aman!</p>
+      </div>
 
-          <div className="kgl-tags">
-            <span className="kgl-tag">Ronda Malam</span>
-            <span className="kgl-tag">Keamanan Warga</span>
-            <span className="kgl-tag">Gotong Royong</span>
-          </div>
+      <div className="input-card">
+        <h3><span style={{color: '#6c5ce7'}}>+</span> Tambah Kegiatan Baru</h3>
+        <div className="input-grid">
+          <input type="text" placeholder="Nama Kegiatan..." className="form-input" />
+          <select className="form-input">
+            <option>Pilih Jenis...</option>
+            <option>Kebersihan</option>
+            <option>Kesehatan</option>
+            <option>Keamanan</option>
+          </select>
+          <input type="date" className="form-input" />
+          <button className="btn-publikasi">Publikasikan</button>
         </div>
+      </div>
 
-        {/* Kolom kanan: ringkasan kegiatan */}
-        <div className="kgl-hero-right">
-          <div className="kgl-hero-card">
-            <div className="kgl-hero-icon">🌙</div>
-            <h3>Ringkasan Kegiatan</h3>
-            <ul>
-              <li>Ronda malam rutin 3x dalam seminggu</li>
-              <li>Petugas bergiliran per blok rumah</li>
-              <li>Koordinasi dengan Ketua RT 14</li>
-            </ul>
-            <div className="kgl-hero-note">
-              Pos ronda berlokasi di dekat gerbang utama RT 14.
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== BAGIAN BAWAH: JADWAL + ATURAN + KONTAK ===== */}
-      <section className="kgl-content">
-        {/* Jadwal ronda */}
-        <div className="kgl-card">
-          <div className="kgl-card-header">
-            <div>
-              <h2>Jadwal Ronda Malam</h2>
-              <p className="kgl-card-subtitle">
-                Contoh jadwal yang dapat disesuaikan dengan kebutuhan RT 14.
-              </p>
-            </div>
-            <span className="kgl-card-pill">Periode Mingguan</span>
-          </div>
-
-          <div className="kgl-table-wrapper">
-            <table className="kgl-table">
-              <thead>
-                <tr>
-                  <th>Hari</th>
-                  <th>Waktu</th>
-                  <th>Petugas</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Senin</td>
-                  <td>22.00 – 04.00</td>
-                  <td>Warga Blok A &amp; Blok B</td>
-                </tr>
-                <tr>
-                  <td>Rabu</td>
-                  <td>22.00 – 04.00</td>
-                  <td>Warga Blok C &amp; Blok D</td>
-                </tr>
-                <tr>
-                  <td>Jumat</td>
-                  <td>22.00 – 04.00</td>
-                  <td>Warga Blok E &amp; Blok F</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Aturan & Kontak dalam 2 kolom */}
-        <div className="kgl-grid-2">
-          {/* Aturan */}
-          <div className="kgl-card">
-            <h2>Aturan Pelaksanaan Siskamling</h2>
-            <p className="kgl-card-subtitle">
-              Agar kegiatan berjalan tertib dan nyaman, mohon diperhatikan
-              beberapa poin berikut:
-            </p>
-            <ul className="kgl-list">
-              <li>
-                Petugas ronda hadir tepat waktu sesuai jadwal yang ditentukan.
-              </li>
-              <li>Melakukan patroli keliling lingkungan secara berkala.</li>
-              <li>
-                Melaporkan segera kepada Ketua RT bila terjadi hal yang
-                mencurigakan.
-              </li>
-              <li>
-                Menjaga sikap sopan santun dan tidak membuat kebisingan
-                berlebihan.
-              </li>
-              <li>
-                Menggunakan perlengkapan seperti senter, peluit, dan rompi jika
-                tersedia.
-              </li>
-            </ul>
-          </div>
-
-          {/* Kontak */}
-          <div className="kgl-card kgl-card-highlight">
-            <h2>Kontak Penanggung Jawab</h2>
-            <p className="kgl-card-subtitle">
-              Hubungi pengurus berikut bila membutuhkan informasi terkait jadwal
-              atau pergantian petugas ronda:
-            </p>
-
-            <div className="kgl-contact">
-              <div className="kgl-contact-item">
-                <span className="kgl-contact-label">Ketua RT 14</span>
-                <span className="kgl-contact-value">08xx‑xxxx‑xxxx</span>
+      <div className="kegiatan-grid">
+        {kegiatan.map((item) => (
+          <div key={item.id} className="activity-card">
+            <div className="card-accent" style={{ backgroundColor: item.warna }}></div>
+            <div className="card-content">
+              <div className="card-header-top">
+                <span className="activity-icon">{item.icon}</span>
+                <span className="activity-badge" style={{ color: item.warna, backgroundColor: item.warna + '15' }}>
+                  {item.jenis}
+                </span>
               </div>
-              <div className="kgl-contact-item">
-                <span className="kgl-contact-label">Koordinator Siskamling</span>
-                <span className="kgl-contact-value">08xx‑xxxx‑xxxx</span>
+              <h2 className="activity-title">{item.nama}</h2>
+              <div className="activity-info">
+                <p>📅 <strong>Tanggal:</strong> {item.tanggal}</p>
+                <p>⏰ <strong>Waktu:</strong> {item.jam}</p>
+                <p>📍 <strong>Lokasi:</strong> {item.lokasi}</p>
               </div>
+              <button 
+                className="btn-detail" 
+                style={{ border: `2px solid ${item.warna}`, color: item.warna }}
+                onClick={() => setSelectedKegiatan(item)}
+              >
+                Lihat Detail
+              </button>
             </div>
+          </div>
+        ))}
+      </div>
 
-            <div className="kgl-contact-note">
-              Jika berhalangan hadir saat jadwal ronda, warga diharapkan mencari
-              pengganti dan menginformasikan kepada koordinator maksimal H‑1.
+      {selectedKegiatan && (
+        <div className="modal-overlay" onClick={() => setSelectedKegiatan(null)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header-box" style={{ backgroundColor: selectedKegiatan.warna }}>
+              <span className="modal-icon">{selectedKegiatan.icon}</span>
+              <button className="close-btn" onClick={() => setSelectedKegiatan(null)}>&times;</button>
+            </div>
+            <div className="modal-body">
+              <span className="modal-badge-type" style={{ color: selectedKegiatan.warna }}>{selectedKegiatan.jenis}</span>
+              <h2>{selectedKegiatan.nama}</h2>
+              <div className="modal-info-list">
+                <p>📅 <strong>Tanggal:</strong> {selectedKegiatan.tanggal}</p>
+                <p>⏰ <strong>Waktu:</strong> {selectedKegiatan.jam}</p>
+                <p>📍 <strong>Lokasi:</strong> {selectedKegiatan.lokasi}</p>
+              </div>
+              <hr />
+              <h4>Deskripsi Kegiatan:</h4>
+              <p className="modal-description-text">{selectedKegiatan.deskripsi}</p>
+              <button className="btn-modal-close" onClick={() => setSelectedKegiatan(null)}>Tutup</button>
             </div>
           </div>
         </div>
-      </section>
+      )}
     </div>
   );
 };
