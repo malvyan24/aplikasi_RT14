@@ -1,6 +1,6 @@
 import { gql } from '@apollo/client';
 
-// 1. Ambil Data Keluarga (Untuk Tabel Rekapitulasi)
+// 1. Ambil Data Keluarga & Anggotanya (LENGKAP)
 export const GET_WARGA = gql`
   query GetFamilies {
     families {
@@ -9,30 +9,34 @@ export const GET_WARGA = gql`
       kepalaKeluarga
       address
       ownershipStatus
-      
-      # Data Bank Sampah
-      totalTabungan  # Total Berat (Kg)
-      balance        # Total Uang (Rp) - WAJIB ADA
-      qrCode         # Kode QR - WAJIB ADA
-      
+      totalTabungan
+      balance
+      qrCode
       members {
         id
         name
         nik
         gender
+        placeOfBirth  # WAJIB ADA
+        dateOfBirth   # WAJIB ADA (Agar umur bisa dihitung)
+        religion
+        profession
         relationship
       }
     }
   }
 `;
 
-// 2. Ambil Data Warga (Untuk Dropdown Input Setoran)
+// 2. Ambil Semua Warga (Flat List)
 export const GET_ALL_CITIZENS = gql`
   query GetAllCitizens {
     citizens {
       id
       name
       nik
+      gender
+      placeOfBirth
+      dateOfBirth     # WAJIB ADA
       family {
         id
         noKK
@@ -42,13 +46,13 @@ export const GET_ALL_CITIZENS = gql`
   }
 `;
 
-// 3. Ambil Statistik Dashboard (Termasuk Total Uang)
+// 3. Statistik Bank Sampah
 export const GET_SAMPAH_STATS = gql`
   query GetSampahStats {
     sampahStats {
       totalBerat
       totalKKAktif
-      totalUang      # Statistik Total Uang RT
+      totalUang
     }
   }
 `;

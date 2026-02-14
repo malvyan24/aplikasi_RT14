@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { NavLink, Link } from "react-router-dom";
+import { FaSignOutAlt } from "react-icons/fa"; // Pastikan install: npm install react-icons
 import "./Navbar.css";
 
-export default function Navbar() {
+// Terima props onLogout dari App.js
+export default function Navbar({ onLogout }) {
   const [open, setOpen] = useState(false);
 
   const linkClass = ({ isActive }) =>
@@ -41,6 +43,23 @@ export default function Navbar() {
           <NavLink to="/banksampah" className={linkClass} onClick={closeMenu}>
             Bank Sampah
           </NavLink>
+          
+          {/* Opsi Logout untuk Mobile Menu */}
+          <button 
+            className="sirt-nav__link" 
+            onClick={onLogout}
+            style={{ 
+                background: 'transparent', 
+                border: 'none', 
+                color: '#ef4444', 
+                cursor: 'pointer',
+                textAlign: 'left',
+                width: '100%',
+                display: 'none' // Disembunyikan di desktop (diatur via CSS media query jika mau)
+            }}
+          >
+            Keluar
+          </button>
         </nav>
 
         <div className="sirt-nav__profile">
@@ -51,6 +70,28 @@ export default function Navbar() {
             onError={(e) => (e.currentTarget.style.display = "none")}
           />
           <span className="sirt-nav__name">Admin RT</span>
+
+          {/* TOMBOL LOGOUT DESKTOP */}
+          <button 
+            onClick={onLogout} 
+            title="Keluar Aplikasi"
+            style={{
+                marginLeft: '15px',
+                background: '#fee2e2',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '8px 12px',
+                color: '#ef4444',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontSize: '13px'
+            }}
+          >
+            <FaSignOutAlt /> Keluar
+          </button>
 
           <button
             type="button"
