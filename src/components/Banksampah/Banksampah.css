@@ -89,15 +89,42 @@
   overflow: hidden;
 }
 
-.card-stat:hover { transform: translateY(-5px); }
+.card-stat:hover {
+  transform: translateY(-5px);
+}
 
-.card-green { background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%); }
-.card-blue { background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%); }
-.card-purple { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); }
+.card-green {
+  background: linear-gradient(135deg, var(--primary-green) 0%, var(--secondary-green) 100%);
+}
 
-.stat-content p { margin: 0; font-size: 14px; font-weight: 500; opacity: 0.9; }
-.stat-content h2 { margin: 8px 0 0 0; font-size: 28px; font-weight: 700; }
-.stat-icon-bg { position: absolute; right: -10px; bottom: -10px; font-size: 80px; opacity: 0.15; }
+.card-blue {
+  background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+}
+
+.card-purple {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);
+}
+
+.stat-content p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.stat-content h2 {
+  margin: 8px 0 0 0;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.stat-icon-bg {
+  position: absolute;
+  right: -10px;
+  bottom: -10px;
+  font-size: 80px;
+  opacity: 0.15;
+}
 
 /* --- FORM INPUT --- */
 .form-card-premium {
@@ -115,12 +142,27 @@
   margin-bottom: 20px;
 }
 
-.section-title { font-size: 18px; font-weight: 700; color: var(--text-main); margin: 0; }
+.section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin: 0;
+}
 
-.form-group { margin-bottom: 20px; }
-.form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #475569; font-size: 14px; }
+.form-group {
+  margin-bottom: 20px;
+}
 
-.form-input-field, .form-select-field {
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #475569;
+  font-size: 14px;
+}
+
+.form-input-field,
+.form-select-field {
   width: 100%;
   padding: 12px;
   border: 2px solid #e2e8f0;
@@ -129,14 +171,30 @@
   transition: all 0.2s;
   outline: none;
 }
-.form-input-field:focus { border-color: var(--primary-green); background: #f0fdf4; }
+
+.form-input-field:focus {
+  border-color: var(--primary-green);
+  background: #f0fdf4;
+}
 
 .btn-save-main {
-  width: 100%; padding: 14px; border: none; background: var(--primary-green); color: var(--white);
-  font-weight: 700; border-radius: var(--radius-md); cursor: pointer; transition: 0.3s;
-  margin-top: 10px; font-size: 15px;
+  width: 100%;
+  padding: 14px;
+  border: none;
+  background: var(--primary-green);
+  color: var(--white);
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: 0.3s;
+  margin-top: 10px;
+  font-size: 15px;
 }
-.btn-save-main:hover { background: var(--secondary-green); transform: translateY(-2px); }
+
+.btn-save-main:hover {
+  background: var(--secondary-green);
+  transform: translateY(-2px);
+}
 
 /* --- TABLE SECTION --- */
 .table-container-premium {
@@ -179,26 +237,116 @@
   font-size: 14px;
   transition: 0.2s;
 }
-.search-input-modern:focus { border-color: var(--primary-blue); background: #fff; }
 
-.modern-table { width: 100%; border-collapse: collapse; }
-.modern-table th { text-align: left; padding: 15px; color: var(--text-muted); border-bottom: 2px solid #f1f5f9; font-size: 12px; text-transform: uppercase; }
-.modern-table td { padding: 15px; border-bottom: 1px solid #f1f5f9; font-size: 14px; vertical-align: middle; }
+.search-input-modern:focus {
+  border-color: var(--primary-blue);
+  background: #fff;
+}
+
+.modern-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.modern-table th {
+  text-align: left;
+  padding: 15px;
+  color: var(--text-muted);
+  border-bottom: 2px solid #f1f5f9;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.modern-table td {
+  padding: 15px;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 14px;
+  vertical-align: middle;
+}
 
 /* ACTION BUTTONS */
-.action-cells { display: flex; gap: 8px; justify-content: center; }
-.btn-icon { width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; border-radius: 8px; border: none; cursor: pointer; color: white; transition: 0.2s; }
-.btn-icon:hover { transform: scale(1.1); }
-.bg-edit { background-color: #3b82f6; }
-.bg-withdraw { background-color: #f59e0b; }
-.bg-delete { background-color: #ef4444; }
+.action-cells {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.btn-icon {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  color: white;
+  transition: 0.2s;
+}
+
+.btn-icon:hover {
+  transform: scale(1.1);
+}
+
+.bg-edit {
+  background-color: #3b82f6;
+}
+
+.bg-withdraw {
+  background-color: #f59e0b;
+}
+
+.bg-delete {
+  background-color: #ef4444;
+}
 
 .qr-code-box {
-  width: 40px; height: 40px; padding: 3px; border: 1px solid #eee;
-  border-radius: 8px; display: flex; align-items: center; justify-content: center;
-  cursor: pointer; transition: 0.2s;
+  width: 40px;
+  height: 40px;
+  padding: 3px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: 0.2s;
 }
-.qr-code-box:hover { transform: scale(1.1); border-color: var(--primary-blue); }
+
+.qr-code-box:hover {
+  transform: scale(1.1);
+  border-color: var(--primary-blue);
+}
 
 /* RESPONSIVE */
-@media (max-width: 1024px) { .bs-layout-grid { grid-template-columns: 1fr; } }
+@media (max-width: 1024px) {
+  .bs-layout-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* layar ponsel*/
+@media (max-width: 768px) {
+  .banksampah-wrapper {
+    padding: 15px;
+  }
+
+  /* Kartu Saldo / Berat Sampah di atas */
+  .summary-cards {
+    grid-template-columns: 1fr;
+    /* Tumpuk ke bawah */
+  }
+
+  /* Form input setoran sampah agar tidak kepotong */
+  .form-setoran {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .form-setoran input,
+  .form-setoran button {
+    width: 100%;
+    /* Tombol jadi lebar penuh agar mudah ditekan jempol */
+    margin-bottom: 10px;
+  }
+}

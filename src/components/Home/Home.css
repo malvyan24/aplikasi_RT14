@@ -136,3 +136,57 @@
   50% { transform: rotate(20deg); }
 }
 .wave-icon { animation: wave 2s infinite; display: inline-block; }
+
+/* --- RESPONSIVE UNTUK HP (Mobile) --- */
+@media (max-width: 768px) {
+  .home-page {
+    padding: 15px; /* Kurangi padding agar tidak sempit */
+  }
+
+  /* Banner jadi lebih kecil di HP */
+  .hero-banner {
+    padding: 20px;
+    flex-direction: column; /* Teks di atas, logo di bawah */
+    text-align: center;
+    gap: 15px;
+  }
+
+  .hero-content h1 {
+    font-size: 22px;
+  }
+
+  .hero-logo-box {
+    display: none; /* Sembunyikan logo box di banner agar hemat ruang */
+  }
+
+  /* Statistik jadi 2 kolom (atau 1 kolom) */
+  .stats-row {
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 10px;
+  }
+
+  .stat-box {
+    padding: 12px;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  /* Grid Dashboard jadi 1 kolom saja */
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Akses Menu Cepat jadi 2 kolom agar tombolnya besar dan mudah diklik jari */
+  .menu-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .menu-box {
+    padding: 20px 10px;
+  }
+
+  .menu-icon-white {
+    font-size: 28px;
+  }
+}

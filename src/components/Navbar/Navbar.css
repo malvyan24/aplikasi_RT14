@@ -133,3 +133,24 @@
   .sirt-nav__inner{ padding:0 12px; }
   .sirt-nav__logo-image{ width:40px; }
 }
+/* Navbar Responsive */
+@media (max-width: 768px) {
+  .navbar-container {
+    flex-direction: column;
+    padding: 10px;
+  }
+
+  .nav-links {
+    display: none; /* Sebaiknya gunakan Hamburger Menu jika link banyak */
+    /* Atau biarkan scrolling horizontal */
+    display: flex;
+    overflow-x: auto;
+    width: 100%;
+    padding-bottom: 5px;
+  }
+
+  .nav-item {
+    white-space: nowrap; /* Jangan biarkan teks terpotong ke bawah */
+    font-size: 13px;
+  }
+}
