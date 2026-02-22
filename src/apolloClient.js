@@ -1,47 +1,50 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
+import {
+  ApolloClient,
+  InMemoryCache,
+  createHttpLink,
+  from,
+} from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import { onError } from "@apollo/client/link/error";
 
-// 1. Definisikan link utama ke API Gateway lewat Ngrok
-// Pastikan URL ini adalah yang terbaru dari terminal Ngrok Anda
+// 1. Link ke Ngrok Alip (Pastikan link ini update kalau Alip restart Ngrok)
 const httpLink = createHttpLink({
-  uri: "https://transcondyloid-melodramatically-milly.ngrok-free.dev/graphql",
+  // Minta Alip cek IP laptopnya (ketik ipconfig di CMD)
+  // Contoh IP: 192.168.1.15
+  uri: "http://192.168.1.26:4002/graphql",
 });
 
-// 2. Middleware untuk menyisipkan Header (Auth & Ngrok Bypass)
+// 2. Setup Header Bypass
 const authLink = setContext((_, { headers }) => {
-  // Mengambil token dari localStorage (Gunakan key 'authToken' sesuai kodingan Login sebelumnya)
   const token = localStorage.getItem("authToken");
-
   return {
     headers: {
       ...headers,
-      // Header Authorization untuk keamanan
       authorization: token ? `Bearer ${token}` : "",
-      
-      // HEADER KRUSIAL: Agar Ngrok tidak memblokir request dengan halaman peringatan browser
-      "ngrok-skip-browser-warning": "true",
+      "ngrok-skip-browser-warning": "true", // Bypass halaman biru Ngrok
+      "apollo-require-preflight": "true", // Bypass keamanan Apollo
     },
   };
 });
 
-// 3. Inisialisasi Apollo Client
+// 3. Error Handler untuk Debugging
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors) {
+    graphQLErrors.forEach(({ message }) =>
+      console.error(`[GraphQL error]: ${message}`),
+    );
+  }
+  if (networkError) {
+    console.error(`[Network error]: ${networkError}`);
+  }
+});
+
 const client = new ApolloClient({
-  // Menggabungkan authLink (header) dengan httpLink (URL)
-  link: authLink.concat(httpLink),
-  
-  // Menggunakan cache standar Apollo
+  link: from([errorLink, authLink, httpLink]),
   cache: new InMemoryCache(),
-  
-  // Opsi tambahan untuk menangani error lebih baik
   defaultOptions: {
-    watchQuery: {
-      fetchPolicy: 'no-cache',
-      errorPolicy: 'all',
-    },
-    query: {
-      fetchPolicy: 'no-cache',
-      errorPolicy: 'all',
-    },
+    watchQuery: { fetchPolicy: "no-cache" },
+    query: { fetchPolicy: "no-cache" },
   },
 });
 

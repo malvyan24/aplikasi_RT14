@@ -1,6 +1,5 @@
 import { gql } from '@apollo/client';
 
-// 1. Ambil Data Keluarga & Anggotanya (LENGKAP)
 export const GET_WARGA = gql`
   query GetFamilies {
     families {
@@ -11,25 +10,24 @@ export const GET_WARGA = gql`
       ownershipStatus
       totalTabungan
       balance
-      qrCode
       members {
         id
         name
         nik
         gender
-        placeOfBirth  
-        dateOfBirth   
         religion
         profession
+        placeOfBirth
+        dateOfBirth
+        age            
         relationship
-        phone       # TAMBAHAN BARU
-        insurance   # TAMBAHAN BARU
+        phone          
+        insurance      
       }
     }
   }
 `;
 
-// 2. Ambil Semua Warga (Flat List)
 export const GET_ALL_CITIZENS = gql`
   query GetAllCitizens {
     citizens {
@@ -37,20 +35,13 @@ export const GET_ALL_CITIZENS = gql`
       name
       nik
       gender
-      placeOfBirth
-      dateOfBirth     
-      phone         # TAMBAHAN BARU
-      insurance     # TAMBAHAN BARU
       family {
-        id
-        noKK
         kepalaKeluarga
       }
     }
   }
 `;
 
-// 3. Statistik Bank Sampah
 export const GET_SAMPAH_STATS = gql`
   query GetSampahStats {
     sampahStats {

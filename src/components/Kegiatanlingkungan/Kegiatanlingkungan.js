@@ -1,12 +1,23 @@
 import React, { useState } from 'react';
-import './Kegiatanlingkungan.css';
+import { useQuery } from '@apollo/client';
+import { GET_KAS_DATA } from '../../graphql/kegiatanQueries';
+import { 
+  FaCalendarAlt, FaShieldAlt, FaPlusCircle, FaUsers, FaWallet, 
+  FaArrowUp, FaArrowDown, FaChartPie, FaHistory, FaClock, FaMapMarkerAlt 
+} from 'react-icons/fa';
+import './Kegiatanlingkungan.css'; // Sesuaikan huruf kecil agar tidak eror lagi
 
 const KegiatanLingkungan = () => {
-  const [activeTab, setActiveTab] = useState('kegiatan'); // Tab: kegiatan atau ronda
+  const [activeTab, setActiveTab] = useState('kegiatan');
   const [selectedKegiatan, setSelectedKegiatan] = useState(null);
 
-  // Data Dummy Kegiatan
-  const [kegiatan] = useState([
+  // 1. Load Data Kas dari Backend
+  const { data: kasData, loading: kasLoading } = useQuery(GET_KAS_DATA, {
+    variables: { month: "Februari", year: "2026" }
+  });
+
+  // 2. Data Dummy Kegiatan (KODE YANG TADI HILANG SUDAH SAYA MASUKKAN LAGI)
+  const kegiatan = [
     {
       id: 1,
       nama: "Kerja Bakti Akbar",
@@ -40,9 +51,8 @@ const KegiatanLingkungan = () => {
       icon: "👮‍♂️",
       warna: "#0984e3"
     }
-  ]);
+  ];
 
-  // Data Jadwal Ronda
   const jadwalRonda = [
     { hari: "Senin", petugas: ["Bambang", "Sutrisno", "Agus", "Mulyono"], regu: "Regu 1" },
     { hari: "Selasa", petugas: ["Dedi", "Rahmat", "Iwan", "Budi"], regu: "Regu 2" },
@@ -50,140 +60,176 @@ const KegiatanLingkungan = () => {
     { hari: "Kamis", petugas: ["Joko", "Slamet", "Anto", "Eko"], regu: "Regu 4" },
     { hari: "Jumat", petugas: ["Yanto", "Roni", "Dani", "Gani"], regu: "Regu 5" },
     { hari: "Sabtu", petugas: ["Zaki", "Fikri", "Haikal", "Rizky"], regu: "Regu Khusus" },
-    { hari: "Minggu", petugas: ["Warga Kerja Bakti", "Siskamling Gabungan"], regu: "All Team" },
+    { hari: "Minggu", petugas: ["Siskamling Gabungan", "Warga Kerja Bakti"], regu: "All Team" },
   ];
 
+  const today = new Date().toLocaleDateString('id-ID', { weekday: 'long' });
+
+  const formatRupiah = (number) => {
+    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
+  };
+
   return (
-    <div className="kegiatan-container">
-      <div className="kegiatan-header">
-        <h1>🌱 Lingkungan & Keamanan RT 14</h1>
-        <p>Kelola kegiatan warga dan pantau keamanan lingkungan dalam satu pintu.</p>
+    <div className="env-wrapper">
+      <div className="env-header text-start">
+        <h2 className="fw-bold text-dark"><FaShieldAlt className="text-primary me-2"/>Lingkungan & Keamanan RT 14</h2>
+        <p className="text-muted">Manajemen jadwal siskamling dan transparansi keuangan warga secara terpusat.</p>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="tab-navigation">
-        <button 
-          className={`tab-btn ${activeTab === 'kegiatan' ? 'active' : ''}`}
-          onClick={() => setActiveTab('kegiatan')}
-        >
-          📅 Kegiatan Warga
+      {/* Navigasi Tab */}
+      <div className="tab-nav-pill">
+        <button className={`nav-pill-btn ${activeTab === 'kegiatan' ? 'active' : ''}`} onClick={() => setActiveTab('kegiatan')}>
+          <FaCalendarAlt className="me-2"/> Kegiatan
         </button>
-        <button 
-          className={`tab-btn ${activeTab === 'ronda' ? 'active' : ''}`}
-          onClick={() => setActiveTab('ronda')}
-        >
-          👮‍♂️ Jadwal Ronda (Siskamling)
+        <button className={`nav-pill-btn ${activeTab === 'ronda' ? 'active' : ''}`} onClick={() => setActiveTab('ronda')}>
+          <FaUsers className="me-2"/> Ronda
+        </button>
+        <button className={`nav-pill-btn ${activeTab === 'kas' ? 'active' : ''}`} onClick={() => setActiveTab('kas')}>
+          💰 Transparansi Kas
         </button>
       </div>
 
-      {activeTab === 'kegiatan' ? (
-        <>
-          {/* Form Tambah Kegiatan */}
-          <div className="input-card">
-            <h3><span style={{color: '#6c5ce7'}}>+</span> Tambah Kegiatan Baru</h3>
-            <div className="input-grid">
-              <input type="text" placeholder="Nama Kegiatan..." className="form-input" />
-              <select className="form-input">
-                <option>Pilih Jenis...</option>
-                <option>Kebersihan</option>
-                <option>Kesehatan</option>
-                <option>Keamanan</option>
-              </select>
-              <input type="date" className="form-input" />
-              <button className="btn-publikasi">Publikasikan</button>
-            </div>
-          </div>
-
-          {/* Grid Kegiatan */}
-          <div className="kegiatan-grid">
-            {kegiatan.map((item) => (
-              <div key={item.id} className="activity-card">
-                <div className="card-accent" style={{ backgroundColor: item.warna }}></div>
-                <div className="card-content">
-                  <div className="card-header-top">
-                    <span className="activity-icon">{item.icon}</span>
-                    <span className="activity-badge" style={{ color: item.warna, backgroundColor: item.warna + '15' }}>
-                      {item.jenis}
-                    </span>
+      <div className="content-area text-start">
+        
+        {/* --- TAB 1: KEGIATAN WARGA --- */}
+        {activeTab === 'kegiatan' && (
+          <div className="fade-in">
+            <div className="card-input shadow-sm border-0 rounded-4 mb-4">
+              <div className="card-body p-4">
+                <h6 className="fw-bold mb-3"><FaPlusCircle className="text-primary me-2"/> Publikasikan Kegiatan Baru</h6>
+                <div className="row g-3">
+                  <div className="col-md-4"><input type="text" className="form-control rounded-pill" placeholder="Nama Kegiatan..." /></div>
+                  <div className="col-md-3">
+                    <select className="form-select rounded-pill">
+                      <option>Jenis...</option><option>Kebersihan</option><option>Kesehatan</option><option>Keamanan</option>
+                    </select>
                   </div>
-                  <h2 className="activity-title">{item.nama}</h2>
-                  <div className="activity-info">
-                    <p>📅 <strong>Tanggal:</strong> {item.tanggal}</p>
-                    <p>⏰ <strong>Waktu:</strong> {item.jam}</p>
-                    <p>📍 <strong>Lokasi:</strong> {item.lokasi}</p>
-                  </div>
-                  <button 
-                    className="btn-detail" 
-                    style={{ border: `2px solid ${item.warna}`, color: item.warna }}
-                    onClick={() => setSelectedKegiatan(item)}
-                  >
-                    Lihat Detail
-                  </button>
+                  <div className="col-md-3"><input type="date" className="form-control rounded-pill" /></div>
+                  <div className="col-md-2"><button className="btn btn-primary w-100 rounded-pill fw-bold">Publikasi</button></div>
                 </div>
               </div>
-            ))}
-          </div>
-        </>
-      ) : (
-        /* SEKSI JADWAL RONDA */
-        <div className="ronda-section">
-          <div className="ronda-info-card">
-            <div className="ronda-status">
-              <span className="status-dot animate-pulse"></span>
-              <strong>Status Malam Ini:</strong> Siaga Aman
             </div>
-            <p className="text-muted small">Diharapkan petugas ronda hadir 15 menit sebelum jam mulai (22:00).</p>
+            <div className="row g-4">
+              {kegiatan.map((item) => (
+                <div key={item.id} className="col-md-4">
+                  <div className="activity-card-new shadow-sm h-100">
+                    <div className="activity-top" style={{ backgroundColor: item.warna }}>
+                      <span className="icon-box">{item.icon}</span>
+                      <span className="badge-type">{item.jenis}</span>
+                    </div>
+                    <div className="activity-body p-4">
+                      <h5 className="fw-bold text-dark mb-3">{item.nama}</h5>
+                      <div className="info-item mb-2"><FaCalendarAlt className="me-2 text-muted" /> {item.tanggal}</div>
+                      <div className="info-item mb-2"><FaClock className="me-2 text-muted" /> {item.jam}</div>
+                      <div className="info-item mb-4"><FaMapMarkerAlt className="me-2 text-muted" /> <span className="small">{item.lokasi}</span></div>
+                      <button className="btn w-100 rounded-pill fw-bold" style={{ border: `2px solid ${item.warna}`, color: item.warna }} onClick={() => setSelectedKegiatan(item)}>Lihat Detail</button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
+        )}
 
-          <div className="ronda-table-container">
-            <table className="ronda-table">
-              <thead>
-                <tr>
-                  <th>Hari</th>
-                  <th>Regu</th>
-                  <th>Petugas Siskamling</th>
-                </tr>
-              </thead>
-              <tbody>
-                {jadwalRonda.map((val, index) => (
-                  <tr key={index} className={new Date().toLocaleDateString('id-ID', {weekday: 'long'}) === val.hari ? 'today-row' : ''}>
-                    <td className="day-cell">{val.hari}</td>
-                    <td className="regu-cell">
-                        <span className="badge-regu">{val.regu}</span>
-                    </td>
-                    <td className="petugas-cell">
-                      {val.petugas.map((nama, i) => (
-                        <span key={i} className="name-tag">{nama}</span>
-                      ))}
-                    </td>
+        {/* --- TAB 2: JADWAL RONDA --- */}
+        {activeTab === 'ronda' && (
+          <div className="fade-in">
+            <div className="alert-security shadow-sm border-0 p-3 rounded-4 mb-4 d-flex align-items-center justify-content-between">
+              <div className="d-flex align-items-center">
+                <div className="pulse-container me-3"><span className="pulse-dot"></span></div>
+                <span className="fw-bold">Status Keamanan Malam Ini: <span className="text-success">Siaga Aman</span></span>
+              </div>
+            </div>
+            <div className="table-responsive shadow-sm rounded-4 overflow-hidden border">
+              <table className="table table-hover align-middle mb-0">
+                <thead className="bg-light">
+                  <tr className="small text-muted text-uppercase">
+                    <th className="px-4 py-3">Hari</th><th className="py-3">Regu</th><th className="py-3">Petugas</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {jadwalRonda.map((val, index) => (
+                    <tr key={index} className={today === val.hari ? 'table-active' : ''}>
+                      <td className="px-4 fw-bold">{val.hari} {today === val.hari && <span className="badge bg-primary ms-2">Hari Ini</span>}</td>
+                      <td><span className="badge bg-dark-subtle text-dark px-3 py-2">{val.regu}</span></td>
+                      <td>
+                        <div className="d-flex flex-wrap gap-2">
+                          {val.petugas.map((nama, i) => (<span key={i} className="badge-name">{nama}</span>))}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Modal Detail (Tetap Sama) */}
+        {/* --- TAB 3: TRANSPARANSI KAS --- */}
+        {activeTab === 'kas' && (
+          <div className="fade-in">
+            <div className="row g-3 mb-4">
+              <div className="col-md-3">
+                <div className="card-stat bg-white shadow-sm p-4 rounded-4 border-0">
+                  <small className="text-muted d-block fw-bold">SALDO KAS</small>
+                  <h4 className="fw-bold text-primary mb-0">{formatRupiah(kasData?.getKasSummary?.balance || 0)}</h4>
+                </div>
+              </div>
+              <div className="col-md-3">
+                <div className="card-stat bg-white shadow-sm p-4 rounded-4 border-0">
+                  <small className="text-muted d-block fw-bold text-success">TOTAL MASUK</small>
+                  <h4 className="fw-bold text-success mb-0">+{formatRupiah(kasData?.getKasSummary?.totalIn || 0)}</h4>
+                </div>
+              </div>
+              <div className="col-md-3">
+                <div className="card-stat bg-white shadow-sm p-4 rounded-4 border-0">
+                  <small className="text-muted d-block fw-bold text-danger">TOTAL KELUAR</small>
+                  <h4 className="fw-bold text-danger mb-0">-{formatRupiah(kasData?.getKasSummary?.totalOut || 0)}</h4>
+                </div>
+              </div>
+              <div className="col-md-3">
+                <div className="card-stat bg-white shadow-sm p-4 rounded-4 border-0">
+                  <small className="text-muted d-block fw-bold">WARGA LUNAS</small>
+                  <h4 className="fw-bold text-dark mb-0">{kasData?.getKasSummary?.paidPercentage?.toFixed(0)}%</h4>
+                </div>
+              </div>
+            </div>
+            <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
+              <div className="card-header bg-white p-4 border-0"><h6 className="fw-bold mb-0"><FaHistory className="me-2 text-primary"/> Riwayat Pengeluaran Kas</h6></div>
+              <div className="table-responsive">
+                <table className="table table-hover align-middle mb-0">
+                  <thead className="table-light"><tr className="small text-muted text-uppercase">
+                    <th className="px-4">Kegiatan</th><th>Kategori</th><th>Tanggal</th><th className="text-end px-4">Jumlah</th>
+                  </tr></thead>
+                  <tbody>
+                    {kasData?.getAllExpenses?.map((ex) => (
+                      <tr key={ex.id}>
+                        <td className="px-4 fw-bold">{ex.title}</td>
+                        <td><span className="badge bg-light text-primary border">{ex.category}</span></td>
+                        <td className="text-muted small">{new Date(isNaN(ex.date) ? ex.date : Number(ex.date)).toLocaleDateString('id-ID', {day: '2-digit', month: 'long', year: 'numeric'})}</td>
+                        <td className="text-end px-4 fw-bold text-danger">- {formatRupiah(ex.amount)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* MODAL DETAIL KEGIATAN */}
       {selectedKegiatan && (
         <div className="modal-overlay" onClick={() => setSelectedKegiatan(null)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header-box" style={{ backgroundColor: selectedKegiatan.warna }}>
-              <span className="modal-icon">{selectedKegiatan.icon}</span>
-              <button className="close-btn" onClick={() => setSelectedKegiatan(null)}>&times;</button>
+          <div className="modal-content-new shadow-lg" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-top" style={{ backgroundColor: selectedKegiatan.warna }}>
+              <span className="modal-main-icon">{selectedKegiatan.icon}</span>
+              <button className="close-x" onClick={() => setSelectedKegiatan(null)}>&times;</button>
             </div>
-            <div className="modal-body">
-              <span className="modal-badge-type" style={{ color: selectedKegiatan.warna }}>{selectedKegiatan.jenis}</span>
-              <h2>{selectedKegiatan.nama}</h2>
-              <div className="modal-info-list">
-                <p>📅 <strong>Tanggal:</strong> {selectedKegiatan.tanggal}</p>
-                <p>⏰ <strong>Waktu:</strong> {selectedKegiatan.jam}</p>
-                <p>📍 <strong>Lokasi:</strong> {selectedKegiatan.lokasi}</p>
-              </div>
-              <hr />
-              <h4>Deskripsi Kegiatan:</h4>
-              <p className="modal-description-text">{selectedKegiatan.deskripsi}</p>
-              <button className="btn-modal-close" onClick={() => setSelectedKegiatan(null)}>Tutup</button>
+            <div className="p-4">
+              <h3 className="fw-bold text-dark">{selectedKegiatan.nama}</h3>
+              <p className="text-muted small mb-4">{selectedKegiatan.deskripsi}</p>
+              <button className="btn btn-secondary w-100 rounded-pill fw-bold" onClick={() => setSelectedKegiatan(null)}>Tutup</button>
             </div>
           </div>
         </div>

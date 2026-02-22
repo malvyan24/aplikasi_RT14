@@ -17,34 +17,32 @@ import {
 // Import Library
 import Select from "react-select";
 import { toast } from "react-toastify";
-import { QRCodeCanvas } from "qrcode.react";
 import { FaEdit, FaTrash, FaMoneyBillWave, FaSearch, FaRecycle, FaUsers, FaWallet } from "react-icons/fa";
 
 // IMPORT FILE CSS EKSTERNAL
 import "./Banksampah.css";
 
-// DAFTAR HARGA
+// DAFTAR HARGA BARU
 const PRICE_LIST = {
-  Plastik: 3000,
-  "Kertas/Kardus": 2000,
-  "Logam/Besi": 5000,
-  Kaca: 1000,
+  "Campuran": 1000,
+  "Botol Bersih": 3000,
+  "Kardus": 1500,
+  "Besi": 2000,
 };
 
 const BankSampah = () => {
   // --- STATE UTAMA ---
   const [selectedCitizen, setSelectedCitizen] = useState(null);
   const [berat, setBerat] = useState("");
-  const [kategori, setKategori] = useState("Plastik");
+  const [kategori, setKategori] = useState("Campuran");
 
-  // --- STATE PENCARIAN (BARU) ---
+  // --- STATE PENCARIAN ---
   const [searchTerm, setSearchTerm] = useState("");
 
   // --- STATE MODAL ---
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [withdrawFamily, setWithdrawFamily] = useState(null);
   const [withdrawAmount, setWithdrawAmount] = useState("");
-  const [qrModalFamily, setQrModalFamily] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editFamily, setEditFamily] = useState(null);
   const [editWeight, setEditWeight] = useState("");
@@ -104,11 +102,15 @@ const BankSampah = () => {
   const handleSimpan = (e) => {
     e.preventDefault();
     if (!selectedCitizen || !berat) return toast.warning("⚠️ Data belum lengkap!");
+    
+    const hargaSatuan = PRICE_LIST[kategori] || 0;
+
     addSetoran({
       variables: {
         citizenId: selectedCitizen.value,
-        berat: parseFloat(berat),
-        kategori,
+        weight: parseFloat(berat),
+        trashType: kategori,
+        pricePerKg: parseFloat(hargaSatuan)
       },
     });
   };
@@ -128,20 +130,7 @@ const BankSampah = () => {
     deleteTabungan({ variables: { familyId: deleteFamily.id } });
   };
 
-  const downloadQR = () => {
-    const canvas = document.getElementById("qr-code-large");
-    if (canvas) {
-      const pngUrl = canvas.toDataURL("image/png");
-      const downloadLink = document.createElement("a");
-      downloadLink.href = pngUrl;
-      downloadLink.download = `QR-${qrModalFamily.kepalaKeluarga}.png`;
-      document.body.appendChild(downloadLink);
-      downloadLink.click();
-      document.body.removeChild(downloadLink);
-    }
-  };
-
-  const formatRupiah = (number) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" }).format(number);
+  const formatRupiah = (number) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(number);
 
   const citizenOptions = dataCitizens?.citizens.map((c) => ({
     value: c.id,
@@ -153,7 +142,7 @@ const BankSampah = () => {
       {/* HEADER */}
       <div className="bs-main-header">
         <div className="logo-box"><FaRecycle /></div>
-        <div className="header-text">
+        <div className="header-text text-start">
           <h1>Bank Sampah & Keuangan RT</h1>
           <p>Kelola setoran sampah, tabungan, dan pencairan dana warga.</p>
         </div>
@@ -162,21 +151,21 @@ const BankSampah = () => {
       {/* STATS */}
       <div className="top-stats-row">
         <div className="card-stat card-green">
-          <div className="stat-content">
+          <div className="stat-content text-start">
             <p>Total Sampah Terkumpul</p>
             <h2>{dataStats?.sampahStats?.totalBerat?.toFixed(1) || 0} Kg</h2>
           </div>
           <FaRecycle className="stat-icon-bg" />
         </div>
         <div className="card-stat card-blue">
-          <div className="stat-content">
+          <div className="stat-content text-start">
             <p>Total Uang Warga</p>
             <h2>{formatRupiah(dataStats?.sampahStats?.totalUang || 0)}</h2>
           </div>
           <FaWallet className="stat-icon-bg" />
         </div>
         <div className="card-stat card-purple">
-          <div className="stat-content">
+          <div className="stat-content text-start">
             <p>KK Berpartisipasi</p>
             <h2>{dataStats?.sampahStats?.totalKKAktif || 0} KK</h2>
           </div>
@@ -188,7 +177,7 @@ const BankSampah = () => {
       <div className="bs-layout-grid">
         
         {/* KIRI: FORM INPUT */}
-        <div className="form-card-premium">
+        <div className="form-card-premium text-start">
           <div className="section-title-wrapper">
             <h3 className="section-title">📥 Input Setoran Baru</h3>
           </div>
@@ -239,17 +228,13 @@ const BankSampah = () => {
           </form>
         </div>
 
-        {/* KANAN: TABEL */}
-        <div className="table-container-premium">
-          
-          {/* HEADER TABEL + SEARCH BAR */}
+        {/* KANAN: TABEL (SUDAH DIHAPUS KOLOM QR) */}
+        <div className="table-container-premium text-start">
           <div className="table-header-flex">
             <div>
               <h3 className="section-title">📊 Rekapitulasi Saldo</h3>
               <p style={{margin:0, fontSize:'13px', color:'#94a3b8'}}>Data saldo terkini seluruh keluarga</p>
             </div>
-            
-            {/* FITUR PENCARIAN YANG DIMINTA */}
             <div className="search-box-wrapper">
               <FaSearch className="search-icon-pos" />
               <input 
@@ -267,7 +252,6 @@ const BankSampah = () => {
               <thead>
                 <tr>
                   <th>Kepala Keluarga</th>
-                  <th className="text-center">QR</th>
                   <th className="text-center">Berat Total</th>
                   <th className="text-end">Saldo (Rp)</th>
                   <th className="text-center">Aksi</th>
@@ -280,11 +264,6 @@ const BankSampah = () => {
                       <td>
                         <div style={{fontWeight:'bold'}}>{family.kepalaKeluarga}</div>
                         <div style={{fontSize:'12px', color:'#94a3b8'}}>{family.noKK}</div>
-                      </td>
-                      <td className="text-center">
-                        <div className="qr-code-box" onClick={() => setQrModalFamily(family)} style={{margin:'auto'}}>
-                          <QRCodeCanvas value={family.qrCode || "-"} size={28} />
-                        </div>
                       </td>
                       <td className="text-center" style={{fontWeight:'bold', color:'#3b82f6'}}>
                         {family.totalTabungan || 0} Kg
@@ -309,7 +288,7 @@ const BankSampah = () => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="5" className="text-center" style={{padding:'40px', color:'#94a3b8'}}>
+                    <td colSpan="4" className="text-center" style={{padding:'40px', color:'#94a3b8'}}>
                       Data tidak ditemukan.
                     </td>
                   </tr>
@@ -320,7 +299,7 @@ const BankSampah = () => {
         </div>
       </div>
 
-      {/* --- MODAL EDIT --- */}
+      {/* MODAL EDIT */}
       {showEditModal && (
         <div className="modal-overlay" style={modalStyles.overlay}>
           <div className="modal-content" style={modalStyles.content}>
@@ -335,7 +314,7 @@ const BankSampah = () => {
         </div>
       )}
 
-      {/* --- MODAL WITHDRAW --- */}
+      {/* MODAL WITHDRAW */}
       {showWithdrawModal && (
         <div className="modal-overlay" style={modalStyles.overlay}>
           <div className="modal-content" style={modalStyles.content}>
@@ -350,7 +329,7 @@ const BankSampah = () => {
         </div>
       )}
 
-      {/* --- MODAL DELETE --- */}
+      {/* MODAL DELETE */}
       {showDeleteModal && (
         <div className="modal-overlay" style={modalStyles.overlay}>
           <div className="modal-content" style={modalStyles.content}>
@@ -364,25 +343,10 @@ const BankSampah = () => {
         </div>
       )}
 
-      {/* --- MODAL QR --- */}
-      {qrModalFamily && (
-        <div className="modal-overlay" style={{...modalStyles.overlay, zIndex:2000}} onClick={() => setQrModalFamily(null)}>
-          <div className="modal-content" style={{...modalStyles.content, textAlign:'center'}} onClick={e => e.stopPropagation()}>
-            <h3>QR Code Warga</h3>
-            <p>{qrModalFamily.kepalaKeluarga}</p>
-            <div style={{margin:'20px auto', display:'inline-block', padding:'10px', border:'1px dashed #ccc'}}>
-              <QRCodeCanvas id="qr-code-large" value={qrModalFamily.qrCode || "-"} size={200} />
-            </div>
-            <button onClick={downloadQR} className="btn-save-main">Download QR</button>
-          </div>
-        </div>
-      )}
-
     </div>
   );
 };
 
-// Simple inline style for modals (karena modal butuh dynamic display kadang)
 const modalStyles = {
   overlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 },
   content: { background: 'white', padding: '30px', borderRadius: '20px', width: '400px', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' },

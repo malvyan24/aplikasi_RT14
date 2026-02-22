@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useMutation, gql } from '@apollo/client';
 import Swal from 'sweetalert2';
-import './Login.css'; // Pastikan CSS diimport di sini
+import './Login.css'; 
 
+// Mutation disesuaikan dengan AuthPayload di BE
 const LOGIN_USER = gql`
   mutation Login($username: String!, $password: String!) {
     login(username: $username, password: $password) {
@@ -21,37 +22,55 @@ const Login = ({ setToken }) => {
 
   const [login, { loading }] = useMutation(LOGIN_USER, {
     onCompleted: (data) => {
-      const token = data.login.token;
+      // Mengambil data dari payload login
+      const { token, user } = data.login;
+
+      // Simpan data ke LocalStorage untuk menjaga sesi tetap aktif
       localStorage.setItem('authToken', token);
-      localStorage.setItem('user', data.login.user.username);
+      localStorage.setItem('user', user.username);
+      localStorage.setItem('userRole', user.role);
+      
+      // Update state token di App.js
       setToken(token);
       
       Swal.fire({
         icon: 'success',
         title: 'Selamat Datang!',
-        text: `Halo, Pak ${data.login.user.username}`,
+        text: `Halo, Pak ${user.username}`,
         showConfirmButton: false,
         timer: 1500
+      }).then(() => {
+        // Refresh kecil untuk memastikan semua komponen mendapat state terbaru
+        window.location.reload(); 
       });
     },
     onError: (error) => {
+      // Menampilkan pesan error asli dari Backend (misal: "User tidak ditemukan")
       Swal.fire({
         icon: 'error',
         title: 'Akses Ditolak',
-        text: 'Username atau Password salah!',
+        text: error.message || 'Username atau Password salah!',
       });
     }
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    login({ variables: { username, password } });
+    
+    // Normalisasi: Kirim username dengan huruf kecil agar cocok dengan database
+    login({ 
+      variables: { 
+        username: username.trim().toLowerCase(), 
+        password: password 
+      } 
+    });
   };
 
   return (
     <div className="login-wrapper">
       <div className="login-card">
         <div className="login-header">
+          {/* Pastikan path logo benar sesuai folder public Kakak */}
           <img src="/image/logoSiRT.png" alt="Logo" className="app-logo" />
           <h2>Layanan Digital RT 14</h2>
           <p>Silakan masuk untuk mengelola data warga</p>
@@ -62,10 +81,11 @@ const Login = ({ setToken }) => {
             <label>Username</label>
             <input
               type="text"
-              placeholder="Masukkan username Anda"
+              placeholder="Masukkan username (adminrt14)"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
+              autoComplete="username"
             />
           </div>
           
@@ -77,6 +97,7 @@ const Login = ({ setToken }) => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              autoComplete="current-password"
             />
           </div>
           

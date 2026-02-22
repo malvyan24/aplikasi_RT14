@@ -1,6 +1,5 @@
 import { gql } from '@apollo/client';
 
-// 1. KELUARGA (KK)
 export const CREATE_FAMILY = gql`
   mutation CreateFamily($kepalaKeluarga: String!, $noKK: String!, $address: String!, $ownershipStatus: String) {
     createFamily(kepalaKeluarga: $kepalaKeluarga, noKK: $noKK, address: $address, ownershipStatus: $ownershipStatus) {
@@ -20,13 +19,13 @@ export const UPDATE_FAMILY = gql`
   }
 `;
 
+// PERBAIKAN: Namanya diubah menjadi DELETE_FAMILY agar tidak error di komponen
 export const DELETE_FAMILY = gql`
   mutation DeleteFamily($id: ID!) {
     deleteFamily(id: $id)
   }
 `;
 
-// 2. ANGGOTA KELUARGA (WARGA)
 export const ADD_CITIZEN = gql`
   mutation AddCitizen(
     $familyId: ID!, 
@@ -38,9 +37,9 @@ export const ADD_CITIZEN = gql`
     $profession: String!, 
     $placeOfBirth: String!, 
     $dateOfBirth: String!, 
-    $relationship: String!,
-    $phone: String,       # TAMBAHAN BARU
-    $insurance: String    # TAMBAHAN BARU
+    $relationship: String,
+    $phone: String,
+    $insurance: String
   ) {
     addCitizen(
       familyId: $familyId, 
@@ -53,8 +52,8 @@ export const ADD_CITIZEN = gql`
       placeOfBirth: $placeOfBirth, 
       dateOfBirth: $dateOfBirth, 
       relationship: $relationship,
-      phone: $phone,           # TAMBAHAN BARU
-      insurance: $insurance    # TAMBAHAN BARU
+      phone: $phone,
+      insurance: $insurance
     ) {
       id
       name
@@ -64,7 +63,6 @@ export const ADD_CITIZEN = gql`
   }
 `;
 
-// --- NEW: UPDATE ANGGOTA ---
 export const UPDATE_CITIZEN = gql`
   mutation UpdateCitizen(
     $id: ID!, 
@@ -73,8 +71,8 @@ export const UPDATE_CITIZEN = gql`
     $gender: String, 
     $relationship: String, 
     $dateOfBirth: String,
-    $phone: String,       # TAMBAHAN BARU
-    $insurance: String    # TAMBAHAN BARU
+    $phone: String,
+    $insurance: String
   ) {
     updateCitizen(
       id: $id, 
@@ -83,8 +81,8 @@ export const UPDATE_CITIZEN = gql`
       gender: $gender, 
       relationship: $relationship, 
       dateOfBirth: $dateOfBirth,
-      phone: $phone,           # TAMBAHAN BARU
-      insurance: $insurance    # TAMBAHAN BARU
+      phone: $phone,
+      insurance: $insurance
     ) {
       id
       name
@@ -94,7 +92,6 @@ export const UPDATE_CITIZEN = gql`
   }
 `;
 
-// --- NEW: HAPUS ANGGOTA ---
 export const DELETE_CITIZEN = gql`
   mutation DeleteCitizen($id: ID!) {
     deleteCitizen(id: $id)
