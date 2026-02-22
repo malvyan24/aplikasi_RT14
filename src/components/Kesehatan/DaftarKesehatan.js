@@ -1,207 +1,99 @@
 import React, { useState } from "react";
 import { useQuery, useMutation } from "@apollo/client";
 import { GET_ALL_HEALTH_RECORDS } from "../../graphql/healthQueries";
-import {
-  DELETE_HEALTH_RECORD,
-  UPDATE_HEALTH_RECORD,
-} from "../../graphql/healthMutations";
-import { FaTrash, FaEdit, FaSave, FaTimes } from "react-icons/fa";
+import { DELETE_HEALTH_RECORD } from "../../graphql/healthMutations";
+import { FaTrash, FaEdit, FaHistory, FaFileMedicalAlt, FaFemale } from "react-icons/fa";
 
 const DaftarKesehatan = ({ searchTerm }) => {
-  const [editRecord, setEditRecord] = useState(null);
-  const { data, loading } = useQuery(GET_ALL_HEALTH_RECORDS, {
-    pollInterval: 3000,
-  });
+  const [historyWarga, setHistoryWarga] = useState(null);
+  const { data, loading } = useQuery(GET_ALL_HEALTH_RECORDS, { pollInterval: 3000 });
+  const [deleteRecord] = useMutation(DELETE_HEALTH_RECORD, { refetchQueries: [{ query: GET_ALL_HEALTH_RECORDS }] });
 
-  const [deleteRecord] = useMutation(DELETE_HEALTH_RECORD, {
-    refetchQueries: [{ query: GET_ALL_HEALTH_RECORDS }],
-  });
+  if (loading) return <div className="p-4 text-center">Menyinkronkan data...</div>;
 
-  const [updateRecord] = useMutation(UPDATE_HEALTH_RECORD, {
-    refetchQueries: [{ query: GET_ALL_HEALTH_RECORDS }],
-    onCompleted: () => {
-      alert("Data Berhasil Diperbarui!");
-      setEditRecord(null);
-    },
-  });
-
-  if (loading)
-    return <div className="p-4 text-center">Menyinkronkan data...</div>;
-
-  const filteredData =
-    data?.getAllHealthRecords?.filter((h) =>
-      h.citizen?.name.toLowerCase().includes(searchTerm.toLowerCase()),
-    ) || [];
+  const allRecords = data?.getAllHealthRecords || [];
+  
+  // Tampilkan data UNIK per warga di tabel depan (ambil yang terbaru)
+  const filteredData = Array.from(new Set(allRecords.map(r => r.citizen?.id)))
+    .map(id => allRecords.find(r => r.citizen?.id === id))
+    .filter((h) => h.citizen?.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
-    <div className="table-responsive bg-white rounded-4 shadow-sm border overflow-hidden">
+    <div className="table-responsive bg-white rounded-4 shadow-sm border overflow-hidden mt-3 text-start">
       <table className="table table-hover mb-0 align-middle">
         <thead className="table-pink">
-          <tr>
-            <th className="ps-4 py-3">NAMA WARGA</th>
+          <tr style={{fontSize:'0.85rem'}}>
+            <th className="ps-4 py-3">NAMA & UMUR</th>
             <th className="text-center">TANGGAL</th>
-            <th className="text-center">GOL</th>
             <th className="text-center">KONDISI</th>
+            <th className="text-center">HASIL CEK</th>
             <th>KETERANGAN</th>
             <th className="text-center">AKSI</th>
           </tr>
         </thead>
         <tbody>
           {filteredData.map((h) => (
-            <tr key={h.id}>
+            <tr key={h.id} style={{fontSize:'0.9rem'}}>
               <td className="ps-4">
                 <div className="fw-bold">{h.citizen?.name}</div>
-                <small className="text-muted">{h.citizen?.nik}</small>
+                {h.isPregnant && <span className="badge bg-primary-light text-primary small p-1 rounded-circle"><FaFemale size={10}/></span>}
+                <small className="text-muted">{h.citizen?.nik} • <span className="text-primary fw-bold">3 Thn</span></small>
               </td>
-              <td className="text-center small">
-                {new Date(parseInt(h.createdAt)).toLocaleDateString("id-ID")}
+              <td className="text-center text-muted small fw-bold">
+                {new Date(parseInt(h.createdAt)).toLocaleDateString("id-ID", { day: '2-digit', month: 'short', year: 'numeric' })}
               </td>
-              <td className="text-center fw-bold">{h.bloodType}</td>
               <td className="text-center">
-                <span
-                  className={`badge-pill ${h.healthStatus === "DARURAT" ? "b-darurat" : h.healthStatus === "PANTAUAN" ? "b-pantau" : "b-sehat"}`}
-                >
-                  {h.healthStatus}
-                </span>
+                <span className={`badge-pill ${h.healthStatus === 'DARURAT' ? 'b-darurat' : 'b-sehat'}`}>{h.healthStatus}</span>
+                <div className="small fw-bold mt-2 text-muted">Gol: {h.bloodType}</div>
               </td>
-              <td className="small">{h.notes || "-"}</td>
               <td className="text-center">
-                <button
-                  className="btn btn-sm btn-outline-warning me-2 border-0"
-                  onClick={() => setEditRecord(h)}
-                >
-                  <FaEdit />
-                </button>
-                <button
-                  className="btn btn-sm btn-outline-danger border-0"
-                  onClick={() =>
-                    window.confirm("Hapus riwayat ini?") &&
-                    deleteRecord({ variables: { id: h.id } })
-                  }
-                >
-                  <FaTrash />
-                </button>
+                <div className="small fw-bold text-muted">TB: {h.height} cm | BB: {h.weight} kg</div>
+                <div className="small fw-bold text-danger mt-1">Tensi: {h.bloodPressure} | Gula: {h.bloodSugar}</div>
+              </td>
+              <td className="small text-muted">
+                {h.isPregnant && <div className="text-primary fw-bold mb-1">HPL: 21/2/2026</div>}
+                {h.notes || "-"}
+              </td>
+              <td className="text-center">
+                <div className="d-flex justify-content-center gap-1">
+                  <button className="btn btn-sm btn-outline-primary border-0" onClick={() => setHistoryWarga({ name: h.citizen?.name, records: allRecords.filter(r => r.citizen?.id === h.citizen?.id).sort((a,b)=>parseInt(b.createdAt)-parseInt(a.createdAt)) })}>
+                    <FaHistory size={16} />
+                  </button>
+                  <button className="btn btn-sm btn-outline-warning border-0"><FaEdit size={16} /></button>
+                  <button className="btn btn-sm btn-outline-danger border-0" onClick={() => window.confirm("Hapus?") && deleteRecord({variables:{id:h.id}})}><FaTrash size={16} /></button>
+                </div>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
 
-      {/* MODAL EDIT RIWAYAT */}
-      {editRecord && (
-        <div
-          className="modal show d-block p-4"
-          style={{
-            backgroundColor: "rgba(0,0,0,0.6)",
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            zIndex: 1060,
-          }}
-        >
-          <div className="modal-dialog modal-dialog-centered">
+      {/* MODAL TRACK RECORD (Tampilan image_260658) */}
+      {historyWarga && (
+        <div className="modal show d-block" style={{ backgroundColor: "rgba(0,0,0,0.7)", position: "fixed", top: 0, left: 0, width: "100%", height: "100%", zIndex: 1070 }}>
+          <div className="modal-dialog modal-dialog-centered modal-lg">
             <div className="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-              <div className="modal-header bg-primary text-white py-3 border-0">
-                <h5 className="mb-0 fw-bold">
-                  <FaEdit className="me-2" /> Edit Riwayat Pemeriksaan
-                </h5>
-                <button
-                  type="button"
-                  className="btn-close btn-close-white"
-                  onClick={() => setEditRecord(null)}
-                ></button>
+              <div className="modal-header bg-dark text-white border-0 py-3">
+                <h5 className="mb-0 fw-bold d-flex align-items-center"><FaFileMedicalAlt className="me-2 text-info"/> Track Record: {historyWarga.name}</h5>
+                <button type="button" className="btn-close btn-close-white" onClick={() => setHistoryWarga(null)}></button>
               </div>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  updateRecord({
-                    variables: {
-                      id: editRecord.id,
-                      healthStatus: editRecord.healthStatus,
-                      bloodType: editRecord.bloodType,
-                      notes: editRecord.notes,
-                    },
-                  });
-                }}
-              >
-                <div className="modal-body p-4 bg-white">
-                  <p className="small text-muted mb-3">
-                    Mengedit data untuk:{" "}
-                    <strong>{editRecord.citizen?.name}</strong>
-                  </p>
-                  <div className="mb-3">
-                    <label className="small fw-bold text-muted mb-2">
-                      Kondisi
-                    </label>
-                    <select
-                      className="form-select"
-                      value={editRecord.healthStatus}
-                      onChange={(e) =>
-                        setEditRecord({
-                          ...editRecord,
-                          healthStatus: e.target.value,
-                        })
-                      }
-                    >
-                      <option value="SEHAT">SEHAT</option>
-                      <option value="PANTAUAN">PANTAUAN</option>
-                      <option value="DARURAT">DARURAT</option>
-                    </select>
-                  </div>
-                  <div className="mb-3">
-                    <label className="small fw-bold text-muted mb-2">
-                      Gol. Darah
-                    </label>
-                    <select
-                      className="form-select"
-                      value={editRecord.bloodType}
-                      onChange={(e) =>
-                        setEditRecord({
-                          ...editRecord,
-                          bloodType: e.target.value,
-                        })
-                      }
-                    >
-                      <option value="A">A</option>
-                      <option value="B">B</option>
-                      <option value="AB">AB</option>
-                      <option value="O">O</option>
-                    </select>
-                  </div>
-                  <div className="mb-3">
-                    <label className="small fw-bold text-muted mb-2">
-                      Keterangan
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={editRecord.notes}
-                      onChange={(e) =>
-                        setEditRecord({ ...editRecord, notes: e.target.value })
-                      }
-                    />
-                  </div>
-                </div>
-                <div className="modal-footer d-flex justify-content-between p-3 border-0">
-                  <button
-                    type="button"
-                    className="btn btn-secondary px-4 fw-bold rounded-3"
-                    onClick={() => setEditRecord(null)}
-                  >
-                    <FaTimes className="me-2" />
-                    Batal
-                  </button>
-                  <button
-                    type="submit"
-                    className="btn btn-primary px-4 fw-bold shadow-sm rounded-3"
-                  >
-                    <FaSave className="me-2" />
-                    Update Riwayat
-                  </button>
-                </div>
-              </form>
+              <div className="modal-body p-0" style={{maxHeight:'60vh', overflowY:'auto'}}>
+                <table className="table table-striped mb-0 text-center small">
+                  <thead className="table-light sticky-top">
+                    <tr><th>TANGGAL</th><th>BB (kg)</th><th>TB (cm)</th><th>STATUS</th><th>CATATAN</th></tr>
+                  </thead>
+                  <tbody>
+                    {historyWarga.records.map(r => (
+                      <tr key={r.id}>
+                        <td className="fw-bold">{new Date(parseInt(r.createdAt)).toLocaleDateString('id-ID')}</td>
+                        <td className="text-primary fw-bold">{r.weight}</td><td className="text-danger fw-bold">{r.height}</td>
+                        <td><span className="badge bg-success">{r.healthStatus}</span></td>
+                        <td className="text-start">{r.notes}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>

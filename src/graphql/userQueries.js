@@ -17,11 +17,13 @@ export const GET_WARGA = gql`
         name
         nik
         gender
-        placeOfBirth  # WAJIB ADA
-        dateOfBirth   # WAJIB ADA (Agar umur bisa dihitung)
+        placeOfBirth  
+        dateOfBirth   
         religion
         profession
         relationship
+        phone       # TAMBAHAN BARU
+        insurance   # TAMBAHAN BARU
       }
     }
   }
@@ -36,7 +38,9 @@ export const GET_ALL_CITIZENS = gql`
       nik
       gender
       placeOfBirth
-      dateOfBirth     # WAJIB ADA
+      dateOfBirth     
+      phone         # TAMBAHAN BARU
+      insurance     # TAMBAHAN BARU
       family {
         id
         noKK

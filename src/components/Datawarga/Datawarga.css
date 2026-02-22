@@ -1,160 +1,236 @@
-/* ===== DATA WARGA CSS FINAL FIX (ULTIMATE) ===== */
+/* =========================================
+   DASHBOARD DATA WARGA - PROFESSIONAL STYLE
+   ========================================= */
 
+/* 1. Reset & Global Base */
 .dw-page {
-  padding: 20px 30px;
-  background-color: #f4f7fe;
+  padding: 32px; /* Padding lebih luas agar konten "bernafas" */
+  background-color: #f8faff; /* Biru sangat muda yang bersih */
   min-height: 100vh;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  color: #2d3748;
 }
 
-/* CARDS STATISTIK */
+/* 2. Tata Letak Grid (Statistik) */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 -12px; /* Menetralkan padding kolom */
+}
+
+.col-md-6 {
+  flex: 0 0 50%;
+  max-width: 500px; /* Batasi lebar maksimal kartu statistik */
+  padding: 0 12px;
+  margin-bottom: 24px;
+}
+
+/* 3. Cards Statistik Professional */
 .warga-card {
   border: none;
-  border-radius: 15px;
+  border-radius: 16px; /* Sudut lebih lembut */
   overflow: hidden;
   position: relative;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-  transition: transform 0.2s;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 160px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 32px;
 }
-.warga-card:hover { transform: translateY(-5px); }
-.gradient-blue { background: linear-gradient(135deg, #0d6efd, #0dcaf0); }
-.gradient-green { background: linear-gradient(135deg, #198754, #20c997); }
 
-/* INPUT & TOMBOL */
+.warga-card.cursor-pointer { cursor: pointer; }
+
+/* Efek Hover Kartu */
+.warga-card.hover-effect:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.gradient-blue { background: linear-gradient(135deg, #3182ce, #63b3ed); }
+.gradient-green { background: linear-gradient(135deg, #38a169, #68d391); }
+
+/* Ikon Latar Belakang Kartu */
+.card-bg-icon {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  font-size: 5rem;
+  opacity: 0.12;
+  color: #fff;
+  pointer-events: none;
+}
+
+/* 4. Toolbar (Search & Buttons) */
+.d-flex.justify-content-between {
+  margin-top: 8px;
+  margin-bottom: 32px;
+  gap: 20px;
+}
+
+/* Input Pencarian */
 .dw-input {
-  border: 1px solid #e0e5f2;
-  border-radius: 8px;
-  padding: 12px 15px; /* Padding lebih besar biar enak ngetik */
-  font-size: 14px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 14px 16px 14px 44px; /* Space untuk ikon search */
+  font-size: 15px;
   width: 100%;
-  box-sizing: border-box;
+  background-color: #ffffff;
+  transition: all 0.2s ease-in-out;
+  color: #4a5568;
+}
+
+.dw-input:focus {
+  border-color: #4299e1;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
   background-color: #fff;
 }
-.dw-input:focus {
-  border-color: #0d6efd;
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.1);
-}
-.btn-warga-primary {
-  background-color: #ff4757; 
-  border: none;
-  border-radius: 8px;
-  padding: 12px 20px;
-  font-weight: 600;
-  color: white;
-  width: 100%;
-  cursor: pointer;
-  transition: 0.2s;
-}
-.btn-warga-primary:hover { background-color: #e8414f; }
 
-/* TABEL UTAMA */
+/* Tombol Primary (Tambah KK) */
+.btn-warga-primary {
+  background-color: #eb4d4b;
+  border: none;
+  border-radius: 12px;
+  padding: 0 28px;
+  height: 52px; /* Tinggi sama dengan input */
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px rgba(235, 77, 75, 0.2);
+}
+
+.btn-warga-primary:hover {
+  background-color: #d63031;
+  transform: translateY(-2px);
+  box-shadow: 0 7px 14px rgba(235, 77, 75, 0.3);
+}
+
+/* 5. Kontainer Tabel Utama */
 .table-warga-container {
   background: white;
-  border-radius: 15px;
-  padding: 20px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.03);
-  margin-top: 20px;
-  overflow-x: auto;
+  border-radius: 16px;
+  padding: 0; /* Header tabel menempel ke atas */
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  border: 1px solid #edf2f7;
 }
+
 .table-warga-header th {
-  font-size: 12px;
-  font-weight: 800;
+  font-size: 13px;
+  font-weight: 700;
   text-transform: uppercase;
-  color: #a3aed0;
-  border-bottom: 2px solid #f0f0f0;
-  padding: 15px;
-  white-space: nowrap;
+  letter-spacing: 0.05em;
+  color: #718096;
+  border-bottom: 1px solid #edf2f7;
+  padding: 20px 24px;
+  background-color: #f7fafc;
 }
-.badge-pill { padding: 5px 12px; border-radius: 30px; font-size: 11px; font-weight: 700; }
-.badge-owned { background: #E6FFFA; color: #047857; }
-.badge-rent { background: #FFFAF0; color: #C05621; }
 
-/* TOMBOL AKSI */
+.table tbody td {
+  padding: 18px 24px;
+  vertical-align: middle;
+  border-bottom: 1px solid #f7fafc;
+  font-size: 15px;
+}
+
+.table-hover tbody tr:hover {
+  background-color: #f8faff;
+}
+
+/* Tombol Aksi Lingkaran */
 .btn-action-circle {
-  width: 32px; height: 32px;
-  border-radius: 50%;
-  display: inline-flex; align-items: center; justify-content: center;
-  border: 1px solid #eee; background: white;
-  margin: 0 3px; cursor: pointer; transition: 0.2s;
-}
-.btn-action-circle:hover { transform: scale(1.15); border-color: #ccc; }
-
-/* --- MODAL FIX (SOLUSI LAYAR KEPOTONG) --- */
-.modal-overlay {
-  position: fixed; 
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.7);
-  z-index: 9999;
-  
-  /* INI KUNCINYA AGAR TIDAK KEPOTONG: */
-  overflow-y: auto; /* Biarkan overlay discroll */
-  padding: 40px 20px; /* Beri jarak atas bawah */
-  display: flex;
-  align-items: flex-start; /* Mulai dari atas, bukan tengah */
+  width: 40px;
+  height: 40px;
+  border-radius: 10px; /* Square rounded lebih modern dari bulat sempurna */
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
+  border: 1.5px solid #edf2f7;
+  background: #fff;
+  margin: 0 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-action-circle:hover {
+  border-color: #cbd5e0;
+  background-color: #f7fafc;
+  transform: translateY(-2px);
+}
+
+.text-primary { color: #3182ce !important; }
+.text-warning { color: #d69e2e !important; }
+.text-danger { color: #e53e3e !important; }
+
+/* 6. Modal System */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(26, 32, 44, 0.7); /* Overlay lebih gelap & elegan */
+  backdrop-filter: blur(6px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
 }
 
 .modal-container {
-  position: relative;
   background: white;
-  border-radius: 15px;
+  border-radius: 20px;
   width: 100%;
-  margin: auto; /* Otomatis tengah jika layar cukup, scroll jika tidak */
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
-  display: flex; flex-direction: column;
+  max-height: 85vh;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalPop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-/* Ukuran Modal */
-.modal-small { max-width: 500px; }
-.modal-large { max-width: 900px; } 
-
 .modal-header-blue {
-  background: #0d6efd; color: white;
-  padding: 20px 30px;
-  display: flex; justify-content: space-between; align-items: center;
-  border-top-left-radius: 15px;
-  border-top-right-radius: 15px;
+  background: #2d3748; /* Header gelap lebih professional */
+  color: white;
+  padding: 24px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .modal-body {
-  padding: 30px;
-  background: #f8f9fa;
+  padding: 32px;
+  overflow-y: auto;
+  background-color: #fff;
 }
 
-/* FORM CARD RAPI */
-.form-card {
-  background: white;
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-  border: 1px solid #eee;
-  margin-bottom: 25px;
-}
-
-/* GRID FORM BARU (2 Baris - Lega) */
-.custom-form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr; /* 3 Kolom */
-  gap: 20px; /* Jarak antar input */
-}
-
-/* Baris bawah tombol full width atau menyesuaikan */
-.full-width-col {
-  grid-column: 1 / -1; /* Mengambil semua kolom */
-}
-
+/* 7. Responsive Fixes */
 @media (max-width: 768px) {
-  .custom-form-grid { grid-template-columns: 1fr; } /* Mobile 1 kolom */
-}
+  .dw-page { padding: 20px; }
+  
+  .col-md-6 {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
 
-/* ... css lainnya di atas ... */
+  .d-flex.justify-content-between {
+    flex-direction: column;
+    align-items: stretch;
+  }
 
-/* --- FIX: AGAR POP-UP ALERT MUNCUL DI ATAS MODAL --- */
-.swal2-container {
-  z-index: 20000 !important; /* Harus lebih besar dari 9999 */
-}
+  .btn-warga-primary {
+    width: 100%;
+  }
 
-.swal2-popup {
-  font-size: 14px !important; /* Opsional: Agar teks pas */
+  /* Sembunyikan kolom yang kurang penting di mobile */
+  .table-warga-header th:nth-child(3),
+  .table tbody td:nth-child(3) {
+    display: none;
+  }
 }

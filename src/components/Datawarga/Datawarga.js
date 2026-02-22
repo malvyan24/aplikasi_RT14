@@ -1,133 +1,113 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
-import * as XLSX from 'xlsx'; // IMPORT LIBRARY EXCEL
+import * as XLSX from 'xlsx'; 
 import { GET_WARGA } from '../../graphql/userQueries';
 import { CREATE_FAMILY, DELETE_FAMILY, ADD_CITIZEN, UPDATE_FAMILY, UPDATE_CITIZEN, DELETE_CITIZEN } from '../../graphql/userMutations';
-import { FaEye, FaEdit, FaTrash, FaUserPlus, FaUsers, FaIdCard, FaSearch, FaTimes, FaSave, FaUndo, FaFileExcel } from 'react-icons/fa'; // Tambah Icon Excel
+import { FaEye, FaEdit, FaTrash, FaUserPlus, FaUsers, FaIdCard, FaSearch, FaTimes, FaSave, FaUndo, FaWhatsapp, FaInfoCircle, FaListUl } from 'react-icons/fa'; 
 import Swal from 'sweetalert2'; 
 import './Datawarga.css';
 
+// Fungsi global agar SweetAlert selalu tampil paling depan
+const fireSwal = (options) => {
+  return Swal.fire({
+    ...options,
+    didOpen: () => {
+      const swalContainer = document.querySelector('.swal2-container');
+      if (swalContainer) swalContainer.style.zIndex = '999999';
+    }
+  });
+};
+
 const DataWarga = () => {
-  // --- STATE ---
+  // --- 1. STATES ---
   const [searchTerm, setSearchTerm] = useState('');
-  
-  // Modals
+  const [searchWargaTerm, setSearchWargaTerm] = useState('');
   const [selectedFamilyId, setSelectedFamilyId] = useState(null); 
+  
   const [showAddKKModal, setShowAddKKModal] = useState(false);
   const [showEditKKModal, setShowEditKKModal] = useState(false);
+  const [showSearchWargaModal, setShowSearchWargaModal] = useState(false);
+  const [showAllKKModal, setShowAllKKModal] = useState(false);
+  
+  const [selectedCitizenDetail, setSelectedCitizenDetail] = useState(null);
 
-  // Forms
   const [newKK, setNewKK] = useState({ kepalaKeluarga: '', noKK: '', address: '', ownershipStatus: 'OWNED' });
   const [editKK, setEditKK] = useState({ id: '', kepalaKeluarga: '', noKK: '', address: '', ownershipStatus: '' });
-  const [memberForm, setMemberForm] = useState({ id: null, name: '', nik: '', relationship: 'Anak', dateOfBirth: '', gender: 'L' });
+  
+  const [memberForm, setMemberForm] = useState({ 
+    id: null, name: '', nik: '', relationship: 'Anak', dateOfBirth: '', gender: 'L', 
+    phone: '', insurance: 'BPJS Mandiri' 
+  });
   const [isEditingMember, setIsEditingMember] = useState(false);
 
-  // --- QUERY ---
+  // --- 2. DATA FETCHING ---
   const { data, loading, error, refetch } = useQuery(GET_WARGA, {
     pollInterval: 0,
     fetchPolicy: "network-only"
   });
 
+  // --- 3. MUTATIONS ---
+  const [createFamily] = useMutation(CREATE_FAMILY, { onCompleted: () => { fireSwal({title:'Sukses', text:'KK Dibuat!', icon:'success'}); setShowAddKKModal(false); refetch(); }});
+  const [updateFamily] = useMutation(UPDATE_FAMILY, { onCompleted: () => { fireSwal({title:'Berhasil', text:'KK Diperbarui!', icon:'success'}); setShowEditKKModal(false); refetch(); }});
+  const [deleteFamily] = useMutation(DELETE_FAMILY, { onCompleted: () => { fireSwal({title:'Terhapus!', text:'KK dihapus.', icon:'success'}); refetch(); }});
+  const [addCitizen] = useMutation(ADD_CITIZEN, { onCompleted: () => { refetch(); resetMemberForm(); }});
+  const [updateCitizen] = useMutation(UPDATE_CITIZEN, { onCompleted: () => { refetch(); resetMemberForm(); }});
+  const [deleteCitizen] = useMutation(DELETE_CITIZEN, { onCompleted: () => { refetch(); }});
+
+  // --- 4. LOGIKA DATA ---
+  const allCitizens = data?.families.flatMap(fam => 
+    fam.members.map(m => ({ ...m, familyName: fam.kepalaKeluarga, familyNoKK: fam.noKK, familyId: fam.id }))
+  ) || [];
+
+  const filteredFamilies = data?.families.filter(f => {
+    const s = searchTerm.toLowerCase();
+    return f.kepalaKeluarga.toLowerCase().includes(s) || f.noKK.includes(s) || (f.address && f.address.toLowerCase().includes(s));
+  }).sort((a, b) => b.id.localeCompare(a.id));
+
+  const displayFamilies = filteredFamilies?.slice(0, 10);
   const selectedFamily = selectedFamilyId ? data?.families.find(f => f.id === selectedFamilyId) : null;
 
-  // --- MUTATIONS (SAMA SEPERTI SEBELUMNYA) ---
-  const [createFamily] = useMutation(CREATE_FAMILY, {
-    onCompleted: () => { Swal.fire('Sukses', 'KK berhasil dibuat!', 'success'); setShowAddKKModal(false); setNewKK({ kepalaKeluarga: '', noKK: '', address: '', ownershipStatus: 'OWNED' }); refetch(); },
-    onError: (err) => Swal.fire('Gagal', err.message, 'error')
-  });
+  const filteredCitizens = allCitizens.filter(c => 
+    c.name.toLowerCase().includes(searchWargaTerm.toLowerCase()) || c.nik.includes(searchWargaTerm)
+  ).slice(0, 15);
 
-  const [updateFamily] = useMutation(UPDATE_FAMILY, {
-    onCompleted: () => { Swal.fire('Berhasil', 'KK diperbarui!', 'success'); setShowEditKKModal(false); refetch(); },
-    onError: (err) => Swal.fire('Gagal', err.message, 'error')
-  });
-
-  const [deleteFamily] = useMutation(DELETE_FAMILY, {
-    onCompleted: () => { Swal.fire('Terhapus!', 'KK dihapus.', 'success'); refetch(); },
-    onError: (err) => Swal.fire('Gagal', err.message, 'error')
-  });
-
-  const [addCitizen] = useMutation(ADD_CITIZEN, {
-    onCompleted: async () => { await refetch(); Swal.fire('Sukses', 'Anggota ditambahkan!', 'success'); resetMemberForm(); },
-    onError: (err) => Swal.fire('Gagal Tambah', err.message, 'error')
-  });
-
-  const [updateCitizen] = useMutation(UPDATE_CITIZEN, {
-    onCompleted: async () => { await refetch(); Swal.fire('Berhasil', 'Data Anggota diupdate!', 'success'); resetMemberForm(); },
-    onError: (err) => Swal.fire('Gagal Update', err.message, 'error')
-  });
-
-  const [deleteCitizen] = useMutation(DELETE_CITIZEN, {
-    onCompleted: async () => { await refetch(); Swal.fire('Terhapus', 'Anggota dihapus.', 'success'); },
-    onError: (err) => Swal.fire('Gagal Hapus', err.message, 'error')
-  });
-
-  // --- FITUR BARU: EXPORT TO EXCEL ---
-  const handleExportExcel = () => {
-    if (!data?.families) return Swal.fire('Info', 'Belum ada data untuk diexport', 'info');
-
-    // 1. Ratakan Data (Flatten Data) agar rapi di Excel
-    const flatData = [];
-    data.families.forEach(fam => {
-      // Jika KK punya anggota, masukkan per baris
-      if (fam.members.length > 0) {
-        fam.members.forEach(member => {
-          flatData.push({
-            'No. KK': fam.noKK,
-            'Kepala Keluarga': fam.kepalaKeluarga,
-            'Alamat': fam.address,
-            'Status Rumah': fam.ownershipStatus,
-            'Nama Anggota': member.name,
-            'NIK': member.nik,
-            'Gender': member.gender,
-            'Hubungan': member.relationship,
-            'Tgl Lahir': formatDate(member.dateOfBirth),
-            'Usia': calculateAge(member.dateOfBirth)
-          });
-        });
-      } else {
-        // Jika KK kosong (belum ada anggota)
-        flatData.push({
-          'No. KK': fam.noKK,
-          'Kepala Keluarga': fam.kepalaKeluarga,
-          'Alamat': fam.address,
-          'Status Rumah': fam.ownershipStatus,
-          'Nama Anggota': '-', 'NIK': '-', 'Gender': '-', 'Hubungan': '-', 'Tgl Lahir': '-', 'Usia': '-'
-        });
-      }
-    });
-
-    // 2. Buat Workbook
-    const worksheet = XLSX.utils.json_to_sheet(flatData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Laporan Data Warga");
-
-    // 3. Download File
-    XLSX.writeFile(workbook, `Laporan_Warga_RT14_${new Date().toISOString().slice(0,10)}.xlsx`);
-    
-    Swal.fire('Berhasil', 'Laporan Excel berhasil didownload!', 'success');
-  };
-
-  // --- HANDLERS LAINNYA ---
-  const resetMemberForm = () => { setMemberForm({ id: null, name: '', nik: '', relationship: 'Anak', dateOfBirth: '', gender: 'L' }); setIsEditingMember(false); };
-  const handleOpenEditKK = (family) => { setEditKK({ ...family }); setShowEditKKModal(true); };
-  const handleUpdateKK = (e) => { e.preventDefault(); updateFamily({ variables: { ...editKK } }); };
+  // --- 5. HANDLERS ---
   const handleCreateKK = (e) => { e.preventDefault(); createFamily({ variables: { ...newKK } }); };
-  
+  const handleUpdateKK = (e) => { e.preventDefault(); updateFamily({ variables: { ...editKK } }); };
   const handleDeleteKK = (id) => {
-    Swal.fire({ title: 'Hapus KK?', text: "Data anggota juga hilang!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Ya, Hapus!' })
+    fireSwal({ title: 'Hapus KK?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Ya, Hapus!' })
     .then((res) => { if (res.isConfirmed) deleteFamily({ variables: { id } }); });
   };
 
+  const parseDate = (val) => {
+    if (!val) return null;
+    const isTimestamp = /^-?\d+$/.test(String(val));
+    const date = new Date(isTimestamp ? Number(val) : val);
+    return isNaN(date.getTime()) ? null : date;
+  };
+  const calculateAge = (val) => { const date = parseDate(val); if(!date) return "-"; return new Date().getFullYear() - date.getFullYear(); };
+  const formatDateForInput = (val) => { const d = parseDate(val); return d ? d.toISOString().split('T')[0] : ''; };
+  const formatDateForDisplay = (val) => { const d = parseDate(val); return d ? d.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) : '-'; };
+
+  const resetMemberForm = () => { 
+    setMemberForm({ id: null, name: '', nik: '', relationship: 'Anak', dateOfBirth: '', gender: 'L', phone: '', insurance: 'BPJS Mandiri' }); 
+    setIsEditingMember(false); 
+  };
+
+  // FIX UNTUK TOMBOL EDIT: Auto Scroll ke atas ke arah form
   const handleEditMemberClick = (member) => {
-    let formattedDate = '';
-    if (member.dateOfBirth) {
-       const d = parseDate(member.dateOfBirth);
-       if (d) formattedDate = d.toISOString().split('T')[0];
-    }
-    setMemberForm({ id: member.id, name: member.name, nik: member.nik, relationship: member.relationship, gender: member.gender || 'L', dateOfBirth: formattedDate });
+    setMemberForm({ 
+      id: member.id, name: member.name, nik: member.nik, relationship: member.relationship, 
+      gender: member.gender || 'L', dateOfBirth: formatDateForInput(member.dateOfBirth),
+      phone: member.phone || '', insurance: member.insurance || 'BPJS Mandiri' 
+    });
     setIsEditingMember(true);
-    const formCard = document.querySelector('.form-card');
-    if(formCard) formCard.scrollIntoView({ behavior: 'smooth' });
+    
+    // Auto-scroll ke bagian form agar user sadar formnya berubah
+    const formElement = document.getElementById('form-tambah-anggota');
+    if(formElement) {
+      formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   };
 
   const handleSubmitMember = (e) => {
@@ -139,84 +119,58 @@ const DataWarga = () => {
   };
 
   const handleDeleteMember = (id) => {
-    Swal.fire({ title: 'Hapus Anggota?', text: "Data tidak bisa dikembalikan!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Ya, Hapus!' })
+    fireSwal({ title: 'Hapus Anggota?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'Ya, Hapus!' })
     .then((res) => { if (res.isConfirmed) deleteCitizen({ variables: { id } }); });
   };
 
-  // Logic Tanggal & Umur
-  const parseDate = (val) => {
-    if (!val) return null;
-    const isTimestamp = /^-?\d+$/.test(String(val));
-    const date = new Date(isTimestamp ? Number(val) : val);
-    return isNaN(date.getTime()) ? null : date;
-  };
-  const formatDate = (val) => { const date = parseDate(val); return date ? date.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : "-"; };
-  const calculateAge = (val) => { const date = parseDate(val); if(!date) return "-"; const age = new Date().getFullYear() - date.getFullYear(); return age; };
-
-  const filteredFamilies = data?.families.filter(f => 
-    f.kepalaKeluarga.toLowerCase().includes(searchTerm.toLowerCase()) || f.noKK.includes(searchTerm)
-  );
-
-  if (loading) return <div className="p-5 text-center">🔄 Loading data...</div>;
+  if (loading) return <div className="p-5 text-center">🔄 Memuat Data RT 14...</div>;
 
   return (
     <div className="dw-page">
-      {/* HEADER & TOOLBAR */}
+      {/* HEADER CARDS */}
       <div className="row mb-4">
         <div className="col-md-6 mb-3">
-          <div className="warga-card gradient-blue p-4 text-white">
+          <div className="warga-card gradient-blue p-4 text-white cursor-pointer hover-effect" onClick={() => setShowAllKKModal(true)}>
             <h2 className="fw-bold">{data?.families.length || 0} Keluarga</h2>
-            <p className="opacity-75 mb-0">Total KK Terdaftar</p>
-            <FaIdCard style={{position:'absolute', right:20, bottom:20, fontSize:'4rem', opacity:0.2}}/>
+            <p className="opacity-75 mb-0">Total KK Terdaftar (Klik Lihat Semua)</p>
+            <FaIdCard className="card-bg-icon"/>
           </div>
         </div>
         <div className="col-md-6 mb-3">
-          <div className="warga-card gradient-green p-4 text-white">
-            <h2 className="fw-bold">{data?.families.reduce((acc, curr) => acc + curr.members.length, 0) || 0} Orang</h2>
-            <p className="opacity-75 mb-0">Total Warga</p>
-            <FaUsers style={{position:'absolute', right:20, bottom:20, fontSize:'4rem', opacity:0.2}}/>
+          <div className="warga-card gradient-green p-4 text-white cursor-pointer hover-effect" onClick={() => setShowSearchWargaModal(true)}>
+            <h2 className="fw-bold">{allCitizens.length} Orang</h2>
+            <p className="opacity-75 mb-0">Total Warga (Klik Cari NIK/Nama)</p>
+            <FaUsers className="card-bg-icon"/>
           </div>
         </div>
       </div>
 
-      <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+      {/* DASHBOARD SEARCH & ADD KK */}
+      <div className="d-flex justify-content-between align-items-center mb-4 gap-3">
         <div className="position-relative flex-grow-1" style={{maxWidth:'500px'}}>
           <FaSearch className="position-absolute top-50 translate-middle-y ms-3 text-secondary"/>
-          <input className="dw-input ps-5" placeholder="Cari Nama Kepala Keluarga / No. KK..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
+          <input className="dw-input ps-5" placeholder="Cari di dashboard..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} />
         </div>
-        
-        {/* BUTTON GROUP (EXPORT & ADD) */}
-        <div className="d-flex gap-2">
-          {/* TOMBOL EXPORT BARU */}
-          <button className="btn-warga-primary" onClick={handleExportExcel} style={{backgroundColor: '#10B981', maxWidth:'180px'}}>
-            <FaFileExcel className="me-2"/> EXPORT EXCEL
-          </button>
-          
-          <button className="btn-warga-primary" onClick={() => setShowAddKKModal(true)} style={{maxWidth:'180px'}}>
-            <FaUserPlus className="me-2"/> TAMBAH KK
-          </button>
-        </div>
+        <button className="btn-warga-primary" onClick={() => setShowAddKKModal(true)}><FaUserPlus className="me-2"/> TAMBAH KK</button>
       </div>
 
-      {/* TABLE UTAMA */}
+      {/* TABEL UTAMA */}
       <div className="table-warga-container">
-        <table className="table table-hover align-middle mb-0" style={{width:'100%'}}>
+        <h6 className="fw-bold mb-3"><FaListUl className="me-2"/> 10 Daftar Keluarga Terbaru</h6>
+        <table className="table table-hover align-middle mb-0">
           <thead className="table-warga-header">
-            <tr>
-              <th>No KK</th><th>Kepala Keluarga</th><th>Alamat</th><th className="text-center">Status</th><th className="text-center">Aksi</th>
-            </tr>
+            <tr><th>No KK</th><th>Kepala Keluarga</th><th>Alamat</th><th className="text-center">Aksi</th></tr>
           </thead>
           <tbody>
-            {filteredFamilies?.map(fam => (
+            {displayFamilies?.map(fam => (
               <tr key={fam.id}>
-                <td className="fw-bold text-secondary">{fam.noKK}</td>
+                <td>{fam.noKK}</td>
                 <td className="fw-bold text-primary">{fam.kepalaKeluarga}</td>
                 <td className="small text-muted">{fam.address}</td>
-                <td className="text-center"><span className={`badge-pill ${fam.ownershipStatus === 'OWNED' ? 'badge-owned' : 'badge-rent'}`}>{fam.ownershipStatus}</span></td>
                 <td className="text-center">
-                  <button className="btn-action-circle text-primary" onClick={() => { setSelectedFamilyId(fam.id); resetMemberForm(); }}><FaEye/></button>
-                  <button className="btn-action-circle text-warning" onClick={() => handleOpenEditKK(fam)}><FaEdit/></button>
-                  <button className="btn-action-circle text-danger" onClick={() => handleDeleteKK(fam.id)}><FaTrash/></button>
+                  <button className="btn-action-circle text-primary" title="Lihat" onClick={() => { setSelectedFamilyId(fam.id); resetMemberForm(); }}><FaEye/></button>
+                  <button className="btn-action-circle text-warning" title="Edit" onClick={() => { setEditKK(fam); setShowEditKKModal(true); }}><FaEdit/></button>
+                  <button className="btn-action-circle text-danger" title="Hapus" onClick={() => handleDeleteKK(fam.id)}><FaTrash/></button>
                 </td>
               </tr>
             ))}
@@ -224,139 +178,38 @@ const DataWarga = () => {
         </table>
       </div>
 
-      {/* MODAL 1 & 2 (ADD/EDIT KK) - SAMA PERSIS SEBELUMNYA */}
-      {showAddKKModal && (
-        <div className="modal-overlay" onClick={() => setShowAddKKModal(false)}>
-          <div className="modal-container modal-small" onClick={e => e.stopPropagation()}>
-            <div className="modal-header-blue">
-              <h5 className="mb-0 fw-bold"><FaUserPlus className="me-2"/> Tambah KK</h5>
-              <FaTimes className="cursor-pointer" onClick={() => setShowAddKKModal(false)}/>
-            </div>
-            <div className="modal-body">
-              <form onSubmit={handleCreateKK} className="d-grid gap-3">
-                <div><label className="small fw-bold">Kepala Keluarga</label><input className="dw-input" required value={newKK.kepalaKeluarga} onChange={e => setNewKK({...newKK, kepalaKeluarga: e.target.value})} /></div>
-                <div><label className="small fw-bold">No KK</label><input className="dw-input" required value={newKK.noKK} onChange={e => setNewKK({...newKK, noKK: e.target.value})} /></div>
-                <div><label className="small fw-bold">Alamat</label><input className="dw-input" required value={newKK.address} onChange={e => setNewKK({...newKK, address: e.target.value})} /></div>
-                <div>
-                  <label className="small fw-bold">Status</label>
-                  <select className="dw-input" value={newKK.ownershipStatus} onChange={e => setNewKK({...newKK, ownershipStatus: e.target.value})}>
-                    <option value="OWNED">Milik Sendiri</option><option value="RENT">Kontrak</option><option value="OFFICIAL">Dinas</option>
-                  </select>
-                </div>
-                <button type="submit" className="btn-warga-primary mt-3">SIMPAN</button>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showEditKKModal && (
-        <div className="modal-overlay" onClick={() => setShowEditKKModal(false)}>
-          <div className="modal-container modal-small" onClick={e => e.stopPropagation()}>
-            <div className="modal-header-blue" style={{background:'#fbc531', color:'#333'}}>
-              <h5 className="mb-0 fw-bold"><FaEdit className="me-2"/> Edit KK</h5>
-              <FaTimes className="cursor-pointer" onClick={() => setShowEditKKModal(false)}/>
-            </div>
-            <div className="modal-body">
-              <form onSubmit={handleUpdateKK} className="d-grid gap-3">
-                <div><label className="small fw-bold">Kepala Keluarga</label><input className="dw-input" required value={editKK.kepalaKeluarga} onChange={e => setEditKK({...editKK, kepalaKeluarga: e.target.value})} /></div>
-                <div><label className="small fw-bold">No KK</label><input className="dw-input" required value={editKK.noKK} onChange={e => setEditKK({...editKK, noKK: e.target.value})} /></div>
-                <div><label className="small fw-bold">Alamat</label><input className="dw-input" required value={editKK.address} onChange={e => setEditKK({...editKK, address: e.target.value})} /></div>
-                <div>
-                  <label className="small fw-bold">Status</label>
-                  <select className="dw-input" value={editKK.ownershipStatus} onChange={e => setEditKK({...editKK, ownershipStatus: e.target.value})}>
-                    <option value="OWNED">Milik Sendiri</option><option value="RENT">Kontrak</option><option value="OFFICIAL">Dinas</option>
-                  </select>
-                </div>
-                <button type="submit" className="btn-warga-primary mt-3" style={{background:'#fbc531', color:'#333'}}>UPDATE</button>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL 3: DETAIL ANGGOTA + EDIT FEATURE */}
-      {selectedFamily && (
-        <div className="modal-overlay" onClick={() => setSelectedFamilyId(null)}>
+      {/* --- MODAL CARI WARGA INDIVIDU --- */}
+      {showSearchWargaModal && (
+        <div className="modal-overlay" onClick={() => setShowSearchWargaModal(false)}>
           <div className="modal-container modal-large" onClick={e => e.stopPropagation()}>
-            <div className="modal-header-blue">
-              <div>
-                <h5 className="mb-0 fw-bold"><FaUsers className="me-2"/> {selectedFamily.kepalaKeluarga}</h5>
-                <small className="opacity-75">No KK: {selectedFamily.noKK}</small>
-              </div>
-              <FaTimes className="cursor-pointer fs-4" onClick={() => setSelectedFamilyId(null)}/>
+            <div className="modal-header-blue" style={{background:'#198754'}}>
+              <h5 className="mb-0 fw-bold"><FaSearch className="me-2"/> Cari Warga (NIK/Nama)</h5>
+              <FaTimes className="cursor-pointer" onClick={() => setShowSearchWargaModal(false)}/>
             </div>
-
             <div className="modal-body">
-              <div className="form-card" style={{borderTop: isEditingMember ? '4px solid #fbc531' : '4px solid #0d6efd'}}>
-                <h6 className="fw-bold mb-3 border-bottom pb-2" style={{color: isEditingMember ? '#e1b12c' : '#0d6efd'}}>
-                  {isEditingMember ? <><FaEdit className="me-2"/> Edit Anggota</> : <><FaUserPlus className="me-2"/> Registrasi Anggota Baru</>}
-                </h6>
-                <form onSubmit={handleSubmitMember}>
-                  <div className="custom-form-grid">
-                    <div>
-                      <label className="small fw-bold text-muted mb-1">Nama Lengkap</label>
-                      <input className="dw-input" required value={memberForm.name} onChange={e => setMemberForm({...memberForm, name: e.target.value})} placeholder="Nama"/>
-                    </div>
-                    <div>
-                      <label className="small fw-bold text-muted mb-1">NIK</label>
-                      <input className="dw-input" required value={memberForm.nik} onChange={e => setMemberForm({...memberForm, nik: e.target.value})} placeholder="NIK"/>
-                    </div>
-                    <div>
-                        <label className="small fw-bold text-muted mb-1">Gender</label>
-                        <select className="dw-input" value={memberForm.gender} onChange={e => setMemberForm({...memberForm, gender: e.target.value})}>
-                            <option value="L">Laki-laki</option><option value="P">Perempuan</option>
-                        </select>
-                    </div>
-                    <div>
-                      <label className="small fw-bold text-muted mb-1">Hubungan</label>
-                      <select className="dw-input" value={memberForm.relationship} onChange={e => setMemberForm({...memberForm, relationship: e.target.value})}>
-                        <option>Anak</option><option>Istri</option><option>Suami</option><option>Famili</option><option>Kepala Keluarga</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label className="small fw-bold text-muted mb-1">Tgl Lahir</label>
-                      <input type="date" className="dw-input" required value={memberForm.dateOfBirth} onChange={e => setMemberForm({...memberForm, dateOfBirth: e.target.value})} />
-                    </div>
-                    <div>
-                        <label className="d-block mb-1">&nbsp;</label>
-                        <div className="d-flex gap-2">
-                          <button type="submit" className="btn-warga-primary shadow-sm" style={{background: isEditingMember ? '#fbc531' : '#ff4757', color: isEditingMember ? '#333' : 'white'}}>
-                              <FaSave className="me-2"/> {isEditingMember ? 'UPDATE' : 'SIMPAN'}
-                          </button>
-                          {isEditingMember && (
-                            <button type="button" className="btn btn-secondary" onClick={resetMemberForm}>
-                              <FaUndo/> Batal
-                            </button>
-                          )}
-                        </div>
-                    </div>
-                  </div>
-                </form>
-              </div>
-
-              <div className="table-responsive border rounded-3 bg-white mt-4">
-                <table className="table table-hover mb-0">
-                  <thead className="bg-light text-secondary small text-uppercase">
-                    <tr>
-                      <th className="p-3">Nama</th><th className="p-3">NIK</th><th className="p-3">L/P</th><th className="p-3">Hubungan</th><th className="p-3">Tgl Lahir</th><th className="p-3 text-center">Usia</th><th className="p-3 text-center">Aksi</th>
-                    </tr>
+              <input autoFocus className="dw-input mb-3 py-3" placeholder="Ketik Nama atau NIK..." value={searchWargaTerm} onChange={e => setSearchWargaTerm(e.target.value)} />
+              <div className="table-responsive border rounded-3">
+                <table className="table table-hover mb-0 align-middle">
+                  <thead className="bg-light">
+                    <tr><th>Nama</th><th>NIK</th><th className="text-end pe-4">Aksi</th></tr>
                   </thead>
                   <tbody>
-                    {selectedFamily.members.map((m) => (
-                      <tr key={m.id} className={isEditingMember && memberForm.id === m.id ? "table-warning" : ""}>
-                        <td className="fw-bold text-primary p-3">{m.name}</td>
-                        <td className="text-muted p-3 small">{m.nik}</td>
-                        <td className="p-3">{m.gender === 'L' ? 'L' : 'P'}</td>
-                        <td className="p-3"><span className="badge bg-info bg-opacity-10 text-dark px-2">{m.relationship}</span></td>
-                        <td className="p-3 small">{formatDate(m.dateOfBirth)}</td>
-                        <td className="p-3 text-center"><span className="badge bg-success rounded-pill px-3">{calculateAge(m.dateOfBirth)} Thn</span></td>
-                        <td className="p-3 text-center">
-                          <button className="btn-action-circle text-warning border-warning" onClick={() => handleEditMemberClick(m)} title="Edit">
-                            <FaEdit/>
+                    {filteredCitizens.map(c => (
+                      <tr key={c.id}>
+                        <td className="fw-bold text-success">{c.name}</td>
+                        <td className="text-muted">{c.nik}</td>
+                        <td className="text-end pe-3">
+                          <button 
+                            className="btn btn-sm btn-info text-white me-2" 
+                            onClick={() => setSelectedCitizenDetail(c)}
+                          >
+                            <FaInfoCircle className="me-1"/> Detail
                           </button>
-                          <button className="btn-action-circle text-danger border-danger ms-2" onClick={() => handleDeleteMember(m.id)} title="Hapus">
-                            <FaTrash/>
+                          <button 
+                            className="btn btn-sm btn-outline-success" 
+                            onClick={() => { setSelectedFamilyId(c.familyId); setShowSearchWargaModal(false); }}
+                          >
+                            Lihat KK
                           </button>
                         </td>
                       </tr>
@@ -365,9 +218,218 @@ const DataWarga = () => {
                 </table>
               </div>
             </div>
-            
-            <div className="p-3 bg-white border-top text-end">
-              <button className="btn btn-secondary btn-sm px-4" onClick={() => setSelectedFamilyId(null)}>Tutup</button>
+          </div>
+        </div>
+      )}
+
+      {/* --- MODAL POPUP DETAIL WARGA (FIX Z-INDEX TERTINGGI) --- */}
+      {selectedCitizenDetail && (
+        <div 
+          className="modal-overlay" 
+          style={{ zIndex: 99999 }} 
+          onClick={() => setSelectedCitizenDetail(null)}
+        >
+          <div 
+            className="modal-container modal-small" 
+            style={{ zIndex: 999999 }} 
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="modal-header-blue" style={{background: '#0dcaf0', color: '#000'}}>
+              <h5 className="mb-0 fw-bold"><FaIdCard className="me-2"/> Biodata Lengkap Warga</h5>
+              <FaTimes className="cursor-pointer fs-4" onClick={() => setSelectedCitizenDetail(null)}/>
+            </div>
+            <div className="modal-body">
+              <div className="bg-light p-4 rounded-3 border">
+                <table className="table table-sm table-borderless mb-0">
+                  <tbody>
+                    <tr><td className="text-muted" width="45%">Nama Lengkap</td><td className="fw-bold">: {selectedCitizenDetail.name}</td></tr>
+                    <tr><td className="text-muted">NIK</td><td className="fw-bold">: {selectedCitizenDetail.nik}</td></tr>
+                    <tr><td className="text-muted">Jenis Kelamin</td><td className="fw-bold">: {selectedCitizenDetail.gender === 'L' ? 'Laki-laki' : 'Perempuan'}</td></tr>
+                    <tr><td className="text-muted">Tempat, Tgl Lahir</td><td className="fw-bold">: {selectedCitizenDetail.placeOfBirth}, {formatDateForDisplay(selectedCitizenDetail.dateOfBirth)}</td></tr>
+                    <tr><td className="text-muted">Agama</td><td className="fw-bold">: {selectedCitizenDetail.religion || '-'}</td></tr>
+                    <tr><td className="text-muted">Pekerjaan</td><td className="fw-bold">: {selectedCitizenDetail.profession || '-'}</td></tr>
+                    <tr><td className="text-muted">Alamat KK</td><td className="fw-bold">: {selectedCitizenDetail.address || '-'}</td></tr>
+                    <tr><td className="text-muted">Status dlm Keluarga</td><td className="fw-bold">: {selectedCitizenDetail.relationship}</td></tr>
+                    <tr>
+                      <td className="text-muted">No. Handphone</td>
+                      <td className="fw-bold text-success">: {selectedCitizenDetail.phone ? (
+                        <a href={`https://wa.me/${selectedCitizenDetail.phone}`} target="_blank" rel="noreferrer" className="text-success text-decoration-none"><FaWhatsapp/> {selectedCitizenDetail.phone}</a>
+                      ) : '-'}</td>
+                    </tr>
+                    <tr><td className="text-muted">Jaminan Kesehatan</td><td className="fw-bold text-primary">: {selectedCitizenDetail.insurance || 'Tidak Ada/Belum Terdata'}</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div className="text-end mt-4">
+                <button className="btn btn-secondary px-4" onClick={() => setSelectedCitizenDetail(null)}>Tutup</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 1: LIHAT SEMUA KK */}
+      {showAllKKModal && (
+        <div className="modal-overlay" onClick={() => setShowAllKKModal(false)}>
+          <div className="modal-container modal-large" onClick={e => e.stopPropagation()}>
+            <div className="modal-header-blue">
+              <h5 className="mb-0 fw-bold"><FaIdCard className="me-2"/> Seluruh Daftar KK RT 14</h5>
+              <FaTimes className="cursor-pointer" onClick={() => setShowAllKKModal(false)}/>
+            </div>
+            <div className="modal-body p-0">
+              <div style={{maxHeight: '60vh', overflowY: 'auto'}}>
+                <table className="table table-hover mb-0">
+                  <thead className="sticky-top bg-white">
+                    <tr><th className="ps-4">No. KK</th><th>Kepala Keluarga</th><th className="text-center">Aksi</th></tr>
+                  </thead>
+                  <tbody>
+                    {filteredFamilies.map(fam => (
+                      <tr key={fam.id}>
+                        <td className="ps-4">{fam.noKK}</td>
+                        <td className="fw-bold">{fam.kepalaKeluarga}</td>
+                        <td className="text-center">
+                          <button className="btn btn-sm btn-primary" onClick={() => { setSelectedFamilyId(fam.id); setShowAllKKModal(false); }}>Buka Detail</button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 3: TAMBAH KK */}
+      {showAddKKModal && (
+        <div className="modal-overlay" onClick={() => setShowAddKKModal(false)}>
+          <div className="modal-container modal-small" onClick={e => e.stopPropagation()}>
+            <div className="modal-header-blue">
+              <h5 className="mb-0 fw-bold">Tambah KK Baru</h5>
+              <FaTimes className="cursor-pointer" onClick={() => setShowAddKKModal(false)}/>
+            </div>
+            <div className="modal-body">
+              <form onSubmit={handleCreateKK} className="d-grid gap-3">
+                <input className="dw-input" placeholder="Nama Kepala Keluarga" required onChange={e => setNewKK({...newKK, kepalaKeluarga: e.target.value})} />
+                <input className="dw-input" placeholder="Nomor KK" required onChange={e => setNewKK({...newKK, noKK: e.target.value})} />
+                <input className="dw-input" placeholder="Alamat Lengkap" required onChange={e => setNewKK({...newKK, address: e.target.value})} />
+                <button type="submit" className="btn-warga-primary w-100">SIMPAN DATA</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 4: DETAIL KELUARGA (VIEW & EDIT MEMBERS) */}
+      {selectedFamily && (
+        <div className="modal-overlay" onClick={() => setSelectedFamilyId(null)}>
+          <div className="modal-container modal-large" onClick={e => e.stopPropagation()}>
+            <div className="modal-header-blue">
+              <h5 className="mb-0 fw-bold"><FaUsers className="me-2"/> Detail KK: {selectedFamily.kepalaKeluarga}</h5>
+              <FaTimes className="cursor-pointer fs-4" onClick={() => setSelectedFamilyId(null)}/>
+            </div>
+            <div className="modal-body p-4">
+              <div className="mb-4 pb-3 border-bottom">
+                 <strong className="text-muted">No KK:</strong> <span className="fw-bold">{selectedFamily.noKK}</span> &nbsp;|&nbsp; 
+                 <strong className="text-muted">Alamat:</strong> {selectedFamily.address}
+              </div>
+
+              {/* FORM TAMBAH/EDIT ANGGOTA DENGAN ID UNTUK AUTO-SCROLL */}
+              <div id="form-tambah-anggota" className="bg-light p-4 rounded-3 border mb-4">
+                <h6 className="fw-bold mb-3 text-primary">{isEditingMember ? 'Edit Data Warga' : 'Registrasi Anggota Baru'}</h6>
+                <form onSubmit={handleSubmitMember}>
+                  <div className="row g-3">
+                    <div className="col-md-4"><label className="small fw-bold text-muted mb-1">Nama Lengkap</label><input className="dw-input" required value={memberForm.name} onChange={e => setMemberForm({...memberForm, name: e.target.value})} /></div>
+                    <div className="col-md-4"><label className="small fw-bold text-muted mb-1">NIK</label><input className="dw-input" required value={memberForm.nik} onChange={e => setMemberForm({...memberForm, nik: e.target.value})} /></div>
+                    <div className="col-md-4">
+                        <label className="small fw-bold text-muted mb-1">Gender</label>
+                        <select className="dw-input" value={memberForm.gender} onChange={e => setMemberForm({...memberForm, gender: e.target.value})}>
+                            <option value="L">Laki-laki</option><option value="P">Perempuan</option>
+                        </select>
+                    </div>
+                    <div className="col-md-3">
+                      <label className="small fw-bold text-muted mb-1">Hubungan</label>
+                      <select className="dw-input" value={memberForm.relationship} onChange={e => setMemberForm({...memberForm, relationship: e.target.value})}>
+                        <option>Kepala Keluarga</option><option>Istri</option><option>Suami</option><option>Anak</option><option>Famili</option>
+                      </select>
+                    </div>
+                    <div className="col-md-3"><label className="small fw-bold text-muted mb-1">Tgl Lahir</label><input type="date" className="dw-input" required value={memberForm.dateOfBirth} onChange={e => setMemberForm({...memberForm, dateOfBirth: e.target.value})} /></div>
+                    <div className="col-md-3">
+                      <label className="small fw-bold text-muted mb-1">No HP / WA</label>
+                      <input className="dw-input" placeholder="08..." value={memberForm.phone} onChange={e => setMemberForm({...memberForm, phone: e.target.value})} />
+                    </div>
+                    <div className="col-md-3">
+                      <label className="small fw-bold text-muted mb-1">Jaminan Kesehatan</label>
+                      <select className="dw-input" value={memberForm.insurance} onChange={e => setMemberForm({...memberForm, insurance: e.target.value})}>
+                        <option value="BPJS Mandiri">BPJS Mandiri</option>
+                        <option value="BPJS dari Pekerjaan">BPJS dari Pekerjaan</option>
+                        <option value="KIS">KIS</option>
+                        <option value="Asuransi Swasta Lainnya">Asuransi Swasta Lainnya</option>
+                        <option value="Tidak Ada">Tidak Ada</option>
+                      </select>
+                    </div>
+                    <div className="col-12 mt-3 d-flex gap-2">
+                      <button type="submit" className="btn-warga-primary px-4"><FaSave className="me-2"/> {isEditingMember ? 'UPDATE DATA' : 'SIMPAN ANGGOTA'}</button>
+                      {isEditingMember && <button type="button" className="btn btn-outline-secondary px-4" onClick={resetMemberForm}><FaUndo className="me-2"/> BATAL</button>}
+                    </div>
+                  </div>
+                </form>
+              </div>
+
+              {/* TABEL ANGGOTA KELUARGA */}
+              <div className="table-responsive rounded-3 border">
+                <table className="table table-hover mb-0 align-middle">
+                  <thead className="bg-light text-secondary small text-uppercase">
+                    <tr><th className="p-3">Nama</th><th>NIK</th><th>No. HP</th><th>Jaminan Kesehatan</th><th className="text-center">Usia</th><th className="text-center">Aksi</th></tr>
+                  </thead>
+                  <tbody>
+                    {selectedFamily.members.map((m) => (
+                      <tr key={m.id}>
+                        <td className="p-3 text-primary fw-bold">
+                          {m.name}<br/>
+                          <span className="small text-muted mt-1 d-inline-block">{m.relationship}</span>
+                        </td>
+                        <td className="small text-muted">{m.nik}</td>
+                        <td>
+                          {m.phone ? (
+                            <a href={`https://wa.me/${m.phone}`} target="_blank" rel="noreferrer" className="text-success fw-bold text-decoration-none" title="Chat WhatsApp">
+                              <FaWhatsapp className="me-1 fs-5"/> {m.phone}
+                            </a>
+                          ) : <span className="text-muted small">-</span>}
+                        </td>
+                        <td className="fw-bold text-dark">{m.insurance || 'BPJS Mandiri'}</td>
+                        <td className="text-center fw-bold">{calculateAge(m.dateOfBirth)} Thn</td>
+                        <td className="text-center">
+                          {/* TOMBOL DETAIL, EDIT, HAPUS DI AKSI */}
+                          <button className="btn-action-circle text-info" title="Detail" onClick={() => setSelectedCitizenDetail(m)}><FaInfoCircle/></button>
+                          <button className="btn-action-circle text-warning" title="Edit" onClick={() => handleEditMemberClick(m)}><FaEdit/></button>
+                          <button className="btn-action-circle text-danger" title="Hapus" onClick={() => handleDeleteMember(m.id)}><FaTrash/></button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL 5: EDIT KK */}
+      {showEditKKModal && (
+        <div className="modal-overlay" onClick={() => setShowEditKKModal(false)}>
+          <div className="modal-container modal-small" onClick={e => e.stopPropagation()}>
+            <div className="modal-header-blue" style={{background:'#fbc531', color:'#000'}}>
+              <h5 className="mb-0 fw-bold">Edit Data KK</h5>
+              <FaTimes className="cursor-pointer" onClick={() => setShowEditKKModal(false)}/>
+            </div>
+            <div className="modal-body">
+              <form onSubmit={handleUpdateKK} className="d-grid gap-3">
+                <input className="dw-input" value={editKK.kepalaKeluarga} onChange={e => setEditKK({...editKK, kepalaKeluarga: e.target.value})} />
+                <input className="dw-input" value={editKK.noKK} onChange={e => setEditKK({...editKK, noKK: e.target.value})} />
+                <input className="dw-input" value={editKK.address} onChange={e => setEditKK({...editKK, address: e.target.value})} />
+                <button type="submit" className="btn-warga-primary w-100" style={{background:'#fbc531', color:'#000'}}>UPDATE DATA</button>
+              </form>
             </div>
           </div>
         </div>

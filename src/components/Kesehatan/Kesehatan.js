@@ -1,153 +1,117 @@
 import React, { useState } from "react";
-import { useQuery } from "@apollo/client";
-import { GET_WARGA } from "../../graphql/userQueries";
-import HealthStatsChart from "./HealthStatsChart";
+import { useQuery, gql } from "@apollo/client";
+import { FaHeartbeat, FaUsers, FaBaby, FaBlind, FaSearch } from "react-icons/fa";
+
 import TambahDataKesehatan from "./TambahDataKesehatan";
 import DaftarKesehatan from "./DaftarKesehatan";
-import MasterListModal from "./MasterListModal"; // Import modal baru
-import {
-  FaHeartbeat,
-  FaBaby,
-  FaBlind,
-  FaBriefcaseMedical,
-} from "react-icons/fa";
+import MasterListModal from "./MasterListModal";
+import DashboardPintar from "./DashboardPintar";
 import "./Kesehatan.css";
+
+const GET_CITIZENS_FOR_HEALTH = gql`
+  query GetCitizensForHealth {
+    citizens {
+      id name nik gender dateOfBirth phone
+      family {
+        id kepalaKeluarga
+        members { id name phone relationship }
+      }
+      healthData { healthStatus }
+    }
+  }
+`;
 
 const Kesehatan = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  // State untuk mengontrol modal
-  const [modalConfig, setModalConfig] = useState({
-    show: false,
-    type: "warga",
-    data: [],
+  const [modalConfig, setModalConfig] = useState({ show: false, type: "warga", data: [] });
+
+  // PENGATURAN OTOMATIS: Polling setiap 2 detik
+  const { data, loading, error } = useQuery(GET_CITIZENS_FOR_HEALTH, {
+    pollInterval: 2000, 
+    fetchPolicy: "network-only"
   });
 
-  const { data } = useQuery(GET_WARGA);
-
   const calculateAge = (dob) => {
-    if (!dob) return 0;
-    const birth = new Date(isNaN(dob) ? dob : Number(dob));
+    if (!dob) return null;
+    let birth = !isNaN(dob) ? new Date(parseInt(dob)) : new Date(dob);
+    if (isNaN(birth.getTime())) return null;
     const today = new Date();
     let age = today.getFullYear() - birth.getFullYear();
-    if (
-      today.getMonth() < birth.getMonth() ||
-      (today.getMonth() === birth.getMonth() &&
-        today.getDate() < birth.getDate())
-    )
-      age--;
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
     return age;
   };
 
-  const members = data?.families?.flatMap((f) => f.members) || [];
-  const balita = members.filter((m) => calculateAge(m.dateOfBirth) <= 5);
-  const lansia = members.filter((m) => calculateAge(m.dateOfBirth) >= 60);
+  if (loading) return <div className="p-5 text-center fw-bold text-primary">🔄 Menyinkronkan Data...</div>;
+  if (error) return <div className="p-5 text-center text-danger">⚠️ Error: {error.message}</div>;
 
-  // Fungsi pembuka modal
-  const openList = (type, listData) => {
-    setModalConfig({ show: true, type, data: listData });
-  };
+  const allMembers = data?.citizens || [];
+  const balitaData = allMembers.filter(m => {
+    const age = calculateAge(m.dateOfBirth);
+    return age !== null && age >= 0 && age <= 5;
+  });
+  const lansiaData = allMembers.filter(m => {
+    const age = calculateAge(m.dateOfBirth);
+    return age !== null && age >= 60;
+  });
 
   return (
     <div className="health-wrapper">
       <div className="d-flex align-items-center mb-4">
-        <div className="cpink p-3 rounded-4 text-white me-3 shadow-sm">
-          <FaBriefcaseMedical size={24} />
+        <div className="bg-white p-3 rounded-circle shadow-sm text-health-primary me-3 border border-pink">
+          <FaHeartbeat size={28} />
         </div>
-        <h3 className="fw-bold text-dark mb-0">Layanan Kesehatan RT 14</h3>
+        <div>
+          <h4 className="fw-bold mb-0 text-dark">Layanan Kesehatan RT 14</h4>
+          <p className="text-muted small mb-0">Update Otomatis • Real-time System</p>
+        </div>
       </div>
 
-      <div className="row g-3 mb-4">
-        <div className="col-lg-8">
-          <div className="row g-3">
-            {/* Kartu 1: Warga Terdaftar (Bisa Klik!) */}
-            <div
-              className="col-md-6"
-              onClick={() => openList("warga", members)}
-              style={{ cursor: "pointer" }}
-            >
-              <div className="card health-card cpink p-4 shadow-sm h-100 position-relative">
-                <h6 className="fw-bold opacity-75">Warga Terdaftar</h6>
-                <h3 className="fw-bold">{members.length} Orang</h3>
-                <div className="mt-2 small fw-bold bg-white bg-opacity-25 p-1 rounded d-inline-block">
-                  Klik untuk detail →
-                </div>
-                <FaHeartbeat
-                  size={40}
-                  className="position-absolute end-0 bottom-0 m-3 opacity-25"
-                />
-              </div>
-            </div>
-
-            {/* Kartu 2: Balita (Bisa Klik!) */}
-            <div
-              className="col-md-6"
-              onClick={() => openList("balita", balita)}
-              style={{ cursor: "pointer" }}
-            >
-              <div className="card health-card cblue p-4 shadow-sm h-100 position-relative">
-                <h6 className="fw-bold opacity-75">Balita (0-5 th)</h6>
-                <h3 className="fw-bold">{balita.length} Anak</h3>
-                <div className="mt-2 small fw-bold bg-white bg-opacity-25 p-1 rounded d-inline-block">
-                  Klik untuk detail →
-                </div>
-                <FaBaby
-                  size={40}
-                  className="position-absolute end-0 bottom-0 m-3 opacity-25"
-                />
-              </div>
-            </div>
-
-            {/* Kartu 3: Lansia (Bisa Klik!) */}
-            <div
-              className="col-md-12"
-              onClick={() => openList("lansia", lansia)}
-              style={{ cursor: "pointer" }}
-            >
-              <div className="card health-card corange p-4 shadow-sm position-relative">
-                <div className="d-flex justify-content-between align-items-center">
-                  <div>
-                    <h6 className="fw-bold opacity-75">Lansia (60+ th)</h6>
-                    <h3 className="fw-bold">{lansia.length} Lansia</h3>
-                    <div className="mt-2 small fw-bold bg-white bg-opacity-25 p-1 rounded d-inline-block">
-                      Klik untuk detail →
-                    </div>
-                  </div>
-                  <FaBlind size={50} className="opacity-25" />
-                </div>
-              </div>
+      <div className="row g-4 mb-4">
+        <div className="col-md-4" onClick={() => setModalConfig({ show: true, type: "warga", data: allMembers })} style={{cursor:'pointer'}}>
+          <div className="card health-card cpink p-4 h-100 shadow-sm">
+            <div className="d-flex justify-content-between align-items-center">
+              <div><h6 className="fw-bold mb-1">Total Warga</h6><h2 className="fw-bold mb-0">{allMembers.length}</h2></div>
+              <FaUsers size={40} opacity={0.7} />
             </div>
           </div>
         </div>
-
-        <div className="col-lg-4">
-          <HealthStatsChart />
+        <div className="col-md-4" onClick={() => setModalConfig({ show: true, type: "balita", data: balitaData })} style={{cursor:'pointer'}}>
+          <div className="card health-card cblue p-4 h-100 shadow-sm">
+            <div className="d-flex justify-content-between align-items-center">
+              <div><h6 className="fw-bold mb-1">Balita (0-5 Thn)</h6><h2 className="fw-bold mb-0">{balitaData.length}</h2></div>
+              <FaBaby size={40} opacity={0.7} />
+            </div>
+          </div>
+        </div>
+        <div className="col-md-4" onClick={() => setModalConfig({ show: true, type: "lansia", data: lansiaData })} style={{cursor:'pointer'}}>
+          <div className="card health-card corange p-4 h-100 shadow-sm">
+            <div className="d-flex justify-content-between align-items-center">
+              <div><h6 className="fw-bold mb-1">Lansia (60+ Thn)</h6><h2 className="fw-bold mb-0">{lansiaData.length}</h2></div>
+              <FaBlind size={40} opacity={0.7} />
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Input Data Kesehatan */}
-      <TambahDataKesehatan allMembers={members} />
-
-      {/* Riwayat Pemeriksaan Umum */}
-      <div className="bg-white p-4 rounded-4 shadow-sm mt-4 border">
-        <div className="d-flex justify-content-between mb-3 align-items-center">
-          <h5 className="fw-bold text-dark mb-0">Riwayat Pemeriksaan Umum</h5>
-          <input
-            type="text"
-            className="form-control w-25 rounded-pill shadow-sm"
-            placeholder="Cari warga..."
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+      <DashboardPintar allMembers={allMembers} />
+      <TambahDataKesehatan allMembers={allMembers} />
+      
+      <div className="d-flex justify-content-between align-items-center mt-5 mb-3">
+        <h5 className="fw-bold text-dark mb-0">Riwayat Pemeriksaan</h5>
+        <div className="input-group w-25 shadow-sm">
+          <span className="input-group-text bg-white border-0 text-muted"><FaSearch /></span>
+          <input type="text" className="form-control border-0 ps-0" placeholder="Cari nama..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
         </div>
-        <DaftarKesehatan searchTerm={searchTerm} />
       </div>
+      <DaftarKesehatan searchTerm={searchTerm} />
 
-      {/* RENDER MODAL */}
-      <MasterListModal
-        show={modalConfig.show}
-        type={modalConfig.type}
-        data={modalConfig.data}
-        onClose={() => setModalConfig({ ...modalConfig, show: false })}
-        calculateAge={calculateAge}
+      <MasterListModal 
+        show={modalConfig.show} 
+        onClose={() => setModalConfig({ ...modalConfig, show: false })} 
+        type={modalConfig.type} 
+        data={modalConfig.data} 
+        calculateAge={calculateAge} 
       />
     </div>
   );

@@ -1,225 +1,131 @@
-.kegiatan-container {
-  padding: 40px 20px;
-  background-color: #f4f7f6;
-  min-height: 100vh;
-  font-family: 'Segoe UI', Roboto, sans-serif;
-}
-
-.kegiatan-header {
-  text-align: center;
-  margin-bottom: 40px;
-}
-
-.kegiatan-header h1 {
-  font-size: 2.2rem;
-  color: #2d3436;
-  margin-bottom: 10px;
-}
-
-.kegiatan-header p {
-  color: #636e72;
-}
-
-/* Form Section */
-.input-card {
-  background: white;
-  padding: 25px;
-  border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-  margin-bottom: 50px;
-  max-width: 1100px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.input-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
+/* Tab Navigation */
+.tab-navigation {
+  display: flex;
+  justify-content: center;
   gap: 15px;
-  margin-top: 15px;
+  margin-bottom: 30px;
 }
 
-.form-input {
-  padding: 12px;
-  border: 1px solid #dfe6e9;
-  border-radius: 8px;
-  font-size: 14px;
-}
-
-.btn-publikasi {
-  background-color: #2ecc71;
-  color: white;
+.tab-btn {
+  padding: 12px 25px;
   border: none;
-  border-radius: 8px;
+  background: #dfe6e9;
+  border-radius: 30px;
   font-weight: bold;
   cursor: pointer;
   transition: 0.3s;
+  color: #636e72;
 }
 
-.btn-publikasi:hover {
-  background-color: #27ae60;
+.tab-btn.active {
+  background: #6c5ce7;
+  color: white;
+  box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
 }
 
-/* Grid & Cards */
-.kegiatan-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 30px;
+/* Ronda Styling */
+.ronda-section {
   max-width: 1100px;
   margin: 0 auto;
+  animation: fadeIn 0.5s ease;
 }
 
-.activity-card {
+.ronda-info-card {
   background: white;
-  border-radius: 12px;
-  display: flex;
-  overflow: hidden;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-  transition: transform 0.3s ease;
-}
-
-.activity-card:hover {
-  transform: translateY(-5px);
-}
-
-.card-accent {
-  width: 8px;
-}
-
-.card-content {
   padding: 20px;
-  flex: 1;
-}
-
-.card-header-top {
+  border-radius: 12px;
+  margin-bottom: 20px;
+  border-left: 5px solid #0984e3;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.activity-icon {
-  font-size: 1.8rem;
-}
-
-.activity-badge {
-  font-weight: 800;
-  font-size: 0.75rem;
-  padding: 4px 12px;
-  border-radius: 20px;
-  text-transform: uppercase;
-}
-
-.activity-title {
-  font-size: 1.4rem;
-  margin: 15px 0;
-  color: #2d3436;
-}
-
-.activity-info p {
-  font-size: 0.9rem;
-  color: #636e72;
-  margin: 8px 0;
-}
-
-.btn-detail {
-  width: 100%;
-  padding: 10px;
-  background: transparent;
-  border-radius: 8px;
-  font-weight: bold;
-  margin-top: 15px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.btn-detail:hover {
-  background: rgba(0,0,0,0.02);
-}
-
-/* Modal Styling */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7);
+.ronda-status {
   display: flex;
-  justify-content: center;
   align-items: center;
-  z-index: 9999;
-  backdrop-filter: blur(4px);
-}
-
-.modal-content {
-  background: #ffffff; /* Putih Solid */
-  width: 90%;
-  max-width: 480px;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-  animation: popUp 0.3s ease;
-}
-
-@keyframes popUp {
-  from { transform: scale(0.9); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-.modal-header-box {
-  padding: 50px 20px;
-  text-align: center;
-  position: relative;
-}
-
-.modal-icon {
-  font-size: 4rem;
-}
-
-.close-btn {
-  position: absolute;
-  top: 15px;
-  right: 20px;
-  background: rgba(255, 255, 255, 0.3);
-  border: none;
-  font-size: 1.5rem;
-  color: white;
-  cursor: pointer;
-  border-radius: 50%;
-  width: 35px;
-  height: 35px;
-}
-
-.modal-body {
-  padding: 30px;
-  background: white; /* Pastikan Putih */
-}
-
-.modal-badge-type {
-  font-weight: bold;
-  text-transform: uppercase;
-  font-size: 0.8rem;
-  letter-spacing: 1px;
-}
-
-.modal-info-list p {
-  margin: 12px 0;
+  gap: 10px;
   color: #2d3436;
 }
 
-.modal-description-text {
-  line-height: 1.6;
-  color: #636e72;
-  margin-top: 10px;
+.status-dot {
+  width: 12px;
+  height: 12px;
+  background: #2ecc71;
+  border-radius: 50%;
 }
 
-.btn-modal-close {
+.animate-pulse {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(46, 204, 113, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+}
+
+.ronda-table-container {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.ronda-table {
   width: 100%;
-  padding: 12px;
-  background: #f1f2f6;
-  border: none;
-  border-radius: 10px;
+  border-collapse: collapse;
+}
+
+.ronda-table th {
+  background: #f8f9fa;
+  padding: 15px;
+  text-align: left;
+  color: #636e72;
+  font-size: 0.9rem;
+}
+
+.ronda-table td {
+  padding: 15px;
+  border-bottom: 1px solid #f1f2f6;
+}
+
+.today-row {
+  background-color: #f0f7ff;
+}
+
+.day-cell {
   font-weight: bold;
-  margin-top: 25px;
-  cursor: pointer;
+  color: #2d3436;
+  width: 120px;
+}
+
+.name-tag {
+  display: inline-block;
+  background: #f1f2f6;
+  padding: 5px 12px;
+  border-radius: 15px;
+  margin: 3px;
+  font-size: 0.85rem;
+  color: #2d3436;
+  border: 1px solid #dfe6e9;
+}
+
+.today-row .name-tag {
+  background: #e3f2fd;
+  border-color: #2196f3;
+  color: #1976d2;
+}
+
+.badge-regu {
+    background: #6c5ce7;
+    color: white;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
