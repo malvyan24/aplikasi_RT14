@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { NavLink, Link } from "react-router-dom";
-import { FaSignOutAlt } from "react-icons/fa"; // Pastikan install: npm install react-icons
+import { FaSignOutAlt } from "react-icons/fa"; 
 import "./Navbar.css";
 
-// Terima props onLogout dari App.js
+// Menerima props onLogout dari App.js
 export default function Navbar({ onLogout }) {
   const [open, setOpen] = useState(false);
+
+  // Ambil nama user secara dinamis dari localStorage
+  const userName = localStorage.getItem('user') || "Admin RT";
 
   const linkClass = ({ isActive }) =>
     `sirt-nav__link ${isActive ? "sirt-nav__link--active" : ""}`;
@@ -28,38 +31,11 @@ export default function Navbar({ onLogout }) {
         </div>
 
         <nav className={`sirt-nav__menu ${open ? "is-open" : ""}`}>
-          <NavLink to="/" className={linkClass} onClick={closeMenu}>
-            Beranda
-          </NavLink>
-          <NavLink to="/datawarga" className={linkClass} onClick={closeMenu}>
-            Data Warga
-          </NavLink>
-          <NavLink to="/kesehatan" className={linkClass} onClick={closeMenu}>
-            Kesehatan
-          </NavLink>
-          <NavLink to="/lingkungan" className={linkClass} onClick={closeMenu}>
-            Lingkungan
-          </NavLink>
-          <NavLink to="/banksampah" className={linkClass} onClick={closeMenu}>
-            Bank Sampah
-          </NavLink>
-          
-          {/* Opsi Logout untuk Mobile Menu */}
-          <button 
-            className="sirt-nav__link" 
-            onClick={onLogout}
-            style={{ 
-                background: 'transparent', 
-                border: 'none', 
-                color: '#ef4444', 
-                cursor: 'pointer',
-                textAlign: 'left',
-                width: '100%',
-                display: 'none' // Disembunyikan di desktop (diatur via CSS media query jika mau)
-            }}
-          >
-            Keluar
-          </button>
+          <NavLink to="/" className={linkClass} onClick={closeMenu}>Beranda</NavLink>
+          <NavLink to="/datawarga" className={linkClass} onClick={closeMenu}>Data Warga</NavLink>
+          <NavLink to="/kesehatan" className={linkClass} onClick={closeMenu}>Kesehatan</NavLink>
+          <NavLink to="/lingkungan" className={linkClass} onClick={closeMenu}>Lingkungan</NavLink>
+          <NavLink to="/banksampah" className={linkClass} onClick={closeMenu}>Bank Sampah</NavLink>
         </nav>
 
         <div className="sirt-nav__profile">
@@ -69,9 +45,9 @@ export default function Navbar({ onLogout }) {
             className="sirt-nav__avatar"
             onError={(e) => (e.currentTarget.style.display = "none")}
           />
-          <span className="sirt-nav__name">Admin RT</span>
+          <span className="sirt-nav__name">{userName}</span>
 
-          {/* TOMBOL LOGOUT DESKTOP */}
+          {/* HUBUNGKAN KE ONLOGOUT */}
           <button 
             onClick={onLogout} 
             title="Keluar Aplikasi"
@@ -96,13 +72,9 @@ export default function Navbar({ onLogout }) {
           <button
             type="button"
             className="sirt-nav__toggle"
-            aria-label="Toggle menu"
-            aria-expanded={open}
             onClick={() => setOpen((v) => !v)}
           >
-            <span />
-            <span />
-            <span />
+            <span /><span /><span />
           </button>
         </div>
       </div>

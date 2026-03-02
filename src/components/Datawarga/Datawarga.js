@@ -2,8 +2,8 @@ import React, { useState, useRef } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import * as XLSX from 'xlsx';
 import { GET_WARGA, GET_ALL_CITIZENS } from '../../graphql/userQueries';
-import { CREATE_FAMILY, UPDATE_FAMILY, DELETE_FAMILY, ADD_CITIZEN, DELETE_CITIZEN } from '../../graphql/userMutations';
-import { FaEye, FaEdit, FaTrash, FaUserPlus, FaUsers, FaIdCard, FaSearch, FaTimes, FaSave, FaFileExcel, FaUpload } from 'react-icons/fa';
+import { CREATE_FAMILY, UPDATE_FAMILY, DELETE_FAMILY, ADD_CITIZEN, DELETE_CITIZEN, PROCESS_SCAN_ALL } from '../../graphql/userMutations';
+import { FaEye, FaEdit, FaTrash, FaUserPlus, FaUsers, FaIdCard, FaSearch, FaTimes, FaSave, FaFileExcel, FaUpload, FaCamera } from 'react-icons/fa';
 import './Datawarga.css';
 
 const DataWarga = () => {
@@ -13,6 +13,7 @@ const DataWarga = () => {
   const [searchKK, setSearchKK] = useState(''); 
   
   const fileInputRef = useRef(null);
+  const scanInputRef = useRef(null); // Ref baru untuk Scan
 
   // State Modals Utama
   const [showAddKKModal, setShowAddKKModal] = useState(false);
@@ -34,6 +35,32 @@ const DataWarga = () => {
 
   // --- 2. GRAPHQL QUERIES & MUTATIONS ---
   const { data, loading, error, refetch } = useQuery(GET_WARGA, { fetchPolicy: "network-only" });
+
+  const [processScanAll, { loading: scanLoading }] = useMutation(PROCESS_SCAN_ALL);
+
+  // LOGIKA SCAN KK/KTP
+  const handleScanKKKTP = async (file) => {
+    if (!file) return;
+    
+    // Opsional: Kasih notifikasi saat proses berjalan biar user tidak bingung
+    alert("Mengirim dokumen ke sistem AI... Mohon tunggu sebentar.");
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = async () => {
+      const base64 = reader.result;
+      try {
+        const { data: res } = await processScanAll({ variables: { imageBase64: base64 } });
+        if (res.processScanAll.success) {
+          alert(`Berhasil! Keluarga ${res.processScanAll.family.kepalaKeluarga} dan seluruh anggotanya telah terdaftar.`);
+          refetch(); 
+        } else {
+          // Menangkap error jika AI gagal membaca
+          alert("Sistem Gagal Memproses: " + res.processScanAll.message);
+        }
+      } catch (err) { alert("Gagal memproses gambar/PDF: " + err.message); }
+    };
+  };
 
   const [createFamily] = useMutation(CREATE_FAMILY, {
     onCompleted: () => { 
@@ -152,10 +179,8 @@ const DataWarga = () => {
   );
 
   const latest10Families = filteredFamilies.slice(0, 10);
-
   const totalKeluarga = sortedFamilies.length;
   const totalOrang = sortedFamilies.reduce((acc, curr) => acc + curr.members.length, 0);
-
   const allCitizensFlat = sortedFamilies.flatMap(f => f.members.map(m => ({ ...m, namaKK: f.kepalaKeluarga, noKK: f.noKK })));
   
   const filteredWarga = allCitizensFlat.filter(m => 
@@ -171,7 +196,6 @@ const DataWarga = () => {
   if (loading) return <div className="p-5 text-center fw-bold text-primary">Memuat Data RT 14...</div>;
   if (error) return <div className="alert alert-danger m-5">Error Sistem: {error.message}</div>;
 
-  // --- 4. TAMPILAN UTAMA (UI) ---
   return (
     <div className="dw-page" style={{ padding: '32px', backgroundColor: '#f8faff', minHeight: '100vh' }}>
       
@@ -213,8 +237,16 @@ const DataWarga = () => {
         </div>
         
         <div className="d-flex gap-2">
-          <input type="file" accept=".xlsx, .xls" ref={fileInputRef} onChange={handleImportExcel} style={{ display: 'none' }} />
+          {/* ========================================================================= */}
+          {/* PERUBAHAN ADA DI BARIS BAWAH INI (accept="image/*, application/pdf") */}
+          {/* ========================================================================= */}
+          <input type="file" hidden ref={scanInputRef} accept="image/*, application/pdf" onChange={(e) => handleScanKKKTP(e.target.files[0])} />
           
+          <button className="btn text-white fw-bold px-4 py-2 rounded-3 shadow-sm d-flex align-items-center" onClick={() => scanInputRef.current.click()} style={{ backgroundColor: '#6366f1', border: 'none' }}>
+            <FaCamera className="me-2"/> {scanLoading ? 'SCANNING...' : 'SCAN KK/KTP/PDF'}
+          </button>
+
+          <input type="file" accept=".xlsx, .xls" ref={fileInputRef} onChange={handleImportExcel} style={{ display: 'none' }} />
           <button className="btn text-white fw-bold px-4 py-2 rounded-3 shadow-sm d-flex align-items-center" onClick={() => fileInputRef.current.click()} style={{ backgroundColor: '#f59e0b', border: 'none' }} title="Import Data KK dari Excel">
             <FaUpload className="me-2"/> IMPORT EXCEL
           </button>
@@ -344,8 +376,6 @@ const DataWarga = () => {
                 <FaTimes className="text-white fs-5 cursor-pointer" onClick={() => setSelectedUser(null)} />
               </div>
               <div className="modal-body p-4 bg-light">
-                
-                {/* Form Tambah Anggota */}
                 <div className="bg-white p-4 rounded-4 mb-4 shadow-sm border border-primary border-opacity-10">
                   <h6 className="fw-bold text-primary mb-3"><FaUserPlus className="me-2"/>Registrasi Anggota Baru</h6>
                   <form onSubmit={e => { 
@@ -357,7 +387,6 @@ const DataWarga = () => {
                       <div className="col-md-3"><label className="small fw-bold text-muted mb-1">NIK (16 Digit)</label><input type="number" className="form-control border-2" required value={memberForm.nik} onChange={e => setMemberForm({...memberForm, nik: e.target.value})} /></div>
                       <div className="col-md-3"><label className="small fw-bold text-muted mb-1">Tempat Lahir</label><input type="text" className="form-control border-2" required value={memberForm.placeOfBirth} onChange={e => setMemberForm({...memberForm, placeOfBirth: e.target.value})} /></div>
                       <div className="col-md-3"><label className="small fw-bold text-muted mb-1">Tanggal Lahir</label><input type="date" className="form-control border-2" required value={memberForm.dateOfBirth} onChange={e => setMemberForm({...memberForm, dateOfBirth: e.target.value})} /></div>
-                      
                       <div className="col-md-2"><label className="small fw-bold text-muted mb-1">Hubungan</label>
                         <select className="form-select border-2 fw-bold" value={memberForm.relationship} onChange={e => setMemberForm({...memberForm, relationship: e.target.value})}>
                           <option value="KEPALA KELUARGA">SUAMI / KK</option><option value="ISTRI">ISTRI</option><option value="ANAK">ANAK</option><option value="FAMILI LAIN">FAMILI LAIN</option>
@@ -384,7 +413,6 @@ const DataWarga = () => {
                   </form>
                 </div>
 
-                {/* Tabel List Warga di Dalam KK */}
                 <div className="table-responsive bg-white rounded-4 border shadow-sm">
                   <table className="table mb-0 small table-striped align-middle">
                     <thead className="bg-light">
@@ -406,13 +434,9 @@ const DataWarga = () => {
                               {m.relationship}
                             </span>
                           </td>
-                          <td className="text-center fw-bold text-success">
-                            {m.age || 0} Thn
-                          </td>
+                          <td className="text-center fw-bold text-success">{m.age || 0} Thn</td>
                           <td className="text-center">
-                            <button className="btn btn-sm btn-outline-info rounded-pill px-3 border-2 fw-bold me-2" onClick={() => setSelectedCitizenDetail(m)} title="Lihat Biodata Lengkap">
-                              <FaIdCard className="me-1"/> Profil
-                            </button>
+                            <button className="btn btn-sm btn-outline-info rounded-pill px-3 border-2 fw-bold me-2" onClick={() => setSelectedCitizenDetail(m)} title="Lihat Biodata Lengkap"><FaIdCard className="me-1"/> Profil</button>
                             <button className="btn btn-sm text-danger" onClick={() => window.confirm("Hapus warga?") && deleteCitizen({ variables: { id: m.id } })} title="Hapus Anggota"><FaTrash /></button>
                           </td>
                         </tr>
@@ -438,67 +462,27 @@ const DataWarga = () => {
               <div className="modal-body p-4 bg-white">
                 <div className="row g-3">
                   <div className="col-12 text-center mb-3">
-                    <div className="bg-success bg-opacity-10 text-success rounded-circle d-inline-flex align-items-center justify-content-center shadow-sm" style={{width: '80px', height: '80px', fontSize: '35px', fontWeight: 'bold'}}>
-                      {selectedCitizenDetail.name.charAt(0).toUpperCase()}
-                    </div>
+                    <div className="bg-success bg-opacity-10 text-success rounded-circle d-inline-flex align-items-center justify-content-center shadow-sm" style={{width: '80px', height: '80px', fontSize: '35px', fontWeight: 'bold'}}>{selectedCitizenDetail.name.charAt(0).toUpperCase()}</div>
                     <h4 className="fw-bold mt-3 text-dark mb-1">{selectedCitizenDetail.name}</h4>
-                    <h6 className={`fw-bold mt-2 ${(selectedCitizenDetail.relationship || "").toUpperCase().includes("KEPALA") || (selectedCitizenDetail.relationship || "").toUpperCase().includes("SUAMI") ? "text-primary" : (selectedCitizenDetail.relationship || "").toUpperCase().includes("ISTRI") ? "text-danger" : "text-info"}`}>
-                      {selectedCitizenDetail.relationship}
-                    </h6>
+                    <h6 className={`fw-bold mt-2 ${(selectedCitizenDetail.relationship || "").toUpperCase().includes("KEPALA") || (selectedCitizenDetail.relationship || "").toUpperCase().includes("SUAMI") ? "text-primary" : (selectedCitizenDetail.relationship || "").toUpperCase().includes("ISTRI") ? "text-danger" : "text-info"}`}>{selectedCitizenDetail.relationship}</h6>
                   </div>
-                  
-                  <div className="col-6">
-                    <div className="p-3 bg-light rounded-3 h-100 border border-secondary border-opacity-25">
-                      <p className="text-muted small mb-1">Nomor Induk Kependudukan</p>
-                      <h6 className="fw-bold text-dark mb-0">{selectedCitizenDetail.nik}</h6>
-                    </div>
-                  </div>
-                  <div className="col-6">
-                    <div className="p-3 bg-light rounded-3 h-100 border border-secondary border-opacity-25">
-                      <p className="text-muted small mb-1">Nomor Handphone</p>
-                      <h6 className="fw-bold text-primary mb-0">{selectedCitizenDetail.phone || "-"}</h6>
-                    </div>
-                  </div>
-                  
-                  <div className="col-6 mt-4">
-                    <p className="text-muted small mb-1 border-bottom pb-1">Tempat, Tanggal Lahir</p>
-                    <h6 className="fw-bold text-dark">{selectedCitizenDetail.placeOfBirth || "-"}, <br/> {formatTanggal(selectedCitizenDetail.dateOfBirth)}</h6>
-                  </div>
-                  <div className="col-6 mt-4">
-                    <p className="text-muted small mb-1 border-bottom pb-1">Umur Saat Ini</p>
-                    <h6 className="fw-bold text-success fs-5">{selectedCitizenDetail.age || 0} Tahun</h6>
-                  </div>
-                  
-                  <div className="col-6 mt-3">
-                    <p className="text-muted small mb-1 border-bottom pb-1">Jenis Kelamin</p>
-                    <h6 className="fw-bold text-dark">{selectedCitizenDetail.gender === 'L' ? 'Laki-Laki' : 'Perempuan'}</h6>
-                  </div>
-                  <div className="col-6 mt-3">
-                    <p className="text-muted small mb-1 border-bottom pb-1">Agama</p>
-                    <h6 className="fw-bold text-dark">{selectedCitizenDetail.religion}</h6>
-                  </div>
-                  
-                  <div className="col-6 mt-3">
-                    <p className="text-muted small mb-1 border-bottom pb-1">Profesi / Pekerjaan</p>
-                    <h6 className="fw-bold text-dark">{selectedCitizenDetail.profession || "-"}</h6>
-                  </div>
-                  <div className="col-6 mt-3">
-                    <p className="text-muted small mb-1 border-bottom pb-1">Jaminan Kesehatan</p>
-                    <h6 className="fw-bold text-dark">{selectedCitizenDetail.insurance || "-"}</h6>
-                  </div>
+                  <div className="col-6"><div className="p-3 bg-light rounded-3 h-100 border border-secondary border-opacity-25"><p className="text-muted small mb-1">NIK</p><h6 className="fw-bold text-dark mb-0">{selectedCitizenDetail.nik}</h6></div></div>
+                  <div className="col-6"><div className="p-3 bg-light rounded-3 h-100 border border-secondary border-opacity-25"><p className="text-muted small mb-1">No. HP</p><h6 className="fw-bold text-primary mb-0">{selectedCitizenDetail.phone || "-"}</h6></div></div>
+                  <div className="col-6 mt-4"><p className="text-muted small mb-1 border-bottom pb-1">Tempat, Tanggal Lahir</p><h6 className="fw-bold text-dark">{selectedCitizenDetail.placeOfBirth || "-"}, <br/> {formatTanggal(selectedCitizenDetail.dateOfBirth)}</h6></div>
+                  <div className="col-6 mt-4"><p className="text-muted small mb-1 border-bottom pb-1">Umur Saat Ini</p><h6 className="fw-bold text-success fs-5">{selectedCitizenDetail.age || 0} Tahun</h6></div>
+                  <div className="col-6 mt-3"><p className="text-muted small mb-1 border-bottom pb-1">Jenis Kelamin</p><h6 className="fw-bold text-dark">{selectedCitizenDetail.gender === 'L' ? 'Laki-Laki' : 'Perempuan'}</h6></div>
+                  <div className="col-6 mt-3"><p className="text-muted small mb-1 border-bottom pb-1">Agama</p><h6 className="fw-bold text-dark">{selectedCitizenDetail.religion}</h6></div>
+                  <div className="col-6 mt-3"><p className="text-muted small mb-1 border-bottom pb-1">Profesi</p><h6 className="fw-bold text-dark">{selectedCitizenDetail.profession || "-"}</h6></div>
+                  <div className="col-6 mt-3"><p className="text-muted small mb-1 border-bottom pb-1">Asuransi</p><h6 className="fw-bold text-dark">{selectedCitizenDetail.insurance || "-"}</h6></div>
                 </div>
               </div>
-              <div className="modal-footer bg-light border-0">
-                <button className="btn btn-secondary w-100 fw-bold rounded-3 shadow-sm py-2" onClick={() => setSelectedCitizenDetail(null)}>TUTUP PROFIL</button>
-              </div>
+              <div className="modal-footer bg-light border-0"><button className="btn btn-secondary w-100 fw-bold rounded-3 shadow-sm py-2" onClick={() => setSelectedCitizenDetail(null)}>TUTUP PROFIL</button></div>
             </div>
           </div>
         </div>
       )}
 
-      {/* ================= MODAL BARU (STATISTIK KLIK) ================= */}
-
-      {/* 5. MODAL DAFTAR SELURUH KARTU KELUARGA (Klik Card Biru) */}
+      {/* 5. MODAL DAFTAR SELURUH KK */}
       {showAllKKModal && (
         <div className="modal show d-block p-4" style={{ backgroundColor: 'rgba(0,0,0,0.85)', position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1050, overflowY: 'auto' }}>
           <div className="modal-dialog modal-xl modal-dialog-centered">
@@ -508,49 +492,11 @@ const DataWarga = () => {
                 <FaTimes className="text-white fs-5 cursor-pointer" onClick={() => { setShowAllKKModal(false); setSearchKK(''); }} />
               </div>
               <div className="modal-body p-4 bg-light">
-                
-                {/* SEARCH BAR KHUSUS DI DALAM MODAL KK */}
-                <div className="mb-4">
-                  <div className="p-2 bg-white border rounded-3 shadow-sm d-flex align-items-center" style={{ maxWidth: '400px' }}>
-                    <FaSearch className="text-muted mx-2" />
-                    <input 
-                      type="text" 
-                      className="form-control border-0 bg-transparent shadow-none" 
-                      placeholder="Cari No KK / Kepala Keluarga..." 
-                      value={searchKK} 
-                      onChange={e => setSearchKK(e.target.value)} 
-                    />
-                  </div>
-                </div>
-
+                <div className="mb-4"><div className="p-2 bg-white border rounded-3 shadow-sm d-flex align-items-center" style={{ maxWidth: '400px' }}><FaSearch className="text-muted mx-2" /><input type="text" className="form-control border-0 bg-transparent shadow-none" placeholder="Cari No KK..." value={searchKK} onChange={e => setSearchKK(e.target.value)} /></div></div>
                 <div className="table-responsive bg-white rounded-4 border shadow-sm">
                   <table className="table mb-0 small table-striped align-middle">
-                    <thead className="bg-light">
-                      <tr>
-                        <th className="ps-4 py-3 text-uppercase text-muted">No KK</th>
-                        <th className="text-uppercase text-muted">Kepala Keluarga</th>
-                        <th className="text-uppercase text-muted">Alamat</th>
-                        <th className="text-uppercase text-muted">Status</th>
-                        <th className="text-center text-uppercase text-muted">Jumlah Anggota</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredAllKK.length > 0 ? filteredAllKK.map(f => (
-                        <tr key={f.id}>
-                          <td className="ps-4 fw-bold text-secondary">{f.noKK}</td>
-                          <td className="fw-bold text-primary">{f.kepalaKeluarga}</td>
-                          <td className="text-muted">{f.address}</td>
-                          <td>
-                            <span className={`fw-bold small ${f.ownershipStatus === 'RENT' ? 'text-warning' : f.ownershipStatus === 'OFFICIAL' ? 'text-secondary' : 'text-success'}`}>
-                              {f.ownershipStatus || "OWNED"}
-                            </span>
-                          </td>
-                          <td className="text-center fw-bold">{f.members?.length || 0} Orang</td>
-                        </tr>
-                      )) : (
-                        <tr><td colSpan="5" className="text-center py-4 text-muted fw-bold">Data KK tidak ditemukan.</td></tr>
-                      )}
-                    </tbody>
+                    <thead className="bg-light"><tr><th className="ps-4 py-3">No KK</th><th>Kepala Keluarga</th><th>Alamat</th><th>Status</th><th>Jumlah</th></tr></thead>
+                    <tbody>{filteredAllKK.map(f => (<tr key={f.id}><td className="ps-4 fw-bold text-secondary">{f.noKK}</td><td className="fw-bold text-primary">{f.kepalaKeluarga}</td><td className="text-muted">{f.address}</td><td>{f.ownershipStatus}</td><td className="text-center">{f.members?.length} Orang</td></tr>))}</tbody>
                   </table>
                 </div>
               </div>
@@ -559,7 +505,7 @@ const DataWarga = () => {
         </div>
       )}
 
-      {/* 6. MODAL DAFTAR SELURUH WARGA RT (Klik Card Hijau) */}
+      {/* 6. MODAL DAFTAR SELURUH WARGA */}
       {showAllWargaModal && (
         <div className="modal show d-block p-4" style={{ backgroundColor: 'rgba(0,0,0,0.85)', position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', zIndex: 1050, overflowY: 'auto' }}>
           <div className="modal-dialog modal-xl modal-dialog-centered">
@@ -569,60 +515,11 @@ const DataWarga = () => {
                 <FaTimes className="text-white fs-5 cursor-pointer" onClick={() => { setShowAllWargaModal(false); setSearchWarga(''); }} />
               </div>
               <div className="modal-body p-4 bg-light">
-                
-                <div className="mb-4">
-                  <div className="p-2 bg-white border rounded-3 shadow-sm d-flex align-items-center" style={{ maxWidth: '400px' }}>
-                    <FaSearch className="text-muted mx-2" />
-                    <input 
-                      type="text" 
-                      className="form-control border-0 bg-transparent shadow-none" 
-                      placeholder="Cari Nama Warga / NIK..." 
-                      value={searchWarga} 
-                      onChange={e => setSearchWarga(e.target.value)} 
-                    />
-                  </div>
-                </div>
-
+                <div className="mb-4"><div className="p-2 bg-white border rounded-3 shadow-sm d-flex align-items-center" style={{ maxWidth: '400px' }}><FaSearch className="text-muted mx-2" /><input type="text" className="form-control border-0 bg-transparent shadow-none" placeholder="Cari Nama Warga..." value={searchWarga} onChange={e => setSearchWarga(e.target.value)} /></div></div>
                 <div className="table-responsive bg-white rounded-4 border shadow-sm">
                   <table className="table mb-0 small table-striped align-middle">
-                    <thead className="bg-light">
-                      <tr>
-                        <th className="ps-4 py-3 text-uppercase text-muted">Nama Lengkap</th>
-                        <th className="text-uppercase text-muted">NIK</th>
-                        <th className="text-uppercase text-muted">Keluarga (Nama KK)</th>
-                        <th className="text-uppercase text-muted">Status Dlm KK</th>
-                        <th className="text-center text-uppercase text-muted">Umur</th>
-                        <th className="text-center text-uppercase text-muted">L/P</th>
-                        <th className="text-center text-uppercase text-muted">Aksi</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredWarga.length > 0 ? filteredWarga.map((m, idx) => (
-                        <tr key={idx}>
-                          <td className="ps-4 fw-bold text-primary">{m.name}</td>
-                          <td className="text-muted">{m.nik}</td>
-                          <td className="fw-medium text-secondary">{m.namaKK}</td>
-                          <td>
-                            <span className={`fw-bold small ${(m.relationship || "").toUpperCase().includes("KEPALA") || (m.relationship || "").toUpperCase().includes("SUAMI") ? "text-primary" : (m.relationship || "").toUpperCase().includes("ISTRI") ? "text-danger" : "text-info"}`}>
-                              {m.relationship}
-                            </span>
-                          </td>
-                          <td className="text-center fw-bold text-success">
-                            {m.age || 0} Thn
-                          </td>
-                          <td className="text-center">{m.gender}</td>
-                          <td className="text-center">
-                            <button className="btn btn-sm btn-outline-info rounded-pill px-3 border-2 fw-bold" onClick={() => setSelectedCitizenDetail(m)} title="Lihat Profil">
-                              <FaIdCard className="me-1"/> Profil
-                            </button>
-                          </td>
-                        </tr>
-                      )) : (
-                        <tr>
-                          <td colSpan="7" className="text-center py-4 text-muted fw-bold">Warga dengan Nama/NIK tersebut tidak ditemukan.</td>
-                        </tr>
-                      )}
-                    </tbody>
+                    <thead className="bg-light"><tr><th className="ps-4">Nama</th><th>NIK</th><th>Nama KK</th><th>Umur</th><th>Aksi</th></tr></thead>
+                    <tbody>{filteredWarga.map((m, idx) => (<tr key={idx}><td className="ps-4 fw-bold text-primary">{m.name}</td><td>{m.nik}</td><td>{m.namaKK}</td><td className="text-center">{m.age} Thn</td><td className="text-center"><button className="btn btn-sm btn-outline-info rounded-pill px-3 border-2 fw-bold" onClick={() => setSelectedCitizenDetail(m)}><FaIdCard className="me-1"/> Profil</button></td></tr>))}</tbody>
                   </table>
                 </div>
               </div>

@@ -3,15 +3,11 @@ import { useMutation, gql } from '@apollo/client';
 import Swal from 'sweetalert2';
 import './Login.css'; 
 
-// Mutation disesuaikan dengan AuthPayload di BE
 const LOGIN_USER = gql`
   mutation Login($username: String!, $password: String!) {
     login(username: $username, password: $password) {
       token
-      user {
-        username
-        role
-      }
+      user { username role }
     }
   }
 `;
@@ -22,93 +18,51 @@ const Login = ({ setToken }) => {
 
   const [login, { loading }] = useMutation(LOGIN_USER, {
     onCompleted: (data) => {
-      // Mengambil data dari payload login
-      const { token, user } = data.login;
-
-      // Simpan data ke LocalStorage untuk menjaga sesi tetap aktif
-      localStorage.setItem('authToken', token);
-      localStorage.setItem('user', user.username);
-      localStorage.setItem('userRole', user.role);
-      
-      // Update state token di App.js
-      setToken(token);
-      
-      Swal.fire({
-        icon: 'success',
-        title: 'Selamat Datang!',
-        text: `Halo, Pak ${user.username}`,
-        showConfirmButton: false,
-        timer: 1500
-      }).then(() => {
-        // Refresh kecil untuk memastikan semua komponen mendapat state terbaru
-        window.location.reload(); 
-      });
+      localStorage.setItem('authToken', data.login.token);
+      localStorage.setItem('user', data.login.user.username);
+      setToken(data.login.token);
+      Swal.fire('Berhasil', 'Selamat Datang Pak RT!', 'success');
     },
-    onError: (error) => {
-      // Menampilkan pesan error asli dari Backend (misal: "User tidak ditemukan")
-      Swal.fire({
-        icon: 'error',
-        title: 'Akses Ditolak',
-        text: error.message || 'Username atau Password salah!',
-      });
-    }
+    onError: (err) => Swal.fire('Gagal', err.message, 'error')
   });
 
-  const handleSubmit = (e) => {
+  const handleLogin = (e) => {
     e.preventDefault();
-    
-    // Normalisasi: Kirim username dengan huruf kecil agar cocok dengan database
-    login({ 
-      variables: { 
-        username: username.trim().toLowerCase(), 
-        password: password 
-      } 
-    });
+    login({ variables: { username, password } });
   };
 
   return (
     <div className="login-wrapper">
       <div className="login-card">
         <div className="login-header">
-          {/* Pastikan path logo benar sesuai folder public Kakak */}
-          <img src="/image/logoSiRT.png" alt="Logo" className="app-logo" />
-          <h2>Layanan Digital RT 14</h2>
-          <p>Silakan masuk untuk mengelola data warga</p>
+          <img src="/image/logoSiRT.png" alt="Logo" className="app-logo" style={{width: '80px'}} />
+          <h2>SiRT 14 - Login Admin</h2>
+          <p>Masukkan akses manual kawan</p>
         </div>
         
-        <form onSubmit={handleSubmit} className="login-body">
+        <form onSubmit={handleLogin} className="login-body">
           <div className="input-group">
-            <label>Username</label>
-            <input
-              type="text"
-              placeholder="Masukkan username (adminrt14)"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-              autoComplete="username"
+            <input 
+              type="text" 
+              placeholder="Username Manual" 
+              value={username} 
+              onChange={(e) => setUsername(e.target.value)} 
+              required 
             />
           </div>
-          
           <div className="input-group">
-            <label>Password</label>
-            <input
-              type="password"
-              placeholder="Masukkan password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              autoComplete="current-password"
+            <input 
+              type="password" 
+              placeholder="Password Manual" 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)} 
+              required 
             />
           </div>
-          
           <button type="submit" className="login-btn" disabled={loading}>
-            {loading ? 'Memverifikasi...' : 'MASUK KE SISTEM'}
+            {loading ? 'Memverifikasi...' : 'MASUK SEKARANG'}
           </button>
         </form>
-        
-        <div className="login-footer">
-          <p>© 2026 Pengurus Rukun Tetangga 14 - Bogor</p>
-        </div>
       </div>
     </div>
   );

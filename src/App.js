@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { ApolloProvider } from "@apollo/client";
 import client from "./apolloClient";
 
-// Import Components
+import Login from "./components/Login/Login";
 import Navbar from "./components/Navbar/Navbar";
 import Home from "./components/Home/Home";
 import Datawarga from "./components/Datawarga/Datawarga";
@@ -16,41 +16,35 @@ import TambahDataSampah from "./components/Banksampah/TambahDataSampah";
 import './App.css'; 
 
 const App = () => {
-  // BYPASS: Langsung set token seolah-olah sudah login
-  const [token, setToken] = useState("token-bypass-admin-rt14");
+  const [token, setToken] = useState(localStorage.getItem("authToken"));
 
-  useEffect(() => {
-    // Memasukkan data palsu ke localStorage agar komponen lain tidak error
-    localStorage.setItem("authToken", "token-bypass-admin-rt14");
-    localStorage.setItem("user", "Admin RT 14 (Bypass)");
-    localStorage.setItem("userRole", "admin");
-  }, []);
+  const handleLogout = () => {
+    localStorage.clear();
+    setToken(null);
+  };
 
   return (
     <ApolloProvider client={client}>
-      <Router>
-        {/* Navbar akan selalu muncul karena kita 'sudah login' */}
-        <Navbar />
-        
-        {/* Spacer agar konten tidak tertutup Navbar */}
-        <div className="app-nav-spacer" style={{ height: '70px' }} />
-
-        <div className="app-container">
-          <Routes>
-            {/* Semua Route sekarang terbuka lebar */}
-            <Route path="/" element={<Home />} />
-            <Route path="/datawarga" element={<Datawarga />} />
-            <Route path="/kesehatan" element={<Kesehatan />} />
-            <Route path="/lingkungan" element={<KegiatanLingkungan />} />
-            <Route path="/banksampah" element={<Banksampah />} />
-            <Route path="/datasampah" element={<DataSampah />} />
-            <Route path="/tambahdatasampah" element={<TambahDataSampah />} />
-
-            {/* Jika user mengakses halaman yang tidak ada, arahkan ke Home */}
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
-        </div>
-      </Router>
+      {!token ? (
+        <Login setToken={setToken} />
+      ) : (
+        <Router>
+          <Navbar onLogout={handleLogout} />
+          <div className="app-nav-spacer" style={{ height: '70px' }} />
+          <div className="app-container">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/datawarga" element={<Datawarga />} />
+              <Route path="/kesehatan" element={<Kesehatan />} />
+              <Route path="/lingkungan" element={<KegiatanLingkungan />} />
+              <Route path="/banksampah" element={<Banksampah />} />
+              <Route path="/datasampah" element={<DataSampah />} />
+              <Route path="/tambahdatasampah" element={<TambahDataSampah />} />
+              <Route path="*" element={<Navigate to="/" />} />
+            </Routes>
+          </div>
+        </Router>
+      )}
     </ApolloProvider>
   );
 };

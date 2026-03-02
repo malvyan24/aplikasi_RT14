@@ -1,51 +1,52 @@
-import {
-  ApolloClient,
-  InMemoryCache,
-  createHttpLink,
-  from,
-} from "@apollo/client";
-import { setContext } from "@apollo/client/link/context";
-import { onError } from "@apollo/client/link/error";
+// import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
+// import { setContext } from "@apollo/client/link/context";
 
-// 1. Link ke Ngrok Alip (Pastikan link ini update kalau Alip restart Ngrok)
+// const httpLink = createHttpLink({
+//   // TEMBAK KE PORT 4000 (API GATEWAY)
+//   uri: "http://192.168.1.32:4000/graphql",
+// });
+
+// const authLink = setContext((_, { headers }) => {
+//   const token = localStorage.getItem("authToken");
+//   return {
+//     headers: {
+//       ...headers,
+//       authorization: token ? `Bearer ${token}` : "",
+//       // Header ini opsional jika kawan tidak menggunakan tunnel/ngrok
+//       "ngrok-skip-browser-warning": "true",
+//     },
+//   };
+// });
+
+// const client = new ApolloClient({
+//   link: authLink.concat(httpLink),
+//   cache: new InMemoryCache(),
+// });
+
+// export default client;
+
+import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
+
+// Menambahkan httpLink ke server proxy yang Anda buat di backend (tidak langsung ke API eksternal)
 const httpLink = createHttpLink({
-  // Minta Alip cek IP laptopnya (ketik ipconfig di CMD)
-  // Contoh IP: 192.168.1.15
-  uri: "http://192.168.1.26:4002/graphql",
+  uri: "https://velutinous-supercivilized-delinda.ngrok-free.dev/graphql", // Ganti dengan alamat server backend
 });
 
-// 2. Setup Header Bypass
 const authLink = setContext((_, { headers }) => {
   const token = localStorage.getItem("authToken");
   return {
     headers: {
       ...headers,
       authorization: token ? `Bearer ${token}` : "",
-      "ngrok-skip-browser-warning": "true", // Bypass halaman biru Ngrok
-      "apollo-require-preflight": "true", // Bypass keamanan Apollo
+      "ngrok-skip-browser-warning": "true", // Hanya jika Anda menggunakan ngrok untuk tunneling
     },
   };
 });
 
-// 3. Error Handler untuk Debugging
-const errorLink = onError(({ graphQLErrors, networkError }) => {
-  if (graphQLErrors) {
-    graphQLErrors.forEach(({ message }) =>
-      console.error(`[GraphQL error]: ${message}`),
-    );
-  }
-  if (networkError) {
-    console.error(`[Network error]: ${networkError}`);
-  }
-});
-
 const client = new ApolloClient({
-  link: from([errorLink, authLink, httpLink]),
+  link: authLink.concat(httpLink),
   cache: new InMemoryCache(),
-  defaultOptions: {
-    watchQuery: { fetchPolicy: "no-cache" },
-    query: { fetchPolicy: "no-cache" },
-  },
 });
 
 export default client;

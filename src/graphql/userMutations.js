@@ -19,7 +19,6 @@ export const UPDATE_FAMILY = gql`
   }
 `;
 
-// PERBAIKAN: Namanya diubah menjadi DELETE_FAMILY agar tidak error di komponen
 export const DELETE_FAMILY = gql`
   mutation DeleteFamily($id: ID!) {
     deleteFamily(id: $id)
@@ -95,5 +94,29 @@ export const UPDATE_CITIZEN = gql`
 export const DELETE_CITIZEN = gql`
   mutation DeleteCitizen($id: ID!) {
     deleteCitizen(id: $id)
+  }
+`;
+
+// --- TAMBAHKAN MUTASI INI ---
+export const PROCESS_SCAN_ALL = gql`
+  mutation ProcessScanAll($imageBase64: String!) {
+    processScanAll(imageBase64: $imageBase64) {
+      success
+      message
+      family {
+        id
+        kepalaKeluarga
+        noKK
+      }
+    }
+  }
+`;
+
+export const REGISTER_USER = gql`
+  mutation RegisterUser($email: String!, $role: String!) {
+    registerUser(email: $email, role: $role) {
+      success
+      message
+    }
   }
 `;
