@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useQuery, useMutation } from "@apollo/client";
-import { GET_ALL_HEALTH_RECORDS } from "../../graphql/healthQueries";
-import { DELETE_HEALTH_RECORD, UPDATE_HEALTH_RECORD } from "../../graphql/healthMutations";
+import { GET_ALL_HEALTH_RECORDS } from "../../../graphql/healthQueries";
+import { DELETE_HEALTH_RECORD, UPDATE_HEALTH_RECORD } from "../../../graphql/healthMutations";
 import MasterListModal from "./MasterListModal"; // Import Modal Identitas
 import { FaTrash, FaEdit, FaHistory, FaSave, FaTimes, FaUserTag } from "react-icons/fa";
 

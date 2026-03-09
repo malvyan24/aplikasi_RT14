@@ -1,7 +1,7 @@
 import React from 'react';
 import { useQuery } from '@apollo/client';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
-import { GET_HEALTH_STATS } from '../../graphql/healthQueries';
+import { GET_HEALTH_STATS } from '../../../graphql/healthQueries';
 
 const HealthStatsChart = () => {
   const { data, loading } = useQuery(GET_HEALTH_STATS, { pollInterval: 5000 });

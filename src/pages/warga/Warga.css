@@ -1,0 +1,40 @@
+.warga-page { padding: 20px; animation: fadeIn 0.5s ease; }
+.warga-loading { padding: 40px; text-align: center; color: #3f54fb; font-weight: bold; }
+
+/* Welcome Section */
+.warga-welcome h2 span { color: #3f54fb; }
+.warga-welcome p { color: #6b7280; font-size: 14px; margin-bottom: 25px; }
+
+/* Cards */
+.warga-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+.warga-card { background: white; padding: 20px; border-radius: 16px; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+.card-icon { font-size: 30px; }
+.label { font-size: 12px; color: #6b7280; font-weight: bold; text-transform: uppercase; }
+.card--green { border-left: 5px solid #10b981; }
+.card--blue { border-left: 5px solid #3b82f6; }
+.card--purple { border-left: 5px solid #8b5cf6; }
+
+/* KK Box */
+.kk-box { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+.kk-header { background: #3f54fb; color: white; padding: 30px; text-align: center; }
+.kk-header p { font-size: 11px; opacity: 0.8; letter-spacing: 2px; }
+.kk-header h1 { font-size: 28px; margin: 10px 0; }
+.member-list { padding: 20px; }
+.member-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #f3f4f6; }
+.name { font-weight: bold; color: #111827; }
+.nik { font-size: 12px; color: #6b7280; }
+.tag { font-size: 10px; background: #eff6ff; color: #3b82f6; padding: 4px 10px; border-radius: 20px; font-weight: bold; }
+
+/* Table */
+.table-container { background: white; border-radius: 12px; overflow: hidden; margin-top: 15px; }
+.warga-table { width: 100%; border-collapse: collapse; }
+.warga-table th { background: #f9fafb; padding: 15px; text-align: left; font-size: 13px; color: #6b7280; }
+.warga-table td { padding: 15px; border-bottom: 1px solid #f3f4f6; font-size: 14px; }
+.text-green { color: #10b981; font-weight: bold; }
+
+/* Health Card */
+.health-card { background: white; padding: 20px; border-radius: 12px; border-left: 4px solid #ef4444; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; }
+.health-top { display: flex; justify-content: space-between; margin-bottom: 10px; }
+.status-badge { background: #fee2e2; color: #ef4444; font-size: 10px; padding: 4px 8px; border-radius: 6px; font-weight: bold; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }

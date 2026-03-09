@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
-import { GET_ALL_CITIZENS, GET_WARGA } from '../../graphql/userQueries'; 
-import { ADD_SETORAN_SAMPAH } from '../../graphql/sampahMutations';
-import { GET_SAMPAH_STATS } from '../../graphql/sampahQueries';
+import { GET_ALL_CITIZENS, GET_WARGA } from '../../../graphql/userQueries'; 
+import { ADD_SETORAN_SAMPAH } from '../../../graphql/sampahMutations';
+import { GET_SAMPAH_STATS } from '../../../graphql/sampahQueries';
 
 const TambahDataSampah = () => {
   // State untuk Data

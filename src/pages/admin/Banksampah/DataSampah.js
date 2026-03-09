@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
-import { GET_WARGA } from '../../graphql/userQueries';
-import { GET_SAMPAH_STATS } from '../../graphql/sampahQueries';
-import { UPDATE_FAMILY_WASTE, DELETE_FAMILY_WASTE } from '../../graphql/sampahMutations';
+import { GET_WARGA } from '../../../graphql/userQueries';
+import { GET_SAMPAH_STATS } from '../../../graphql/sampahQueries';
+import { UPDATE_FAMILY_WASTE, DELETE_FAMILY_WASTE } from '../../../graphql/sampahMutations';
 
 const DataSampah = () => {
   const { data, loading, error } = useQuery(GET_WARGA);

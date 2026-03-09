@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useQuery, useMutation } from "@apollo/client";
-import { GET_WARGA, GET_ALL_CITIZENS } from "../../graphql/userQueries";
-import { ADD_CITIZEN, DELETE_CITIZEN, DELETE_WARGA, UPDATE_FAMILY } from "../../graphql/userMutations";
+import { GET_WARGA, GET_ALL_CITIZENS } from "../../../graphql/userQueries";
+import { ADD_CITIZEN, DELETE_CITIZEN, DELETE_WARGA, UPDATE_FAMILY } from "../../../graphql/userMutations";
 import { FaEye, FaTrash, FaUsers, FaSearch, FaEdit, FaSave, FaTimes, FaUserPlus, FaIdCard } from "react-icons/fa";
 
 const UserList = () => {

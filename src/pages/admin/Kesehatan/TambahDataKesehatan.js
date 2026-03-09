@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useMutation } from "@apollo/client";
-import { ADD_HEALTH_RECORD } from "../../graphql/healthMutations";
-import { GET_ALL_HEALTH_RECORDS } from "../../graphql/healthQueries";
+import { ADD_HEALTH_RECORD } from "../../../graphql/healthMutations";
+import { GET_ALL_HEALTH_RECORDS } from "../../../graphql/healthQueries";
 import { FaSave, FaFemale, FaUserCheck } from "react-icons/fa";
 
 const TambahDataKesehatan = ({ allMembers }) => {

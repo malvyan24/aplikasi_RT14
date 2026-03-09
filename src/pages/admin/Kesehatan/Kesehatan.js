@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useQuery } from "@apollo/client";
-import { GET_WARGA } from "../../graphql/userQueries";
-import { GET_ALL_HEALTH_RECORDS } from "../../graphql/healthQueries";
+import { GET_WARGA } from "../../../graphql/userQueries";
+import { GET_ALL_HEALTH_RECORDS } from "../../../graphql/healthQueries";
 import HealthStatsChart from "./HealthStatsChart";
 import TambahDataKesehatan from "./TambahDataKesehatan";
 import DaftarKesehatan from "./DaftarKesehatan";

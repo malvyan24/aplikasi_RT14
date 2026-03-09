@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useMutation } from "@apollo/client";
-import { ADD_WARGA } from "../../graphql/userMutations";
-import { GET_WARGA } from "../../graphql/userQueries";
+import { ADD_WARGA } from "../../../graphql/userMutations";
+import { GET_WARGA } from "../../../graphql/userQueries";
 
 const AddUser = () => {
   const [nik, setNik] = useState(""); 

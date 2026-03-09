@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useQuery } from '@apollo/client';
-import { GET_KAS_DATA } from '../../graphql/kegiatanQueries';
+import { GET_KAS_DATA } from '../../../graphql/kegiatanQueries';
 import { 
   FaCalendarAlt, FaShieldAlt, FaPlusCircle, FaUsers, FaWallet, 
   FaArrowUp, FaArrowDown, FaChartPie, FaHistory, FaClock, FaMapMarkerAlt 

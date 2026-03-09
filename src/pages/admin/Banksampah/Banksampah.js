@@ -6,13 +6,13 @@ import {
   GET_WARGA,
   GET_ALL_CITIZENS,
   GET_SAMPAH_STATS,
-} from "../../graphql/userQueries";
+} from "../../../graphql/userQueries";
 import {
   ADD_SETORAN,
   WITHDRAW_FUND,
   UPDATE_FAMILY_WASTE,
   DELETE_TABUNGAN,
-} from "../../graphql/sampahMutations";
+} from "../../../graphql/sampahMutations";
 
 // Import Library
 import Select from "react-select";
