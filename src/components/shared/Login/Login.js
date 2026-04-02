@@ -27,9 +27,10 @@ const Login = ({ setToken, setRole }) => {
     onCompleted: (data) => {
       const { token, user } = data.login;
       
-      // 1. Simpan Token, Role, dan FamilyId ke brankas browser (localStorage)
+      // 1. Simpan Token, Role, dan Info User ke brankas browser (localStorage)
       localStorage.setItem('authToken', token);
       localStorage.setItem('userRole', user.role);
+      localStorage.setItem('userName', user.username);
       
       // 👇 SIMPAN FAMILY ID JIKA ADA 👇
       if (user.familyId) {

@@ -32,30 +32,6 @@ const NavbarWarga = ({ onLogout }) => {
           >
             Beranda
           </NavLink>
-          
-          <NavLink 
-            to="/profilkeluarga" 
-            className={({ isActive }) => isActive ? 'warga-nav__link warga-nav__link--active' : 'warga-nav__link'}
-            onClick={() => setIsMenuOpen(false)}
-          >
-            Profil Keluarga
-          </NavLink>
-          
-          <NavLink 
-            to="/kesehatanwarga" 
-            className={({ isActive }) => isActive ? 'warga-nav__link warga-nav__link--active' : 'warga-nav__link'}
-            onClick={() => setIsMenuOpen(false)}
-          >
-            Data Kesehatan
-          </NavLink>
-          
-          <NavLink 
-            to="/tabungansampah" 
-            className={({ isActive }) => isActive ? 'warga-nav__link warga-nav__link--active' : 'warga-nav__link'}
-            onClick={() => setIsMenuOpen(false)}
-          >
-            Tabungan Sampah
-          </NavLink>
         </div>
 
         {/* === PROFIL & LOGOUT === */}

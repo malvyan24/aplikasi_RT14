@@ -17,10 +17,7 @@ import BankSampah from "./pages/admin/Banksampah/Banksampah"; // ✅ Pastikan pa
 import KegiatanLingkungan from "./pages/admin/Kegiatanlingkungan/Kegiatanlingkungan";
 
 // 👇 IMPORT HALAMAN WARGA 👇
-import Dashboardwarga from "./pages/warga/Dashboardwarga"; 
-import ProfilKeluarga from "./pages/warga/ProfilKeluarga"; 
-import KesehatanWarga from "./pages/warga/KesehatanWarga";
-import TabunganSampah from "./pages/warga/TabunganSampah";
+import Dashboardwarga from "./pages/warga/Dashboardwarga";
 
 import './App.css'; 
 
@@ -74,9 +71,6 @@ const App = () => {
               {role === 'warga' && (
                 <Routes>
                   <Route path="/" element={<Dashboardwarga />} />
-                  <Route path="/profilkeluarga" element={<ProfilKeluarga />} />
-                  <Route path="/kesehatanwarga" element={<KesehatanWarga />} />
-                  <Route path="/tabungansampah" element={<TabunganSampah />} />
                   <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
               )}

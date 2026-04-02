@@ -222,3 +222,36 @@
   font-weight: 700;
   letter-spacing: 0.5px;
 }
+
+/* --- RESPONSIVE MOBILE UNTUK KEGIATAN LINGKUNGAN --- */
+@media (max-width: 768px) {
+  .env-wrapper {
+    padding: 15px;
+  }
+  
+  .tab-nav-pill {
+    flex-wrap: wrap;
+    border-radius: 20px;
+    padding: 10px;
+  }
+  
+  .nav-pill-btn {
+    flex: 1 1 100%;
+    justify-content: center;
+    margin-bottom: 5px;
+  }
+  
+  .modal-content-new {
+    width: 95%;
+    max-width: 450px;
+    margin: 0 10px;
+  }
+  
+  .modal-top {
+    height: 120px;
+  }
+  
+  .activity-top {
+    height: 80px;
+  }
+}

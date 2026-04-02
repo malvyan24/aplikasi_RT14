@@ -150,18 +150,15 @@
 
 /* --- 7. RESPONSIVE --- */
 @media (max-width: 768px) {
-  .health-wrapper { padding: 15px; }
+  .health-wrapper { 
+    padding: 15px; 
+  }
+  
   .border-end-dashed {
     border-right: none !important;
     border-bottom: 2px dashed #ffe4ea !important;
     margin-bottom: 20px;
     padding-bottom: 20px;
-  }
-} 
-/* layar ponsel*/
-@media (max-width: 768px) {
-  .kesehatan-container {
-    padding: 15px;
   }
 
   /* Jika ada tabel data kesehatan, buat bisa digeser (scroll) ke samping */
@@ -174,5 +171,16 @@
   .health-cards-grid {
     grid-template-columns: 1fr; /* Jadi satu kolom saja ke bawah */
     gap: 15px;
+  }
+  
+  .d-flex.align-items-center.mb-4 {
+    flex-direction: column;
+    align-items: flex-start !important;
+    text-align: left;
+  }
+  
+  .d-flex.align-items-center.mb-4 h3 {
+    margin-top: 15px;
+    font-size: 20px;
   }
 }

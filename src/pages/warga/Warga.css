@@ -1,40 +1,559 @@
-.warga-page { padding: 20px; animation: fadeIn 0.5s ease; }
-.warga-loading { padding: 40px; text-align: center; color: #3f54fb; font-weight: bold; }
+/* ═══════════════════════════════════════════════════════════════
+   PORTAL WARGA RT 14 — Premium Design System
+   ═══════════════════════════════════════════════════════════════ */
 
-/* Welcome Section */
-.warga-welcome h2 span { color: #3f54fb; }
-.warga-welcome p { color: #6b7280; font-size: 14px; margin-bottom: 25px; }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-/* Cards */
-.warga-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-.warga-card { background: white; padding: 20px; border-radius: 16px; display: flex; align-items: center; gap: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-.card-icon { font-size: 30px; }
-.label { font-size: 12px; color: #6b7280; font-weight: bold; text-transform: uppercase; }
-.card--green { border-left: 5px solid #10b981; }
-.card--blue { border-left: 5px solid #3b82f6; }
-.card--purple { border-left: 5px solid #8b5cf6; }
+/* ── BASE ─────────────────────────────────────────────────────── */
+.warga-page {
+  padding: 24px;
+  background: linear-gradient(135deg, #f0f4ff 0%, #faf5ff 50%, #f0fdf4 100%);
+  min-height: 100vh;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
 
-/* KK Box */
-.kk-box { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-.kk-header { background: #3f54fb; color: white; padding: 30px; text-align: center; }
-.kk-header p { font-size: 11px; opacity: 0.8; letter-spacing: 2px; }
-.kk-header h1 { font-size: 28px; margin: 10px 0; }
-.member-list { padding: 20px; }
-.member-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #f3f4f6; }
-.name { font-weight: bold; color: #111827; }
-.nik { font-size: 12px; color: #6b7280; }
-.tag { font-size: 10px; background: #eff6ff; color: #3b82f6; padding: 4px 10px; border-radius: 20px; font-weight: bold; }
+.warga-loading {
+  padding: 60px;
+  text-align: center;
+  color: #6366f1;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.3px;
+}
 
-/* Table */
-.table-container { background: white; border-radius: 12px; overflow: hidden; margin-top: 15px; }
-.warga-table { width: 100%; border-collapse: collapse; }
-.warga-table th { background: #f9fafb; padding: 15px; text-align: left; font-size: 13px; color: #6b7280; }
-.warga-table td { padding: 15px; border-bottom: 1px solid #f3f4f6; font-size: 14px; }
-.text-green { color: #10b981; font-weight: bold; }
+/* ── WELCOME BANNER ───────────────────────────────────────────── */
+.warga-welcome {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+  padding: 32px 36px;
+  border-radius: 24px;
+  color: white;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 32px rgba(99, 102, 241, 0.25);
+  position: relative;
+  overflow: hidden;
+}
 
-/* Health Card */
-.health-card { background: white; padding: 20px; border-radius: 12px; border-left: 4px solid #ef4444; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 15px; }
-.health-top { display: flex; justify-content: space-between; margin-bottom: 10px; }
-.status-badge { background: #fee2e2; color: #ef4444; font-size: 10px; padding: 4px 8px; border-radius: 6px; font-weight: bold; }
+.warga-welcome::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -20%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+  border-radius: 50%;
+}
 
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.warga-welcome::after {
+  content: "";
+  position: absolute;
+  bottom: -60%;
+  left: -10%;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.warga-welcome h2 {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0 0 6px 0;
+  position: relative;
+  z-index: 1;
+}
+
+.warga-welcome h2 span {
+  color: #fde68a;
+}
+
+.warga-welcome p {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 14px;
+  margin: 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── TAB NAVIGATION ───────────────────────────────────────────── */
+.warga-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  background: white;
+  padding: 6px;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.warga-tab-btn {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Inter', sans-serif;
+  white-space: nowrap;
+}
+
+.warga-tab-btn:hover {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.warga-tab-btn.active {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+  transform: translateY(-1px);
+}
+
+/* ── FADE-IN ANIMATION ────────────────────────────────────────── */
+.warga-fade-in {
+  animation: wargaSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes wargaSlideIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── STAT CARDS GRID ──────────────────────────────────────────── */
+.warga-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.warga-card {
+  background: white;
+  padding: 24px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  position: relative;
+  overflow: hidden;
+}
+
+.warga-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  opacity: 0.06;
+  transform: translate(30%, -30%);
+}
+
+.warga-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+}
+
+.card--green { border-left: 4px solid #10b981; }
+.card--green::before { background: #10b981; }
+.card--blue  { border-left: 4px solid #3b82f6; }
+.card--blue::before  { background: #3b82f6; }
+.card--purple { border-left: 4px solid #8b5cf6; }
+.card--purple::before { background: #8b5cf6; }
+
+.card-icon {
+  font-size: 32px;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: #f8fafc;
+  flex-shrink: 0;
+}
+
+.card--green .card-icon { background: #ecfdf5; }
+.card--blue  .card-icon { background: #eff6ff; }
+.card--purple .card-icon { background: #f5f3ff; }
+
+.card-info .label {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.card-info h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+/* ── SECTIONS ─────────────────────────────────────────────────── */
+.warga-section {
+  background: white;
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.warga-section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 20px 0;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0;
+}
+
+.btn-lihat {
+  background: linear-gradient(135deg, #eff6ff, #f5f3ff);
+  border: 1px solid #e0e7ff;
+  color: #6366f1;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-family: 'Inter', sans-serif;
+}
+
+.btn-lihat:hover {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  border-color: transparent;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.empty-msg {
+  color: #94a3b8;
+  font-size: 14px;
+  text-align: center;
+  padding: 30px 20px;
+  background: #f8fafc;
+  border-radius: 12px;
+  border: 2px dashed #e2e8f0;
+}
+
+/* ── KK BOX (Profil Keluarga) ─────────────────────────────────── */
+.kk-box {
+  background: white;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+.kk-header {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+  color: white;
+  padding: 36px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.kk-header::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  right: -30%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.kk-header p {
+  font-size: 10px;
+  opacity: 0.75;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  margin: 0;
+  font-weight: 600;
+}
+
+.kk-header h1 {
+  font-size: 30px;
+  margin: 12px 0 8px 0;
+  font-weight: 800;
+  letter-spacing: 1px;
+  position: relative;
+  z-index: 1;
+}
+
+.kk-header .address {
+  font-size: 13px;
+  opacity: 0.85;
+  letter-spacing: 0;
+}
+
+.member-list {
+  padding: 24px;
+}
+
+.member-list h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 16px 0;
+}
+
+.member-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-radius: 14px;
+  margin-bottom: 10px;
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  transition: all 0.25s ease;
+}
+
+.member-item:hover {
+  background: #eff6ff;
+  border-color: #dbeafe;
+  transform: translateX(4px);
+}
+
+.name {
+  font-weight: 700;
+  color: #1e293b;
+  font-size: 15px;
+}
+
+.nik {
+  font-size: 12px;
+  color: #64748b;
+  margin: 2px 0 0 0;
+}
+
+.tag {
+  font-size: 11px;
+  background: linear-gradient(135deg, #eff6ff, #f5f3ff);
+  color: #6366f1;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 700;
+  border: 1px solid #e0e7ff;
+  white-space: nowrap;
+}
+
+/* ── TABLE ────────────────────────────────────────────────────── */
+.table-container {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-top: 12px;
+  border: 1px solid #f1f5f9;
+}
+
+.warga-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.warga-table th {
+  background: #f8fafc;
+  padding: 14px 18px;
+  text-align: left;
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.warga-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid #f8fafc;
+  font-size: 14px;
+  color: #334155;
+}
+
+.warga-table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.warga-table tbody tr:hover {
+  background: #fafbff;
+}
+
+.warga-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.text-green {
+  color: #10b981;
+  font-weight: 700;
+}
+
+/* ── HEALTH CARD ──────────────────────────────────────────────── */
+.health-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.health-card {
+  background: white;
+  padding: 20px 24px;
+  border-radius: 16px;
+  border-left: 4px solid #ef4444;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  margin-bottom: 0;
+  transition: all 0.25s ease;
+  border-top: 1px solid rgba(0,0,0,0.03);
+  border-right: 1px solid rgba(0,0,0,0.03);
+  border-bottom: 1px solid rgba(0,0,0,0.03);
+}
+
+.health-card:hover {
+  transform: translateX(4px);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.08);
+}
+
+.health-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.health-top strong {
+  font-size: 15px;
+  color: #1e293b;
+}
+
+.status-badge {
+  background: linear-gradient(135deg, #fef2f2, #fee2e2);
+  color: #ef4444;
+  font-size: 11px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-weight: 700;
+  border: 1px solid #fecaca;
+}
+
+.health-notes {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0 0 6px 0;
+  line-height: 1.5;
+}
+
+.health-notes.italic {
+  font-style: italic;
+}
+
+.date {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+/* ── RESPONSIVE ───────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .warga-page {
+    padding: 16px;
+  }
+
+  .warga-welcome {
+    padding: 24px;
+    border-radius: 20px;
+  }
+
+  .warga-welcome h2 {
+    font-size: 20px;
+  }
+
+  .warga-tabs {
+    gap: 4px;
+    padding: 4px;
+    border-radius: 14px;
+    overflow-x: auto;
+  }
+
+  .warga-tab-btn {
+    padding: 10px 12px;
+    font-size: 12px;
+    min-width: fit-content;
+  }
+
+  .warga-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .warga-card {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .card-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 26px;
+    border-radius: 14px;
+  }
+
+  .card-info h3 {
+    font-size: 18px;
+  }
+
+  .warga-section {
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .kk-header {
+    padding: 24px;
+  }
+
+  .kk-header h1 {
+    font-size: 22px;
+  }
+
+  .member-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .warga-table th,
+  .warga-table td {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+}

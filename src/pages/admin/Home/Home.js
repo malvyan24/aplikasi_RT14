@@ -1,6 +1,15 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@apollo/client";
 import "./Home.css";
+
+// GraphQL Queries
+import { GET_WARGA } from "../../../graphql/dashboardQueries";
+import { GET_SAMPAH_STATS } from "../../../graphql/dashboardQueries";
+import { GET_HEALTH_STATS } from "../../../graphql/dashboardQueries";
+import { GET_KAS_DATA } from "../../../graphql/dashboardQueries";
+
+// Icons
 import {
   FaUsers,
   FaHome,
@@ -11,38 +20,94 @@ import {
   FaHandPaper,
   FaHeartbeat,
   FaLeaf,
+  FaMoneyBillWave,
 } from "react-icons/fa";
 
 const Home = () => {
   const navigate = useNavigate();
 
+  // ─── FETCH DATA REAL-TIME ───────────────────────────────────────────
+  const { data: wargaData, loading: wargaLoading } = useQuery(GET_WARGA);
+  const { data: sampahData, loading: sampahLoading } = useQuery(GET_SAMPAH_STATS);
+  const { data: healthData, loading: healthLoading } = useQuery(GET_HEALTH_STATS);
+  const { data: kasData, loading: kasLoading } = useQuery(GET_KAS_DATA, {
+    variables: { month: "Februari", year: "2026" },
+  });
+
+  const isLoading = wargaLoading || sampahLoading || healthLoading || kasLoading;
+
+  // ─── HITUNG STATISTIK DARI DATA BACKEND ─────────────────────────────
+  const totalKeluarga = wargaData?.families?.length || 0;
+
+  const totalWarga = wargaData?.families?.reduce(
+    (acc, family) => acc + (family.members?.length || 0),
+    0
+  ) || 0;
+
+  const totalBeratSampah = sampahData?.sampahStats?.totalBerat || 0;
+
+  const totalUangSampah = sampahData?.sampahStats?.totalUang || 0;
+
+  const totalDataKesehatan = healthData?.getHealthStats?.reduce(
+    (acc, item) => acc + (item.count || 0),
+    0
+  ) || 0;
+
+  const saldoKasRT = kasData?.getKasSummary?.balance || 0;
+
+  // ─── FORMAT RUPIAH ──────────────────────────────────────────────────
+  const formatRupiah = (number) => {
+    if (number >= 1_000_000) {
+      return `Rp ${(number / 1_000_000).toFixed(1)} Jt`;
+    }
+    if (number >= 1_000) {
+      return `Rp ${(number / 1_000).toFixed(0)} Rb`;
+    }
+    return `Rp ${number}`;
+  };
+
+  // ─── STATISTIK CARDS (SEKARANG DINAMIS) ─────────────────────────────
   const stats = [
     {
       id: 1,
       label: "Total Keluarga",
-      value: "99 KK",
+      value: `${totalKeluarga} KK`,
       icon: <FaHome />,
       class: "stat-blue",
     },
     {
       id: 2,
       label: "Total Warga",
-      value: "350 Org",
+      value: `${totalWarga} Org`,
       icon: <FaUsers />,
       class: "stat-white",
     },
     {
       id: 3,
       label: "Kas Sampah",
-      value: "Rp 4,7 Jt",
+      value: formatRupiah(totalUangSampah),
       icon: <FaWallet />,
       class: "stat-white",
     },
     {
       id: 4,
       label: "Berat Sampah",
-      value: "1612 Kg",
+      value: `${totalBeratSampah.toFixed(1)} Kg`,
       icon: <FaRecycle />,
+      class: "stat-white",
+    },
+    {
+      id: 5,
+      label: "Data Kesehatan",
+      value: `${totalDataKesehatan} Data`,
+      icon: <FaHeartbeat />,
+      class: "stat-white",
+    },
+    {
+      id: 6,
+      label: "Saldo Kas RT",
+      value: formatRupiah(saldoKasRT),
+      icon: <FaMoneyBillWave />,
       class: "stat-white",
     },
   ];
@@ -78,13 +143,16 @@ const Home = () => {
     },
   ];
 
+  // Tampilkan nama admin yang dinamis
+  const adminName = localStorage.getItem("userName") || "Pak Admin";
+
   return (
     <div className="home-page">
       {/* Banner Utama */}
       <div className="hero-banner">
         <div className="hero-content">
           <h1>
-            Halo, Pak Ahmad! <FaHandPaper className="wave-icon" />
+            Halo, {adminName}! <FaHandPaper className="wave-icon" />
           </h1>
           <p>
             Kelola data warga & kegiatan RT 14 jadi lebih mudah dan berwarna.
@@ -95,14 +163,16 @@ const Home = () => {
         </div>
       </div>
 
-      {/* Row Statistik Utama */}
+      {/* Row Statistik Utama — Sekarang Real-Time! */}
       <div className="stats-row">
         {stats.map((s) => (
-          <div key={s.id} className={`stat-box ${s.class}`}>
+          <div key={s.id} className={`stat-box ${s.class} ${isLoading ? "stat-loading" : ""}`}>
             <div className="stat-icon-circle">{s.icon}</div>
             <div className="stat-text">
               <span className="label">{s.label}</span>
-              <span className="value">{s.value}</span>
+              <span className="value">
+                {isLoading ? "..." : s.value}
+              </span>
             </div>
           </div>
         ))}
