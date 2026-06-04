@@ -1,14 +1,10 @@
 import React, { useState, useRef } from 'react';
 import Tesseract from 'tesseract.js';
-import { Html5QrcodeScanner } from 'html5-qrcode';
 import { 
   Upload, 
-  Camera, 
   Keyboard, 
   QrCode, 
-  AlertCircle, 
-  Check, 
-  Loader 
+  Check
 } from 'lucide-react';
 import Swal from 'sweetalert2';
 import './KartuKeluargaInputOCR.css';
@@ -16,14 +12,29 @@ import './KartuKeluargaInputOCR.css';
 export default function KartuKeluargaInputOCR() {
   const [inputMode, setInputMode] = useState('manual');
   const [kkNumber, setKkNumber] = useState('');
-  const [kkData, setKkData] = useState(null); // Data dari OCR
+  const [kkData, setKkData] = useState(null);
   const [loading, setLoading] = useState(false);
   const [ocrProgress, setOcrProgress] = useState(0);
-  const [cameraActive, setCameraActive] = useState(false);
   const [uploadPreview, setUploadPreview] = useState(null);
   const fileInputRef = useRef(null);
-  const videoRef = useRef(null);
-  const scannerRef = useRef(null);
+  const workerRef = useRef(null);
+
+  // Initialize Tesseract Worker once
+  const initializeWorker = async () => {
+    if (!workerRef.current) {
+      try {
+        workerRef.current = await Tesseract.createWorker('ind', 1, {
+          corePath: 'https://cdn.jsdelivr.net/npm/tesseract.js-core@v5/tesseract-core.wasm.js',
+          workerPath: 'https://cdn.jsdelivr.net/npm/tesseract.js@v5/dist/worker.min.js',
+          langPath: 'https://cdn.jsdelivr.net/npm/tesseract.js-data@v1.0.25/fast'
+        });
+      } catch (error) {
+        console.error('Worker initialization error:', error);
+        throw new Error('Gagal menginisialisasi OCR. Silakan refresh halaman.');
+      }
+    }
+    return workerRef.current;
+  };
 
   // ===== MODE 1: INPUT MANUAL =====
   const handleManualInput = (e) => {
@@ -35,6 +46,12 @@ export default function KartuKeluargaInputOCR() {
   const handleFileUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
+    // Validasi ukuran file
+    if (file.size > 5 * 1024 * 1024) {
+      Swal.fire('Error', 'Ukuran file terlalu besar (maksimal 5MB)', 'error');
+      return;
+    }
 
     setLoading(true);
     setOcrProgress(0);
@@ -54,54 +71,90 @@ export default function KartuKeluargaInputOCR() {
 
   const performOCR = async (imageSrc) => {
     try {
+      // Show loading dialog
       Swal.fire({
         title: 'Memproses Gambar',
-        html: '<div class="progress"><div class="progress-bar" style="width: 0%"></div></div><p class="mt-2">Mengekstrak teks dari gambar...</p>',
+        html: `
+          <div style="margin: 20px 0;">
+            <p style="margin-bottom: 15px;">Mengekstrak teks dari gambar...</p>
+            <div class="progress" style="height: 20px; background: #f0f0f0; border-radius: 5px; overflow: hidden;">
+              <div class="progress-bar" id="ocrProgressBar" style="width: 0%; background: #007bff; transition: width 0.3s; height: 100%;"></div>
+            </div>
+            <p style="margin-top: 10px; font-size: 14px; color: #666;" id="progressText">Inisialisasi...</p>
+          </div>
+        `,
         allowOutsideClick: false,
         didOpen: async () => {
-          const worker = await Tesseract.createWorker('ind'); // Indonesian language
+          try {
+            const worker = await initializeWorker();
 
-          const result = await worker.recognize(imageSrc);
-          const text = result.data.text;
+            // Update progress
+            worker.on('progress', (progress) => {
+              const percent = Math.round(progress.progress * 100);
+              setOcrProgress(percent);
+              
+              const progressBar = document.getElementById('ocrProgressBar');
+              const progressText = document.getElementById('progressText');
+              if (progressBar) progressBar.style.width = percent + '%';
+              if (progressText) progressText.textContent = `Proses: ${percent}%`;
+            });
 
-          await worker.terminate();
+            const result = await worker.recognize(imageSrc);
+            const text = result.data.text;
 
-          // Ekstrak nomor KK (16 digit)
-          const kkMatch = text.match(/\b\d{16}\b/);
-          
-          // Ekstrak informasi lainnya
-          const extractedData = extractKKData(text);
+            // Ekstrak nomor KK (16 digit)
+            const kkMatch = text.match(/\b\d{16}\b/);
+            const extractedData = extractKKData(text);
 
-          if (kkMatch) {
-            setKkNumber(kkMatch[0]);
-            setKkData(extractedData);
-            
+            if (kkMatch) {
+              setKkNumber(kkMatch[0]);
+              setKkData(extractedData);
+              
+              Swal.fire({
+                title: 'Sukses!',
+                html: `
+                  <div style="text-align: left;">
+                    <p><strong>Nomor KK:</strong> <span style="font-size: 18px; font-weight: bold; color: #28a745;">${kkMatch[0]}</span></p>
+                    ${extractedData.nama ? `<p><strong>Nama:</strong> ${extractedData.nama}</p>` : ''}
+                    ${extractedData.alamat ? `<p><strong>Alamat:</strong> ${extractedData.alamat}</p>` : ''}
+                    ${extractedData.kota ? `<p><strong>Kota:</strong> ${extractedData.kota}</p>` : ''}
+                  </div>
+                `,
+                icon: 'success',
+              });
+            } else {
+              Swal.fire({
+                title: 'Perhatian',
+                text: 'Nomor KK 16 digit tidak terdeteksi. Silakan periksa kualitas gambar atau input manual.',
+                html: `
+                  <p>Teks yang terdeteksi:</p>
+                  <textarea style="width: 100%; height: 100px; margin-top: 10px; border: 1px solid #ddd; padding: 10px; border-radius: 5px;" readonly>${text.substring(0, 200)}</textarea>
+                `,
+                icon: 'info',
+              });
+            }
+
+            setLoading(false);
+          } catch (error) {
+            console.error('OCR Error:', error);
             Swal.fire({
-              title: 'Sukses!',
+              title: 'Error',
+              text: 'Gagal memproses gambar. Error: ' + error.message,
               html: `
-                <div class="text-start">
-                  <p><strong>Nomor KK:</strong> ${kkMatch[0]}</p>
-                  ${extractedData.nama ? `<p><strong>Nama:</strong> ${extractedData.nama}</p>` : ''}
-                  ${extractedData.alamat ? `<p><strong>Alamat:</strong> ${extractedData.alamat}</p>` : ''}
-                  ${extractedData.kota ? `<p><strong>Kota:</strong> ${extractedData.kota}</p>` : ''}
-                </div>
+                <p>${error.message}</p>
+                <p style="margin-top: 10px; font-size: 12px; color: #666;">
+                  Tips: Pastikan gambar KK jelas dan terbaca. Coba ambil ulang dengan pencahayaan lebih baik.
+                </p>
               `,
-              icon: 'success',
+              icon: 'error',
             });
-          } else {
-            Swal.fire({
-              title: 'Informasi',
-              text: 'Nomor KK tidak terdeteksi. Silakan input manual atau coba upload gambar lain.',
-              icon: 'info',
-            });
+            setLoading(false);
           }
-
-          setLoading(false);
         },
       });
     } catch (error) {
-      console.error('OCR Error:', error);
-      Swal.fire('Error', 'Gagal memproses gambar dengan OCR', 'error');
+      console.error('OCR Setup Error:', error);
+      Swal.fire('Error', 'Gagal memulai OCR: ' + error.message, 'error');
       setLoading(false);
     }
   };
@@ -116,14 +169,15 @@ export default function KartuKeluargaInputOCR() {
       tglLahir: '',
       pekerjaan: '',
       agama: '',
+      rawText: text,
     };
 
     // Ekstrak Nomor KK (16 digit)
     const kkMatch = text.match(/\b\d{16}\b/);
     if (kkMatch) data.kkNumber = kkMatch[0];
 
-    // Ekstrak Nama (biasanya di baris pertama atau setelah "Nama")
-    const namaMatch = text.match(/(?:Nama|NAMA)\s*:?\s*([A-Z][A-Za-z\s]+)/i);
+    // Ekstrak Nama
+    const namaMatch = text.match(/(?:Nama|NAMA)\s*:?\s*([A-Za-z\s]+?)(?:\n|Usia|Jenis|Tempat|$)/i);
     if (namaMatch) data.nama = namaMatch[1].trim();
 
     // Ekstrak Alamat
@@ -131,15 +185,15 @@ export default function KartuKeluargaInputOCR() {
     if (alamatMatch) data.alamat = alamatMatch[1].trim();
 
     // Ekstrak Kota/Kabupaten
-    const kotaMatch = text.match(/(?:Kota|Kabupaten|KOTA|KABUPATEN)\s*:?\s*([A-Za-z\s]+)/i);
+    const kotaMatch = text.match(/(?:Kota|Kabupaten|KOTA|KABUPATEN)\s*:?\s*([A-Za-z\s]+?)(?:\n|Provinsi|$)/i);
     if (kotaMatch) data.kota = kotaMatch[1].trim();
 
-    // Ekstrak Tanggal Lahir (format: DD/MM/YYYY atau DD-MM-YYYY)
+    // Ekstrak Tanggal Lahir
     const tglMatch = text.match(/\d{1,2}[-\/]\d{1,2}[-\/]\d{4}/);
     if (tglMatch) data.tglLahir = tglMatch[0];
 
     // Ekstrak Pekerjaan
-    const pekerjaanMatch = text.match(/(?:Pekerjaan|PEKERJAAN)\s*:?\s*([A-Za-z\s]+)/i);
+    const pekerjaanMatch = text.match(/(?:Pekerjaan|PEKERJAAN)\s*:?\s*([A-Za-z\s]+?)(?:\n|Agama|$)/i);
     if (pekerjaanMatch) data.pekerjaan = pekerjaanMatch[1].trim();
 
     // Ekstrak Agama
@@ -147,66 +201,6 @@ export default function KartuKeluargaInputOCR() {
     if (agamaMatch) data.agama = agamaMatch[1];
 
     return data;
-  };
-
-  // ===== MODE 3: KAMERA REAL-TIME =====
-  const startCamera = async () => {
-    try {
-      setCameraActive(true);
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' },
-      });
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-
-        const scanner = new Html5QrcodeScanner(
-          'qr-reader-camera',
-          { fps: 10, qrbox: { width: 250, height: 250 } },
-          false
-        );
-
-        scanner.render(
-          (result) => {
-            setKkNumber(result);
-            stopCamera(stream, scanner);
-            Swal.fire('Sukses!', `Nomor KK: ${result}`, 'success');
-          },
-          (error) => {
-            console.log('Scan error:', error);
-          }
-        );
-
-        scannerRef.current = scanner;
-      }
-    } catch (error) {
-      Swal.fire(
-        'Error',
-        'Tidak dapat mengakses kamera. Pastikan Anda memberikan izin.',
-        'error'
-      );
-      setCameraActive(false);
-    }
-  };
-
-  const stopCamera = (stream, scanner) => {
-    if (stream) {
-      stream.getTracks().forEach((track) => track.stop());
-    }
-    if (scanner) {
-      scanner.clear();
-    }
-    setCameraActive(false);
-  };
-
-  const handleStopCamera = () => {
-    if (scannerRef.current) {
-      scannerRef.current.clear();
-    }
-    if (videoRef.current?.srcObject) {
-      videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
-    }
-    setCameraActive(false);
   };
 
   // ===== SUBMIT =====
@@ -217,21 +211,27 @@ export default function KartuKeluargaInputOCR() {
       return;
     }
 
-    // Prepare data to send
     const submitData = {
       kkNumber,
       ...kkData,
-      source: inputMode, // manual, upload, atau camera
+      source: inputMode,
     };
 
-    Swal.fire('Sukses!', `Nomor KK: ${kkNumber} berhasil didaftarkan`, 'success').then(
-      () => {
-        console.log('Submit KK Data:', submitData);
-        // Kirim ke backend
-        // sendToBackend(submitData);
-      }
-    );
+    Swal.fire('Sukses!', `Nomor KK: ${kkNumber} berhasil didaftarkan`, 'success').then(() => {
+      console.log('Submit KK Data:', submitData);
+      // Kirim ke backend
+      // sendToBackend(submitData);
+    });
   };
+
+  // Cleanup on unmount
+  React.useEffect(() => {
+    return () => {
+      if (workerRef.current) {
+        workerRef.current.terminate();
+      }
+    };
+  }, []);
 
   return (
     <div className="container mt-5 mb-5">
@@ -241,7 +241,7 @@ export default function KartuKeluargaInputOCR() {
             <QrCode className="me-2" size={24} style={{ display: 'inline' }} />
             Input Kartu Keluarga (KK) dengan OCR
           </h4>
-          <small>Scan, Upload, atau Input Manual</small>
+          <small>Upload Gambar atau Input Manual</small>
         </div>
 
         <div className="card-body p-4">
@@ -255,7 +255,6 @@ export default function KartuKeluargaInputOCR() {
               onClick={() => {
                 setInputMode('manual');
                 setUploadPreview(null);
-                handleStopCamera();
               }}
             >
               <Keyboard size={18} className="me-2" style={{ display: 'inline' }} />
@@ -269,25 +268,10 @@ export default function KartuKeluargaInputOCR() {
               }`}
               onClick={() => {
                 setInputMode('upload');
-                handleStopCamera();
               }}
             >
               <Upload size={18} className="me-2" style={{ display: 'inline' }} />
               Upload OCR
-            </button>
-
-            <button
-              type="button"
-              className={`btn btn-sm ${
-                inputMode === 'camera' ? 'btn-primary' : 'btn-outline-primary'
-              }`}
-              onClick={() => {
-                setInputMode('camera');
-                setUploadPreview(null);
-              }}
-            >
-              <Camera size={18} className="me-2" style={{ display: 'inline' }} />
-              Kamera
             </button>
           </div>
 
@@ -326,10 +310,10 @@ export default function KartuKeluargaInputOCR() {
                 >
                   <Upload size={32} className="text-primary mb-2" />
                   <p className="mb-1">
-                    Klik untuk upload atau drag & drop gambar KK
+                    Klik untuk upload gambar KK
                   </p>
                   <small className="text-muted">
-                    (JPG, PNG, maksimal 5MB) - OCR akan mengekstrak nomor dan data
+                    (JPG, PNG, maksimal 5MB)
                   </small>
                 </div>
                 <input
@@ -361,42 +345,6 @@ export default function KartuKeluargaInputOCR() {
                       <span className="visually-hidden">Loading...</span>
                     </div>
                     <p className="mt-2">Memproses OCR... ({ocrProgress}%)</p>
-                    <div className="progress mt-2">
-                      <div
-                        className="progress-bar"
-                        style={{ width: `${ocrProgress}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* MODE 3: KAMERA */}
-            {inputMode === 'camera' && (
-              <div className="mb-3">
-                <label className="form-label fw-bold">
-                  Scan Barcode dengan Kamera
-                </label>
-                {!cameraActive ? (
-                  <button
-                    type="button"
-                    className="btn btn-success w-100 btn-lg"
-                    onClick={startCamera}
-                  >
-                    <Camera size={20} className="me-2" style={{ display: 'inline' }} />
-                    Buka Kamera
-                  </button>
-                ) : (
-                  <div className="scanner-container">
-                    <div id="qr-reader-camera" style={{ width: '100%' }}></div>
-                    <button
-                      type="button"
-                      className="btn btn-danger w-100 mt-3"
-                      onClick={handleStopCamera}
-                    >
-                      Hentikan Kamera
-                    </button>
                   </div>
                 )}
               </div>
@@ -412,7 +360,7 @@ export default function KartuKeluargaInputOCR() {
             )}
 
             {/* DATA OCR YANG TEREKSTRAK */}
-            {kkData && (
+            {kkData && Object.keys(kkData).some(k => k !== 'rawText' && kkData[k]) && (
               <div className="card bg-light mb-3">
                 <div className="card-header bg-info text-white">
                   <strong>Data Terekstrak dari OCR</strong>
