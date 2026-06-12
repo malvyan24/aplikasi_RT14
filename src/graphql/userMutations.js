@@ -38,6 +38,7 @@ export const ADD_CITIZEN = gql`
     $dateOfBirth: String!, 
     $relationship: String,
     $phone: String,
+    $email: String!,
     $insurance: String
   ) {
     addCitizen(
@@ -52,11 +53,13 @@ export const ADD_CITIZEN = gql`
       dateOfBirth: $dateOfBirth, 
       relationship: $relationship,
       phone: $phone,
+      email: $email,
       insurance: $insurance
     ) {
       id
       name
       phone
+      email
       insurance
     }
   }

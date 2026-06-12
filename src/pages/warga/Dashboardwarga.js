@@ -28,11 +28,13 @@ const GET_FAMILY_FULL = gql`
 const GET_HEALTH = gql`
   query GetHealth {
     getAllHealthRecords {
-      familyId
       healthStatus
       notes
       createdAt
-      citizen { name }
+      citizen { 
+        name 
+        family { id }
+      }
     }
   }
 `;
@@ -62,13 +64,33 @@ export default function DashboardWarga() {
   const { data: healthData } = useQuery(GET_HEALTH);
   const { data: logsData } = useQuery(GET_LOGS);
 
-  if (loadFamily) return <div className="warga-loading">Memuat data...</div>;
+  if (loadFamily) {
+    return (
+      <div className="warga-page">
+        <div className="skeleton-box" style={{ height: '140px', marginBottom: '24px', borderRadius: '24px' }}></div>
+        <div className="warga-tabs skeleton-box" style={{ height: '48px', marginBottom: '24px', borderRadius: '16px', background: 'transparent' }}></div>
+        <div className="warga-grid">
+          <div className="skeleton-card" style={{ height: '120px' }}></div>
+          <div className="skeleton-card" style={{ height: '120px' }}></div>
+          <div className="skeleton-card" style={{ height: '120px' }}></div>
+        </div>
+      </div>
+    );
+  }
 
   const family = familyData?.getFamilyById;
-  const myHealth = healthData?.getAllHealthRecords?.filter(h => h.familyId === familyId) || [];
+  const myHealth = healthData?.getAllHealthRecords?.filter(h => h.citizen?.family?.id === familyId) || [];
   const myLogs = logsData?.allTrashLogs?.filter(l => l.familyId === familyId) || [];
 
   const formatRupiah = (n) => `Rp ${(n || 0).toLocaleString('id-ID')}`;
+
+  const formatTanggal = (val) => {
+    if (!val) return "-";
+    const isTimestamp = /^-?\d+$/.test(String(val));
+    const d = new Date(isTimestamp ? Number(val) : val);
+    if (isNaN(d.getTime())) return val;
+    return d.toLocaleDateString('id-ID');
+  };
 
   // ─── TAB CONFIG ──────────────────────────────────────────────────────
   const tabs = [
@@ -166,10 +188,10 @@ export default function DashboardWarga() {
                   <tbody>
                     {myLogs.slice(0, 3).map((log, i) => (
                       <tr key={i}>
-                        <td>{new Date(log.txnDate).toLocaleDateString('id-ID')}</td>
-                        <td><strong>{log.trashType}</strong></td>
-                        <td>{log.weight} Kg</td>
-                        <td className="text-green">{formatRupiah(log.debit)}</td>
+                        <td data-label="Tanggal">{formatTanggal(log.txnDate)}</td>
+                        <td data-label="Jenis"><strong>{log.trashType}</strong></td>
+                        <td data-label="Berat">{log.weight} Kg</td>
+                        <td data-label="Pendapatan" className="text-green">{formatRupiah(log.debit)}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -227,7 +249,7 @@ export default function DashboardWarga() {
                     <span className="status-badge">{h.healthStatus}</span>
                   </div>
                   <p className="health-notes italic">"{h.notes}"</p>
-                  <small className="date">{new Date(h.createdAt).toLocaleDateString()}</small>
+                  <small className="date">{formatTanggal(h.createdAt)}</small>
                 </div>
               ))
             )}
@@ -257,10 +279,10 @@ export default function DashboardWarga() {
                 ) : (
                   myLogs.map((log, i) => (
                     <tr key={i}>
-                      <td>{new Date(log.txnDate).toLocaleDateString('id-ID')}</td>
-                      <td><strong>{log.trashType}</strong></td>
-                      <td>{log.weight} Kg</td>
-                      <td className="text-green">{formatRupiah(log.debit)}</td>
+                      <td data-label="Tanggal">{formatTanggal(log.txnDate)}</td>
+                      <td data-label="Jenis Sampah"><strong>{log.trashType}</strong></td>
+                      <td data-label="Berat">{log.weight} Kg</td>
+                      <td data-label="Pendapatan" className="text-green">{formatRupiah(log.debit)}</td>
                     </tr>
                   ))
                 )}

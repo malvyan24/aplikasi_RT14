@@ -1,5 +1,5 @@
 import React from "react";
-import { FaTimes, FaUser, FaIdCard, FaMapMarkerAlt, FaBirthdayCake, FaPhone, FaVenusMars } from "react-icons/fa";
+import { FaUser, FaIdCard, FaMapMarkerAlt, FaBirthdayCake, FaPhone, FaVenusMars } from "react-icons/fa";
 
 const MasterListModal = ({ warga, onClose }) => {
   if (!warga) return null;

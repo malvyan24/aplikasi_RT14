@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { GET_ALL_HEALTH_RECORDS } from '../../../graphql/healthQueries';
-import { FaBaby, FaHeartbeat, FaCalendarCheck, FaInfoCircle, FaCheckCircle, FaExclamationTriangle, FaArrowDown, FaArrowUp } from 'react-icons/fa';
+import { FaBaby, FaHeartbeat, FaInfoCircle, FaCheckCircle, FaExclamationTriangle } from 'react-icons/fa';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const DashboardPintar = ({ allMembers }) => {

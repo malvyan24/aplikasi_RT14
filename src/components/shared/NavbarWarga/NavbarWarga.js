@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 // 👇 Sekarang kita import CSS khusus Warga yang baru saja dibuat
 import './NavbarWarga.css'; 
@@ -8,6 +8,17 @@ const NavbarWarga = ({ onLogout }) => {
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  // Logika Dark Mode
+  const [theme, setTheme] = useState(localStorage.getItem('wargaTheme') || 'light');
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('wargaTheme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme(theme === 'light' ? 'dark' : 'light');
   };
 
   return (
@@ -36,6 +47,14 @@ const NavbarWarga = ({ onLogout }) => {
 
         {/* === PROFIL & LOGOUT === */}
         <div className="warga-nav__profile">
+          <button 
+            onClick={toggleTheme} 
+            className="warga-nav__theme-btn" 
+            style={{ background: 'transparent', border: 'none', fontSize: '20px', cursor: 'pointer', marginRight: '10px' }}
+            title={theme === 'light' ? "Ganti Mode Gelap" : "Ganti Mode Terang"}
+          >
+            {theme === 'light' ? '🌙' : '☀️'}
+          </button>
           <span className="warga-nav__name">Warga RT 14</span>
           
           <button className="logout-btn-warga" onClick={onLogout}>

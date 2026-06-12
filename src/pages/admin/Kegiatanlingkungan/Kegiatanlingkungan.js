@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { GET_KAS_DATA } from '../../../graphql/kegiatanQueries';
 import { 
-  FaCalendarAlt, FaShieldAlt, FaPlusCircle, FaUsers, FaWallet, 
-  FaArrowUp, FaArrowDown, FaChartPie, FaHistory, FaClock, FaMapMarkerAlt 
+  FaCalendarAlt, FaShieldAlt, FaPlusCircle, FaUsers, 
+  FaHistory, FaClock, FaMapMarkerAlt 
 } from 'react-icons/fa';
 import './Kegiatanlingkungan.css'; // Sesuaikan huruf kecil agar tidak eror lagi
 
@@ -12,7 +12,7 @@ const KegiatanLingkungan = () => {
   const [selectedKegiatan, setSelectedKegiatan] = useState(null);
 
   // 1. Load Data Kas dari Backend
-  const { data: kasData, loading: kasLoading } = useQuery(GET_KAS_DATA, {
+  const { data: kasData } = useQuery(GET_KAS_DATA, {
     variables: { month: "Februari", year: "2026" }
   });
 
